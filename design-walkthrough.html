@@ -1,29 +1,158 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Phỏm/Sâm Score Tracker — UX Walkthrough</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif; }
+    :root {
+      --primary: #fcd535;
+      --primary-active: #f0b90b;
+      --on-primary: #181a20;
+
+      --canvas: #ffffff;
+      --page-bg: #ffffff;
+      --surface-card: #ffffff;
+      --surface-elevated: #f5f5f5;
+      --surface-soft: #fafafa;
+      --surface-strong: #f5f5f5;
+
+      --ink: #181a20;
+      --body: #181a20;
+      --muted: #707a8a;
+      --muted-strong: #929aa5;
+      --on-dark: #ffffff;
+
+      --hairline: #eaecef;
+      --border-strong: #cdd1d6;
+
+      --score-positive: #0ecb81;
+      --score-negative: #f6465d;
+      --score-positive-tint: #e8faf2;
+      --score-negative-tint: #fdecef;
+
+      --warning: #ff9500;
+      --warning-tint: rgba(255, 149, 0, 0.14);
+
+      --focus-row-tint: rgba(252, 213, 53, 0.16);
+      --focus-bottom: #fcd535;
+
+      --glass-tint: rgba(255, 255, 255, 0.68);
+      --glass-stroke: rgba(24, 26, 32, 0.06);
+      --glass-specular: rgba(255, 255, 255, 0.14);
+
+      --sheet-base: rgba(11, 14, 17, 0.92);
+      --sheet-ink: #ffffff;
+      --sheet-muted: #929aa5;
+      --sheet-hairline: #2b3139;
+      --sheet-elevated: #2b3139;
+      --sheet-card: #1e2329;
+    }
+
+    [data-theme="dark"] {
+      --canvas: #0b0e11;
+      --page-bg: #0b0e11;
+      --surface-card: #1e2329;
+      --surface-elevated: #2b3139;
+      --surface-soft: #1e2329;
+      --surface-strong: #2b3139;
+
+      --ink: #eaecef;
+      --body: #eaecef;
+      --muted: #707a8a;
+      --muted-strong: #929aa5;
+
+      --hairline: #2b3139;
+      --border-strong: #2b3139;
+
+      --score-positive-tint: rgba(14, 203, 129, 0.14);
+      --score-negative-tint: rgba(246, 70, 93, 0.14);
+
+      --focus-row-tint: rgba(252, 213, 53, 0.12);
+
+      --glass-tint: rgba(30, 35, 41, 0.62);
+      --glass-stroke: rgba(255, 255, 255, 0.08);
+    }
+
+    html, body {
+      background: var(--page-bg);
+      color: var(--ink);
+      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+      transition: background-color 240ms cubic-bezier(0.22, 1, 0.36, 1), color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .font-display { font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; letter-spacing: -0.012em; }
+    .font-mono-sf {
+      font-family: 'SF Mono', ui-monospace, 'JetBrains Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .text-brand { color: var(--primary); }
+    .bg-brand { background: var(--primary); }
+    .bg-brand-active { background: var(--primary-active); }
+    .text-on-brand { color: var(--on-primary); }
+    .text-ink { color: var(--ink); }
+    .text-body { color: var(--body); }
+    .text-muted { color: var(--muted); }
+    .text-muted-strong { color: var(--muted-strong); }
+    .text-pos { color: var(--score-positive); }
+    .text-neg { color: var(--score-negative); }
+    .text-warn { color: var(--warning); }
+
+    .bg-canvas { background: var(--canvas); }
+    .bg-surface-card { background: var(--surface-card); }
+    .bg-surface-elevated { background: var(--surface-elevated); }
+    .bg-surface-soft { background: var(--surface-soft); }
+    .bg-pos-tint { background: var(--score-positive-tint); }
+    .bg-neg-tint { background: var(--score-negative-tint); }
+    .bg-warn-tint { background: var(--warning-tint); }
+    .bg-focus-tint { background: var(--focus-row-tint); }
+
+    .border-hairline { border-color: var(--hairline); }
+    .border-brand { border-color: var(--primary); }
+    .border-neg { border-color: var(--score-negative); }
+
+    .glass-regular {
+      background: var(--glass-tint);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-bottom: 1px solid var(--glass-stroke);
+    }
+    .glass-stroke-top {
+      box-shadow: inset 0 1px 0 var(--glass-specular);
+    }
+
+    /* Sheet surface: dark thick glass regardless of page theme — per DESIGN.md materials.glass-thick-sheet */
+    .sheet-canvas {
+      background: var(--sheet-base);
+      color: var(--sheet-ink);
+    }
+    .sheet-canvas .row-divider { border-color: var(--sheet-hairline); }
+    .sheet-canvas .text-body-on { color: var(--sheet-ink); }
+    .sheet-canvas .text-muted-on { color: var(--sheet-muted); }
+    .sheet-canvas .surface-elevated-on { background: var(--sheet-elevated); }
+    .sheet-canvas .surface-card-on { background: var(--sheet-card); }
+
     .phone {
       width: 375px;
       height: 812px;
       border-radius: 48px;
-      box-shadow: 0 0 0 12px #1c1c1e, 0 30px 60px -15px rgba(0,0,0,0.4);
+      box-shadow: 0 0 0 12px #1c1c1e, 0 30px 60px -15px rgba(0,0,0,0.45);
       overflow: hidden;
       position: relative;
-      background: #fff;
+      background: var(--canvas);
+      transition: background-color 240ms ease;
+    }
+    [data-theme="dark"] .phone {
+      box-shadow: 0 0 0 12px #1c1c1e, 0 30px 60px -15px rgba(0,0,0,0.85);
     }
     .phone::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 50%;
+      top: 0; left: 50%;
       transform: translateX(-50%);
-      width: 120px;
-      height: 30px;
+      width: 120px; height: 30px;
       background: #1c1c1e;
       border-bottom-left-radius: 18px;
       border-bottom-right-radius: 18px;
@@ -33,111 +162,243 @@
       padding-top: 48px;
       height: 100%;
       overflow-y: auto;
-      background: #f2f2f7;
+      background: var(--canvas);
+      color: var(--ink);
     }
-    .ios-blue { color: #007AFF; }
-    .bg-ios-blue { background: #007AFF; }
-    .border-ios-blue { border-color: #007AFF; }
-    .ios-red { color: #FF3B30; }
-    .ios-green { color: #34C759; }
-    .ios-orange { color: #FF9500; }
-    .bg-ios-green { background: #34C759; }
-    .bg-ios-orange { background: #FF9500; }
+    .phone-content::-webkit-scrollbar { display: none; }
     .scroll-x::-webkit-scrollbar { display: none; }
     .scroll-x { -ms-overflow-style: none; scrollbar-width: none; }
     .step-anchor { scroll-margin-top: 80px; }
-    .annotation::before {
-      content: '';
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #007AFF;
-      top: 50%;
-      transform: translateY(-50%);
+
+    /* Subtle section divider — quieter than alternating backgrounds */
+    .section-rule {
+      border-top: 1px solid var(--hairline);
     }
-    .annotation-left::before { right: -16px; }
-    .annotation-right::before { left: -16px; }
+
+    /* Hero ledger preview */
+    .ledger {
+      background: var(--surface-card);
+      border: 1px solid var(--hairline);
+      border-radius: 16px;
+    }
+    .ledger-row + .ledger-row { border-top: 1px solid var(--hairline); }
+
+    /* Focus state on round-entry row */
+    .entry-row-focused {
+      background: var(--focus-row-tint);
+      border-bottom: 2px solid var(--focus-bottom);
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      width: 36px; height: 36px;
+      border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--surface-elevated);
+      color: var(--ink);
+      transition: background-color 200ms ease;
+    }
+    .theme-toggle:hover { background: var(--surface-strong); }
+    [data-theme="light"] .theme-icon-moon { display: inline; }
+    [data-theme="light"] .theme-icon-sun { display: none; }
+    [data-theme="dark"] .theme-icon-moon { display: none; }
+    [data-theme="dark"] .theme-icon-sun { display: inline; }
+
+    /* Nav link */
+    .nav-step {
+      color: var(--muted);
+      font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      padding: 6px 8px;
+      border-radius: 6px;
+      transition: color 150ms ease, background-color 150ms ease;
+    }
+    .nav-step:hover { color: var(--ink); background: var(--surface-elevated); }
+    .nav-step .num { color: var(--ink); font-weight: 600; margin-right: 4px; }
+    [data-theme="dark"] .nav-step .num { color: var(--ink); }
+
+    /* Step number stamp */
+    .step-stamp {
+      font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .step-stamp .step-dot {
+      color: var(--ink);
+      margin-right: 6px;
+    }
+
+    /* Bullet replacement */
+    .point {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: baseline;
+    }
+    .point-marker {
+      font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+      color: var(--primary);
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    /* iOS continuous-ish corners (CSS approximation) */
+    .squircle-lg { border-radius: 16px; }
+    .squircle-md { border-radius: 12px; }
+    .squircle-sm { border-radius: 8px; }
+    .squircle-xl { border-radius: 22px; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-canvas text-ink">
 
-  <!-- Sticky nav -->
-  <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
-    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center gap-6 overflow-x-auto">
-      <div class="font-semibold text-slate-900 whitespace-nowrap">🎴 Phỏm/Sâm — UX Walkthrough</div>
-      <div class="flex gap-1 text-xs">
-        <a href="#step-1" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">1. Mở app</a>
-        <a href="#step-2" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">2. Tạo session</a>
-        <a href="#step-3" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">3. Bảng điểm</a>
-        <a href="#step-4" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">4. Thêm ván</a>
-        <a href="#step-5" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">5. Chặt heo</a>
-        <a href="#step-6" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">6. Sửa ván</a>
-        <a href="#step-7" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">7. Tổng kết</a>
-        <a href="#step-8" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">8. Lịch sử</a>
-        <a href="#step-9" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">9. Share</a>
-        <a href="#step-10" class="px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap">10. Nhận link</a>
+  <!-- Sticky nav: Liquid Glass material -->
+  <nav class="sticky top-0 z-40 glass-regular">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center gap-6">
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="inline-flex items-center justify-center w-7 h-7 squircle-sm bg-brand text-on-brand font-display font-bold text-sm">P</span>
+        <span class="font-display font-semibold text-ink text-sm">Phỏm/Sâm · Walkthrough</span>
       </div>
+      <div class="hidden md:flex gap-0.5 overflow-x-auto flex-1">
+        <a href="#step-1" class="nav-step"><span class="num">01</span>Mở app</a>
+        <a href="#step-2" class="nav-step"><span class="num">02</span>Tạo session</a>
+        <a href="#step-3" class="nav-step"><span class="num">03</span>Bảng điểm</a>
+        <a href="#step-4" class="nav-step"><span class="num">04</span>Thêm ván</a>
+        <a href="#step-5" class="nav-step"><span class="num">05</span>Chặt heo</a>
+        <a href="#step-6" class="nav-step"><span class="num">06</span>Sửa ván</a>
+        <a href="#step-7" class="nav-step"><span class="num">07</span>Tổng kết</a>
+        <a href="#step-8" class="nav-step"><span class="num">08</span>Lịch sử</a>
+        <a href="#step-9" class="nav-step"><span class="num">09</span>Share</a>
+        <a href="#step-10" class="nav-step"><span class="num">10</span>Nhận link</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Đổi giao diện sáng/tối" title="Đổi giao diện sáng/tối">
+        <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
     </div>
   </nav>
 
   <!-- Hero -->
-  <header class="max-w-5xl mx-auto px-6 pt-12 pb-8">
-    <h1 class="text-4xl font-bold tracking-tight">Phỏm/Sâm Score Tracker</h1>
-    <p class="mt-3 text-lg text-slate-600">iOS native · Offline-first · No onboarding · iCloud sync</p>
-    <div class="mt-6 grid grid-cols-3 gap-3 max-w-2xl">
-      <div class="bg-white rounded-xl p-4 border border-slate-200">
-        <div class="text-2xl">⚡</div>
-        <div class="mt-1 font-medium text-sm">Fast</div>
-        <div class="text-xs text-slate-500">Mở app là chơi. N-1 số/ván.</div>
+  <header class="max-w-7xl mx-auto px-6 pt-20 pb-12 grid lg:grid-cols-[1.4fr_1fr] gap-16 items-end">
+    <div>
+      <div class="font-mono-sf text-xs text-muted mb-6">v0.1 · iOS 17+ · SwiftData + CloudKit</div>
+      <h1 class="font-display text-5xl md:text-6xl font-bold text-ink leading-[1.02] tracking-tight">
+        Phỏm/Sâm<br/>Score Tracker
+      </h1>
+      <p class="mt-6 text-base text-muted-strong max-w-md leading-relaxed">
+        Một chủ trò cầm điện thoại, gõ điểm sau mỗi ván. Không backend, không signup, không tutorial. Mở app là chơi.
+      </p>
+
+      <div class="mt-10 space-y-3 max-w-md">
+        <div class="point">
+          <span class="point-marker font-mono-sf">01</span>
+          <span class="text-sm"><span class="font-display font-semibold text-ink">Fast.</span> <span class="text-muted">Mỗi ván chỉ N−1 số. Ô cuối tự điền <span class="font-mono-sf text-ink">−(tổng)</span>.</span></span>
+        </div>
+        <div class="point">
+          <span class="point-marker font-mono-sf">02</span>
+          <span class="text-sm"><span class="font-display font-semibold text-ink">Offline-first.</span> <span class="text-muted">SwiftData lưu local. iCloud sync chạy ngầm, chưa bao giờ chặn đường.</span></span>
+        </div>
+        <div class="point">
+          <span class="point-marker font-mono-sf">03</span>
+          <span class="text-sm"><span class="font-display font-semibold text-ink">Dumb tracker.</span> <span class="text-muted">App ghi điểm, không hiểu luật. Móm/ù/thối heo — bàn tự biết.</span></span>
+        </div>
       </div>
-      <div class="bg-white rounded-xl p-4 border border-slate-200">
-        <div class="text-2xl">📴</div>
-        <div class="mt-1 font-medium text-sm">Offline-first</div>
-        <div class="text-xs text-slate-500">SwiftData local. iCloud bonus.</div>
+    </div>
+
+    <!-- Live ledger preview: shows the design language inline -->
+    <div class="ledger">
+      <div class="flex items-center justify-between px-5 pt-4 pb-3">
+        <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted font-semibold">Tổng · Live preview</div>
+        <div class="font-mono-sf text-[10px] text-muted">Ván 3 · 19:48</div>
       </div>
-      <div class="bg-white rounded-xl p-4 border border-slate-200">
-        <div class="text-2xl">🎯</div>
-        <div class="mt-1 font-medium text-sm">No onboarding</div>
-        <div class="text-xs text-slate-500">Không signup. Defaults tốt sẵn.</div>
+      <div class="px-5 pb-3 flex gap-2 overflow-x-auto scroll-x">
+        <div class="flex-shrink-0 px-3 py-2 squircle-md bg-neg-tint">
+          <div class="text-[11px] text-muted-strong">An</div>
+          <div class="font-mono-sf text-base font-bold text-neg">−5</div>
+        </div>
+        <div class="flex-shrink-0 px-3 py-2 squircle-md bg-neg-tint">
+          <div class="text-[11px] text-muted-strong">Bình</div>
+          <div class="font-mono-sf text-base font-bold text-neg">−3</div>
+        </div>
+        <div class="flex-shrink-0 px-3 py-2 squircle-md bg-pos-tint">
+          <div class="text-[11px] text-muted-strong">Cường</div>
+          <div class="font-mono-sf text-base font-bold text-pos">+5</div>
+        </div>
+        <div class="flex-shrink-0 px-3 py-2 squircle-md bg-pos-tint">
+          <div class="text-[11px] text-muted-strong">Dũng</div>
+          <div class="font-mono-sf text-base font-bold text-pos">+3</div>
+        </div>
+      </div>
+      <div class="ledger-row px-5 py-3 flex items-center justify-between">
+        <div class="font-mono-sf text-xs text-muted">Ván 3</div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="font-mono-sf text-neg font-semibold">An −2</span>
+          <span class="font-mono-sf text-pos font-semibold">Bình +4</span>
+          <span class="font-mono-sf text-pos font-semibold">Cường +1</span>
+          <span class="font-mono-sf text-neg font-semibold">Dũng −3</span>
+        </div>
+      </div>
+      <div class="ledger-row px-5 py-3 flex items-center justify-between">
+        <div class="font-mono-sf text-xs text-muted">Ván 2</div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="font-mono-sf text-pos font-semibold">An +1</span>
+          <span class="font-mono-sf text-neg font-semibold">Bình −2</span>
+          <span class="font-mono-sf text-pos font-semibold">Cường +3</span>
+          <span class="font-mono-sf text-neg font-semibold">Dũng −2</span>
+        </div>
+      </div>
+      <div class="ledger-row px-5 py-3 flex items-center justify-between">
+        <div class="font-mono-sf text-xs text-muted">Ván 1</div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="font-mono-sf text-neg font-semibold">An −4</span>
+          <span class="font-mono-sf text-neg font-semibold">Bình −5</span>
+          <span class="font-mono-sf text-pos font-semibold">Cường +1</span>
+          <span class="font-mono-sf text-pos font-semibold">Dũng +8</span>
+        </div>
+      </div>
+      <div class="px-5 py-3 flex items-center justify-between border-t border-hairline">
+        <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted font-semibold">Tổng các ô (ván 3)</div>
+        <div class="font-mono-sf text-pos text-sm font-semibold">0 ✓</div>
       </div>
     </div>
   </header>
 
   <!-- STEP 1: Empty state -->
-  <section id="step-1" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center">
+  <section id="step-1" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div>
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 1</div>
-      <h2 class="mt-2 text-3xl font-bold">Mở app lần đầu / chưa có session</h2>
-      <p class="mt-4 text-slate-600">HomeView empty state. 1 nút duy nhất. Icon History ẩn ở góc — chỉ dùng khi muốn xem buổi cũ.</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>0 tap</strong> để bắt đầu khi có session active (xem step 3).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Không splash screen, không tutorial, không welcome.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Tap icon góc phải để vào <strong>Lịch sử</strong> (step 8).</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">01.</span>Mở app lần đầu</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Chưa có session đang chơi</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">HomeView empty state. Một nút duy nhất, biểu tượng History ẩn ở góc cho buổi cũ. Không splash, không tutorial.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">0 tap</strong> để bắt đầu khi đã có session active (xem step 3).</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Không splash screen, không welcome, không onboarding.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Tap góc phải → <strong class="text-ink">Lịch sử</strong> (step 8).</span></div>
+      </div>
     </div>
     <div class="flex justify-center">
       <div class="phone">
         <div class="phone-content flex flex-col">
-          <!-- Status bar mock -->
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span>
-            <span>•••</span>
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold" style="color: var(--ink)">
+            <span class="font-mono-sf">9:41</span>
+            <span class="font-mono-sf text-muted">•••</span>
           </div>
-          <!-- Header -->
-          <div class="flex justify-between items-center px-5 py-3">
-            <div class="text-lg font-bold">Phỏm/Sâm</div>
-            <button class="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-600">⋯</button>
+          <!-- Nav: glass-regular -->
+          <div class="flex justify-between items-center px-5 py-3 glass-regular">
+            <div class="font-display font-semibold text-base">Phỏm/Sâm</div>
+            <button class="w-9 h-9 rounded-full bg-surface-elevated flex items-center justify-center text-muted-strong text-base">⋯</button>
           </div>
-          <!-- Empty state -->
-          <div class="flex-1 flex flex-col items-center justify-center px-8 -mt-12">
-            <div class="text-7xl mb-6 opacity-30">🎴</div>
-            <div class="text-base text-slate-500 text-center">Chưa có session đang chơi</div>
-            <div class="text-sm text-slate-400 text-center mt-1">Bắt đầu buổi mới ở dưới</div>
+          <div class="flex-1 flex flex-col items-center justify-center px-8 -mt-8">
+            <div class="text-7xl mb-6 opacity-25">🎴</div>
+            <div class="text-base text-muted text-center">Chưa có session đang chơi</div>
+            <div class="text-sm text-muted text-center mt-1.5">Bắt đầu buổi mới ở dưới</div>
           </div>
-          <!-- Big button -->
           <div class="px-5 pb-12">
-            <button class="w-full bg-ios-blue text-white font-semibold py-4 rounded-2xl text-base shadow-lg">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-4 squircle-lg text-base">
               + Tạo session mới
             </button>
           </div>
@@ -147,170 +408,171 @@
   </section>
 
   <!-- STEP 2: New session -->
-  <section id="step-2" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center bg-white rounded-3xl shadow-sm">
+  <section id="step-2" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div class="flex justify-center order-2 md:order-1">
       <div class="phone">
-        <div class="phone-content">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+        <!-- Sheet over canvas — sheet uses dark thick-glass material per DESIGN.md -->
+        <div class="phone-content sheet-canvas flex flex-col">
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-body-on">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted-on">•••</span>
           </div>
-          <!-- Sheet header -->
-          <div class="flex justify-between items-center px-5 py-3 border-b border-slate-200">
-            <button class="text-slate-500">✕</button>
-            <div class="font-semibold">Tạo session mới</div>
+          <div class="flex justify-between items-center px-5 py-3 border-b row-divider">
+            <button class="text-muted-on text-lg">✕</button>
+            <div class="font-display font-semibold text-body-on">Tạo session mới</div>
             <div class="w-6"></div>
           </div>
-          <div class="p-5 space-y-5">
-            <!-- Name -->
+          <div class="p-5 space-y-6">
             <div>
-              <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tên session</label>
-              <div class="mt-2 px-4 py-3 bg-slate-100 rounded-xl text-slate-700">24/05/2026 19:30</div>
-              <div class="mt-1 text-xs text-slate-400">Tap để sửa</div>
+              <label class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted-on font-semibold">Tên session</label>
+              <div class="mt-2 px-4 py-3 surface-elevated-on squircle-md text-body-on font-mono-sf text-sm">24/05/2026 19:30</div>
+              <div class="mt-1.5 text-[11px] text-muted-on">Tap để sửa</div>
             </div>
-            <!-- Last group quick action -->
             <div>
-              <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nhóm vừa chơi</label>
-              <button class="mt-2 w-full px-4 py-3 bg-blue-50 rounded-xl text-left flex items-center justify-between">
+              <label class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted-on font-semibold">Nhóm vừa chơi</label>
+              <button class="mt-2 w-full px-4 py-3.5 surface-elevated-on squircle-md text-left flex items-center justify-between">
                 <div>
-                  <div class="font-medium text-sm">An · Bình · Cường · Dũng</div>
-                  <div class="text-xs text-slate-500 mt-0.5">Tối 22/05/2026</div>
+                  <div class="font-display font-semibold text-sm text-body-on">An · Bình · Cường · Dũng</div>
+                  <div class="text-[11px] text-muted-on mt-0.5">Tối 22/05/2026</div>
                 </div>
-                <span class="text-xs font-semibold ios-blue">Dùng lại</span>
+                <span class="bg-brand text-on-brand text-[11px] font-display font-semibold px-3 py-1.5 rounded-full">Dùng lại</span>
               </button>
             </div>
-            <!-- Custom -->
             <div>
-              <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Hoặc thêm người</label>
+              <label class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted-on font-semibold">Hoặc thêm người</label>
               <div class="mt-2 flex flex-wrap gap-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 rounded-full text-sm">An <span class="text-slate-400">✕</span></span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 rounded-full text-sm">Bình <span class="text-slate-400">✕</span></span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 rounded-full text-sm">Cường <span class="text-slate-400">✕</span></span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 surface-elevated-on rounded-full text-sm text-body-on">An <span class="text-muted-on">✕</span></span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 surface-elevated-on rounded-full text-sm text-body-on">Bình <span class="text-muted-on">✕</span></span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 surface-elevated-on rounded-full text-sm text-body-on">Cường <span class="text-muted-on">✕</span></span>
               </div>
-              <input type="text" placeholder="+ Thêm người..." class="mt-2 w-full px-4 py-3 border-2 border-dashed border-slate-300 rounded-xl text-sm placeholder-slate-400 focus:outline-none" />
-              <!-- Autosuggest dropdown -->
-              <div class="mt-1 bg-white border border-slate-200 rounded-xl shadow-lg text-sm">
-                <div class="px-4 py-2 hover:bg-slate-50">Dũng <span class="text-xs text-slate-400">(7 buổi)</span></div>
-                <div class="px-4 py-2 hover:bg-slate-50">Em <span class="text-xs text-slate-400">(3 buổi)</span></div>
+              <input type="text" placeholder="+ Thêm người..." class="mt-3 w-full px-4 py-3 bg-transparent border border-dashed squircle-md text-sm focus:outline-none" style="border-color: var(--sheet-hairline); color: var(--sheet-ink);" />
+              <div class="mt-1.5 surface-card-on squircle-md text-sm border" style="border-color: var(--sheet-hairline);">
+                <div class="px-4 py-2.5 flex items-center justify-between">
+                  <span class="text-body-on">Dũng</span>
+                  <span class="font-mono-sf text-[11px] text-muted-on">7 buổi</span>
+                </div>
+                <div class="px-4 py-2.5 flex items-center justify-between border-t row-divider">
+                  <span class="text-body-on">Em</span>
+                  <span class="font-mono-sf text-[11px] text-muted-on">3 buổi</span>
+                </div>
               </div>
             </div>
           </div>
-          <!-- Bottom button -->
-          <div class="px-5 pt-2 pb-8 bg-white sticky bottom-0">
-            <button class="w-full bg-ios-blue text-white font-semibold py-4 rounded-2xl text-base">Bắt đầu →</button>
+          <div class="px-5 pt-2 pb-8 mt-auto">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-4 squircle-lg text-base">Bắt đầu →</button>
           </div>
         </div>
       </div>
     </div>
     <div class="order-1 md:order-2">
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 2</div>
-      <h2 class="mt-2 text-3xl font-bold">Tạo session</h2>
-      <p class="mt-4 text-slate-600">Sheet bung lên. Default đã sẵn sàng: tên = timestamp, nhóm = "vừa chơi" với 1-tap "Dùng lại".</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Best case (90%)</strong>: tap "Dùng lại" → tap "Bắt đầu" = 2 taps.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Thêm người mới: ô input có autosuggest từ history (distinct names, sort by frequency).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Tên session có thể sửa <em>sau</em> khi bắt đầu — không cản đường.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Bắt đầu = nếu có session active cũ → tự archive trong background.</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">02.</span>Tạo session</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Mặc định sẵn sàng. Không hỏi.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Sheet bung lên. Tên = timestamp. Nhóm vừa chơi gắn sẵn pill <span class="font-mono-sf text-ink">Dùng lại</span>.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Best case (90%)</strong>: tap Dùng lại → tap Bắt đầu. <span class="font-mono-sf text-ink">2 taps</span> tổng.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Thêm người mới: autosuggest từ history (distinct names, sort theo tần suất).</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Tên session sửa được <em>sau</em> khi bắt đầu, không cản đường.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Có session active cũ → tự archive trong background.</span></div>
+      </div>
     </div>
   </section>
 
   <!-- STEP 3: SessionView R1 -->
-  <section id="step-3" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center">
+  <section id="step-3" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div>
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 3</div>
-      <h2 class="mt-2 text-3xl font-bold">Bảng điểm chính (Layout R1)</h2>
-      <p class="mt-4 text-slate-600">Đây là màn xuất hiện ngay khi mở app trong lúc đang chơi. 0 tap thấy điểm.</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>TỔNG</strong> = chip ngang, scroll horizontally khi nhiều người. Mỗi chip = tên + tổng dồn (xanh thắng / đỏ thua).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Ván cards</strong> = scroll dọc, mới-trên-cùng. Mỗi card hiện ai bao nhiêu inline.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Tap card</strong> = sửa ván. <strong>Swipe trái</strong> = xóa (confirm).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>FAB "+ Ván"</strong> sticky bottom. Trigger full-screen entry sheet (step 4).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Share button</strong> trên header → AirDrop (step 9).</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">03.</span>Bảng điểm chính</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Mở app, thấy điểm.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Layout R1. Đây là màn xuất hiện ngay khi mở app trong lúc đang chơi. 0 tap thấy điểm.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">TỔNG</strong> = chip scroll ngang. Mỗi chip: tên + tổng dồn, xanh thắng / đỏ thua.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Ván cards</strong> = scroll dọc, mới-trên-cùng. Mỗi card hiện ai bao nhiêu inline.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Tap card</strong> = sửa ván. <strong class="text-ink">Swipe trái</strong> = xóa (confirm).</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">FAB “+ Ván”</strong> sticky bottom. Trigger entry sheet (step 4).</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Share</strong> trên nav → AirDrop (step 9).</span></div>
+      </div>
     </div>
     <div class="flex justify-center">
       <div class="phone">
         <div class="phone-content flex flex-col">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold" style="color: var(--ink)">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted">•••</span>
           </div>
-          <!-- NavBar -->
-          <div class="flex justify-between items-center px-5 py-3 bg-white border-b border-slate-200">
-            <button class="ios-blue text-2xl leading-none">‹</button>
+          <!-- NavBar glass -->
+          <div class="flex justify-between items-center px-5 py-3 glass-regular">
+            <button class="text-brand text-2xl leading-none">‹</button>
             <div class="text-center">
-              <div class="font-semibold text-sm">Tối 24/05</div>
-              <div class="text-xs text-slate-400">4 người · 3 ván</div>
+              <div class="font-display font-semibold text-sm text-ink">Tối 24/05</div>
+              <div class="font-mono-sf text-[11px] text-muted mt-0.5">4 người · 3 ván</div>
             </div>
-            <div class="flex gap-2">
-              <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm">⤴</button>
-              <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm">⋯</button>
+            <div class="flex gap-1.5">
+              <button class="w-8 h-8 rounded-full bg-surface-elevated flex items-center justify-center text-muted-strong text-xs">↑</button>
+              <button class="w-8 h-8 rounded-full bg-surface-elevated flex items-center justify-center text-muted-strong text-xs">⋯</button>
             </div>
           </div>
           <!-- Totals chip row -->
-          <div class="px-4 py-3 bg-white border-b border-slate-200">
-            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2">Tổng</div>
+          <div class="px-4 py-3 bg-canvas border-b border-hairline">
+            <div class="font-mono-sf text-[10px] font-semibold uppercase tracking-[0.14em] text-muted mb-2">Tổng</div>
             <div class="flex gap-2 overflow-x-auto scroll-x">
-              <div class="flex-shrink-0 px-3 py-2 rounded-xl bg-red-50 border border-red-100">
-                <div class="text-xs text-slate-600">An</div>
-                <div class="font-bold ios-red">-5</div>
+              <div class="flex-shrink-0 px-3 py-2 squircle-md bg-neg-tint">
+                <div class="text-[11px] text-muted-strong">An</div>
+                <div class="font-mono-sf text-base font-bold text-neg">−5</div>
               </div>
-              <div class="flex-shrink-0 px-3 py-2 rounded-xl bg-red-50 border border-red-100">
-                <div class="text-xs text-slate-600">Bình</div>
-                <div class="font-bold ios-red">-3</div>
+              <div class="flex-shrink-0 px-3 py-2 squircle-md bg-neg-tint">
+                <div class="text-[11px] text-muted-strong">Bình</div>
+                <div class="font-mono-sf text-base font-bold text-neg">−3</div>
               </div>
-              <div class="flex-shrink-0 px-3 py-2 rounded-xl bg-green-50 border border-green-100">
-                <div class="text-xs text-slate-600">Cường</div>
-                <div class="font-bold ios-green">+5</div>
+              <div class="flex-shrink-0 px-3 py-2 squircle-md bg-pos-tint">
+                <div class="text-[11px] text-muted-strong">Cường</div>
+                <div class="font-mono-sf text-base font-bold text-pos">+5</div>
               </div>
-              <div class="flex-shrink-0 px-3 py-2 rounded-xl bg-green-50 border border-green-100">
-                <div class="text-xs text-slate-600">Dũng</div>
-                <div class="font-bold ios-green">+3</div>
+              <div class="flex-shrink-0 px-3 py-2 squircle-md bg-pos-tint">
+                <div class="text-[11px] text-muted-strong">Dũng</div>
+                <div class="font-mono-sf text-base font-bold text-pos">+3</div>
               </div>
             </div>
           </div>
           <!-- Round cards -->
           <div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline">
               <div class="flex justify-between items-center mb-2">
-                <div class="text-xs font-semibold text-slate-500">Ván 3</div>
-                <div class="text-xs text-slate-400">19:48</div>
+                <div class="font-mono-sf text-[11px] font-semibold text-muted">VÁN 3</div>
+                <div class="font-mono-sf text-[11px] text-muted">19:48</div>
               </div>
-              <div class="flex flex-wrap gap-3 text-sm">
-                <span><span class="text-slate-500">An</span> <span class="font-semibold ios-red">-2</span></span>
-                <span><span class="text-slate-500">Bình</span> <span class="font-semibold ios-green">+4</span></span>
-                <span><span class="text-slate-500">Cường</span> <span class="font-semibold ios-green">+1</span></span>
-                <span><span class="text-slate-500">Dũng</span> <span class="font-semibold ios-red">-3</span></span>
+              <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+                <span><span class="text-muted">An</span> <span class="font-mono-sf font-semibold text-neg">−2</span></span>
+                <span><span class="text-muted">Bình</span> <span class="font-mono-sf font-semibold text-pos">+4</span></span>
+                <span><span class="text-muted">Cường</span> <span class="font-mono-sf font-semibold text-pos">+1</span></span>
+                <span><span class="text-muted">Dũng</span> <span class="font-mono-sf font-semibold text-neg">−3</span></span>
               </div>
             </div>
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline">
               <div class="flex justify-between items-center mb-2">
-                <div class="text-xs font-semibold text-slate-500">Ván 2</div>
-                <div class="text-xs text-slate-400">19:42</div>
+                <div class="font-mono-sf text-[11px] font-semibold text-muted">VÁN 2</div>
+                <div class="font-mono-sf text-[11px] text-muted">19:42</div>
               </div>
-              <div class="flex flex-wrap gap-3 text-sm">
-                <span><span class="text-slate-500">An</span> <span class="font-semibold ios-green">+1</span></span>
-                <span><span class="text-slate-500">Bình</span> <span class="font-semibold ios-red">-2</span></span>
-                <span><span class="text-slate-500">Cường</span> <span class="font-semibold ios-green">+3</span></span>
-                <span><span class="text-slate-500">Dũng</span> <span class="font-semibold ios-red">-2</span></span>
+              <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+                <span><span class="text-muted">An</span> <span class="font-mono-sf font-semibold text-pos">+1</span></span>
+                <span><span class="text-muted">Bình</span> <span class="font-mono-sf font-semibold text-neg">−2</span></span>
+                <span><span class="text-muted">Cường</span> <span class="font-mono-sf font-semibold text-pos">+3</span></span>
+                <span><span class="text-muted">Dũng</span> <span class="font-mono-sf font-semibold text-neg">−2</span></span>
               </div>
             </div>
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline">
               <div class="flex justify-between items-center mb-2">
-                <div class="text-xs font-semibold text-slate-500">Ván 1</div>
-                <div class="text-xs text-slate-400">19:35</div>
+                <div class="font-mono-sf text-[11px] font-semibold text-muted">VÁN 1</div>
+                <div class="font-mono-sf text-[11px] text-muted">19:35</div>
               </div>
-              <div class="flex flex-wrap gap-3 text-sm">
-                <span><span class="text-slate-500">An</span> <span class="font-semibold ios-red">-4</span></span>
-                <span><span class="text-slate-500">Bình</span> <span class="font-semibold ios-red">-5</span></span>
-                <span><span class="text-slate-500">Cường</span> <span class="font-semibold ios-green">+1</span></span>
-                <span><span class="text-slate-500">Dũng</span> <span class="font-semibold ios-green">+8</span></span>
+              <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+                <span><span class="text-muted">An</span> <span class="font-mono-sf font-semibold text-neg">−4</span></span>
+                <span><span class="text-muted">Bình</span> <span class="font-mono-sf font-semibold text-neg">−5</span></span>
+                <span><span class="text-muted">Cường</span> <span class="font-mono-sf font-semibold text-pos">+1</span></span>
+                <span><span class="text-muted">Dũng</span> <span class="font-mono-sf font-semibold text-pos">+8</span></span>
               </div>
             </div>
             <div class="h-20"></div>
           </div>
           <!-- FAB -->
           <div class="absolute bottom-8 left-0 right-0 px-5">
-            <button class="w-full bg-ios-blue text-white font-semibold py-4 rounded-2xl text-base shadow-xl">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-4 squircle-lg text-base shadow-xl">
               + Ván 4
             </button>
           </div>
@@ -320,146 +582,147 @@
   </section>
 
   <!-- STEP 4: RoundEntryView normal -->
-  <section id="step-4" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center bg-white rounded-3xl shadow-sm">
+  <section id="step-4" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div class="flex justify-center order-2 md:order-1">
       <div class="phone">
-        <div class="phone-content flex flex-col bg-white">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+        <div class="phone-content sheet-canvas flex flex-col">
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-body-on">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted-on">•••</span>
           </div>
-          <!-- Sheet header -->
-          <div class="flex justify-between items-center px-5 py-3 border-b border-slate-200">
-            <button class="text-slate-500">✕</button>
-            <div class="font-semibold">Ván 4</div>
+          <div class="flex justify-between items-center px-5 py-3 border-b row-divider">
+            <button class="text-muted-on text-lg">✕</button>
+            <div class="font-display font-semibold text-body-on">Ván 4</div>
             <div class="w-6"></div>
           </div>
-          <!-- Players list -->
-          <div class="px-5 py-4 space-y-3">
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">An</div>
-              <div class="font-mono text-xl ios-red font-semibold">-5</div>
+          <div class="px-5 py-4 space-y-1">
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">An</div>
+              <div class="font-mono-sf text-2xl font-semibold text-neg">−5</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">Bình</div>
-              <div class="font-mono text-xl ios-green font-semibold">+3</div>
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">Bình</div>
+              <div class="font-mono-sf text-2xl font-semibold text-pos">+3</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">Cường</div>
-              <div class="font-mono text-xl ios-green font-semibold">+1</div>
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">Cường</div>
+              <div class="font-mono-sf text-2xl font-semibold text-pos">+1</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b-2 border-blue-300 bg-blue-50 -mx-2 px-2 rounded-lg">
-              <div class="font-medium">Dũng <span class="text-xs text-slate-400">đang focus</span></div>
-              <div class="font-mono text-xl text-slate-400 italic font-semibold">+1 <span class="text-xs not-italic">auto</span></div>
+            <div class="flex items-center justify-between px-3 py-3 entry-row-focused squircle-sm">
+              <div class="font-display font-semibold text-body-on">Dũng <span class="font-mono-sf text-[10px] text-muted-on ml-1 uppercase tracking-wider">đang focus</span></div>
+              <div class="font-mono-sf text-2xl font-semibold text-muted-on italic">+1 <span class="text-[10px] not-italic uppercase tracking-wider">auto</span></div>
             </div>
           </div>
-          <!-- Sum indicator -->
-          <div class="mx-5 mb-3 px-4 py-2 bg-green-50 rounded-lg flex items-center justify-between">
-            <div class="text-xs text-slate-600">Tổng các ô</div>
-            <div class="font-semibold ios-green text-sm">0 ✓</div>
+          <!-- Sum indicator OK -->
+          <div class="mx-5 mb-3 px-4 py-3 bg-pos-tint squircle-md flex items-center justify-between">
+            <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted-on font-semibold">Tổng các ô</div>
+            <div class="font-display font-semibold text-pos text-base">0 ✓</div>
           </div>
           <!-- Keypad -->
-          <div class="mt-auto bg-slate-200 p-2 grid grid-cols-3 gap-1.5">
-            <button class="bg-white rounded-lg py-3 font-medium">1</button>
-            <button class="bg-white rounded-lg py-3 font-medium">2</button>
-            <button class="bg-white rounded-lg py-3 font-medium">3</button>
-            <button class="bg-white rounded-lg py-3 font-medium">4</button>
-            <button class="bg-white rounded-lg py-3 font-medium">5</button>
-            <button class="bg-white rounded-lg py-3 font-medium">6</button>
-            <button class="bg-white rounded-lg py-3 font-medium">7</button>
-            <button class="bg-white rounded-lg py-3 font-medium">8</button>
-            <button class="bg-white rounded-lg py-3 font-medium">9</button>
-            <button class="bg-white rounded-lg py-3 font-medium">±</button>
-            <button class="bg-white rounded-lg py-3 font-medium">0</button>
-            <button class="bg-white rounded-lg py-3 font-medium">⌫</button>
+          <div class="mt-auto px-2 pb-2 pt-2 grid grid-cols-3 gap-1.5" style="background: rgba(0,0,0,0.25);">
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">1</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">2</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">3</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">4</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">5</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">6</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">7</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">8</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">9</button>
+            <button class="surface-card-on squircle-md py-4 font-display text-xl text-body-on">±</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">0</button>
+            <button class="surface-card-on squircle-md py-4 font-display text-xl text-body-on">⌫</button>
           </div>
-          <div class="p-3 bg-slate-200">
-            <button class="w-full bg-ios-blue text-white font-semibold py-3 rounded-xl">Lưu ván →</button>
+          <div class="p-3" style="background: rgba(0,0,0,0.25);">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-3.5 squircle-lg text-base">Lưu ván →</button>
           </div>
         </div>
       </div>
     </div>
     <div class="order-1 md:order-2">
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 4</div>
-      <h2 class="mt-2 text-3xl font-bold">Thêm ván — normal (cả bàn liên quan)</h2>
-      <p class="mt-4 text-slate-600">Full-screen sheet. List dọc của player, ô số bên phải. Custom keypad dưới đáy — không che gì, không cần system keyboard.</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Auto-fill rule</strong>: gõ N-1 ô → ô cuối hiện suggested value <span class="text-slate-400 italic">+1 auto</span> mờ italic.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Tap ô auto-fill → trở thành ô gõ tay, ô khác sẽ thành auto.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Sum indicator</strong> live: xanh = 0 OK, cam = ≠0 warning.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Keypad có ±, ⌫. Tap số → thêm vào ô đang focus.</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">04.</span>Thêm ván — normal</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Cả bàn liên quan. Auto-fill ô cuối.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Full-screen sheet. List dọc của player, ô số bên phải. Custom keypad dưới đáy, không che gì, không cần system keyboard.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Auto-fill rule</strong>: gõ N−1 ô → ô cuối hiện suggested <span class="font-mono-sf text-ink">+1 auto</span> mờ italic.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Tap ô auto-fill → trở thành ô gõ tay; ô khác sẽ thành auto.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Sum indicator</strong> live: xanh = 0 OK, cam = ≠0 warning.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Keypad có ±, ⌫. Tap số → append vào ô đang focus.</span></div>
+      </div>
     </div>
   </section>
 
   <!-- STEP 5: Sparse round -->
-  <section id="step-5" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center">
+  <section id="step-5" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div>
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 5</div>
-      <h2 class="mt-2 text-3xl font-bold">Thêm ván — chặt heo (sparse)</h2>
-      <p class="mt-4 text-slate-600">Case đặc thù Phỏm/Sâm: chỉ 2 người dính giao dịch (vd Bình chặt heo An), những người khác không liên quan.</p>
-      <div class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm">
-        <div class="font-semibold mb-1">Rule α: Empty = 0 ngầm</div>
-        <div class="text-slate-700">Ô bạn không tap = 0 mặc định (placeholder mờ). Auto-fill chỉ kích hoạt khi N-1 ô đã có số. Nếu sum 2 ô đã gõ = 0 → tap Lưu trực tiếp, không cần đụng 2 ô còn lại.</div>
+      <div class="step-stamp"><span class="step-dot">05.</span>Thêm ván — chặt heo</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Chỉ 2 người dính. 3 actions tổng.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Case đặc thù Phỏm/Sâm: 2 người dính giao dịch (Bình chặt heo An), người khác không liên quan.</p>
+      <div class="mt-6 p-5 squircle-lg border border-hairline bg-surface-card">
+        <div class="flex items-baseline gap-3 mb-2">
+          <span class="font-mono-sf text-xs text-brand font-semibold">RULE α</span>
+          <div class="font-display font-semibold text-ink text-sm">Empty = 0 ngầm</div>
+        </div>
+        <div class="text-sm text-muted leading-relaxed">Ô không tap = <span class="font-mono-sf text-ink">0</span> mặc định (placeholder mờ). Auto-fill chỉ kích hoạt khi N−1 ô đã có số. Nếu sum 2 ô đã gõ = 0 → tap Lưu trực tiếp, không cần đụng 2 ô còn lại.</div>
       </div>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Chặt heo 4 người</strong>: 2 thao tác gõ + 1 tap Lưu = 3 actions tổng.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Chặt heo 8 người</strong>: vẫn 3 actions (placeholder 0 cho 6 người còn lại, không cần đụng).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Sum indicator <span class="ios-green font-semibold">0 ✓</span> tự động báo sẵn sàng.</span></li>
-        <li class="flex gap-2"><span class="ios-orange">●</span><span>Nếu sum ≠ 0 (lỡ tay) → warning cam, vẫn cho Lưu.</span></li>
-      </ul>
+      <div class="mt-6 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Chặt heo 4 người</strong>: 2 thao tác gõ + 1 tap Lưu = <span class="font-mono-sf text-ink">3 actions</span>.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Chặt heo 8 người</strong>: vẫn 3 actions (placeholder 0 cho 6 người còn lại).</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Sum indicator <span class="font-mono-sf text-pos font-semibold">0 ✓</span> tự báo sẵn sàng.</span></div>
+        <div class="point"><span class="point-marker" style="color: var(--warning)">→</span><span class="text-muted">Sum ≠ 0 (lỡ tay) → <span class="font-mono-sf text-warn">warning</span> cam, vẫn cho Lưu.</span></div>
+      </div>
     </div>
     <div class="flex justify-center">
       <div class="phone">
-        <div class="phone-content flex flex-col bg-white">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+        <div class="phone-content sheet-canvas flex flex-col">
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-body-on">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted-on">•••</span>
           </div>
-          <div class="flex justify-between items-center px-5 py-3 border-b border-slate-200">
-            <button class="text-slate-500">✕</button>
-            <div class="font-semibold">Ván 5 · Chặt heo</div>
+          <div class="flex justify-between items-center px-5 py-3 border-b row-divider">
+            <button class="text-muted-on text-lg">✕</button>
+            <div class="font-display font-semibold text-body-on">Ván 5 · Chặt heo</div>
             <div class="w-6"></div>
           </div>
-          <div class="px-5 py-4 space-y-3">
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">An</div>
-              <div class="font-mono text-xl ios-red font-semibold">-5</div>
+          <div class="px-5 py-4 space-y-1">
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">An</div>
+              <div class="font-mono-sf text-2xl font-semibold text-neg">−5</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">Bình</div>
-              <div class="font-mono text-xl ios-green font-semibold">+5</div>
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">Bình</div>
+              <div class="font-mono-sf text-2xl font-semibold text-pos">+5</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium text-slate-400">Cường</div>
-              <div class="font-mono text-xl text-slate-300 font-light">0</div>
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display text-muted-on">Cường</div>
+              <div class="font-mono-sf text-2xl font-light text-muted-on opacity-60">0</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium text-slate-400">Dũng</div>
-              <div class="font-mono text-xl text-slate-300 font-light">0</div>
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display text-muted-on">Dũng</div>
+              <div class="font-mono-sf text-2xl font-light text-muted-on opacity-60">0</div>
             </div>
           </div>
-          <div class="mx-5 mb-3 px-4 py-3 bg-green-50 rounded-lg flex items-center justify-between">
+          <div class="mx-5 mb-3 px-4 py-3 bg-pos-tint squircle-md flex items-center justify-between">
             <div>
-              <div class="text-xs text-slate-600">Tổng các ô</div>
-              <div class="text-xs text-slate-400 mt-0.5">2 người liên quan, 2 người = 0</div>
+              <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted-on font-semibold">Tổng các ô</div>
+              <div class="text-[11px] text-muted-on mt-0.5">2 người liên quan, 2 người = 0</div>
             </div>
-            <div class="font-semibold ios-green text-lg">0 ✓</div>
+            <div class="font-display font-semibold text-pos text-lg">0 ✓</div>
           </div>
-          <div class="mt-auto bg-slate-200 p-2 grid grid-cols-3 gap-1.5">
-            <button class="bg-white rounded-lg py-3 font-medium">1</button>
-            <button class="bg-white rounded-lg py-3 font-medium">2</button>
-            <button class="bg-white rounded-lg py-3 font-medium">3</button>
-            <button class="bg-white rounded-lg py-3 font-medium">4</button>
-            <button class="bg-white rounded-lg py-3 font-medium">5</button>
-            <button class="bg-white rounded-lg py-3 font-medium">6</button>
-            <button class="bg-white rounded-lg py-3 font-medium">7</button>
-            <button class="bg-white rounded-lg py-3 font-medium">8</button>
-            <button class="bg-white rounded-lg py-3 font-medium">9</button>
-            <button class="bg-white rounded-lg py-3 font-medium">±</button>
-            <button class="bg-white rounded-lg py-3 font-medium">0</button>
-            <button class="bg-white rounded-lg py-3 font-medium">⌫</button>
+          <div class="mt-auto px-2 pb-2 pt-2 grid grid-cols-3 gap-1.5" style="background: rgba(0,0,0,0.25);">
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">1</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">2</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">3</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">4</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">5</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">6</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">7</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">8</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">9</button>
+            <button class="surface-card-on squircle-md py-4 font-display text-xl text-body-on">±</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">0</button>
+            <button class="surface-card-on squircle-md py-4 font-display text-xl text-body-on">⌫</button>
           </div>
-          <div class="p-3 bg-slate-200">
-            <button class="w-full bg-ios-blue text-white font-semibold py-3 rounded-xl">Lưu ván →</button>
+          <div class="p-3" style="background: rgba(0,0,0,0.25);">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-3.5 squircle-lg text-base">Lưu ván →</button>
           </div>
         </div>
       </div>
@@ -467,147 +730,147 @@
   </section>
 
   <!-- STEP 6: Edit -->
-  <section id="step-6" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center bg-white rounded-3xl shadow-sm">
+  <section id="step-6" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div class="flex justify-center order-2 md:order-1">
       <div class="phone">
-        <div class="phone-content flex flex-col bg-white">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+        <div class="phone-content sheet-canvas flex flex-col">
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-body-on">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted-on">•••</span>
           </div>
-          <div class="flex justify-between items-center px-5 py-3 border-b border-slate-200">
-            <button class="text-slate-500">✕</button>
-            <div class="font-semibold">Sửa ván 2</div>
-            <button class="text-sm ios-red font-medium">Xóa</button>
+          <div class="flex justify-between items-center px-5 py-3 border-b row-divider">
+            <button class="text-muted-on text-lg">✕</button>
+            <div class="font-display font-semibold text-body-on">Sửa ván 2</div>
+            <button class="font-display font-semibold text-sm text-neg">Xóa</button>
           </div>
-          <div class="px-5 py-4 space-y-3">
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">An</div>
-              <div class="font-mono text-xl ios-green font-semibold">+1</div>
+          <div class="px-5 py-4 space-y-1">
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">An</div>
+              <div class="font-mono-sf text-2xl font-semibold text-pos">+1</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b-2 border-blue-300 bg-blue-50 -mx-2 px-2 rounded-lg">
-              <div class="font-medium">Bình <span class="text-xs text-slate-400">focus</span></div>
-              <div class="font-mono text-xl ios-red font-semibold">-2|</div>
+            <div class="flex items-center justify-between px-3 py-3 entry-row-focused squircle-sm">
+              <div class="font-display font-semibold text-body-on">Bình <span class="font-mono-sf text-[10px] text-muted-on ml-1 uppercase tracking-wider">focus</span></div>
+              <div class="font-mono-sf text-2xl font-semibold text-neg">−2<span class="text-brand">|</span></div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">Cường</div>
-              <div class="font-mono text-xl ios-green font-semibold">+3</div>
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">Cường</div>
+              <div class="font-mono-sf text-2xl font-semibold text-pos">+3</div>
             </div>
-            <div class="flex items-center justify-between py-2 border-b border-slate-100">
-              <div class="font-medium">Dũng</div>
-              <div class="font-mono text-xl text-slate-400 italic font-semibold">-2 <span class="text-xs not-italic">auto</span></div>
+            <div class="flex items-center justify-between py-3 border-b row-divider">
+              <div class="font-display font-semibold text-body-on">Dũng</div>
+              <div class="font-mono-sf text-2xl font-semibold text-muted-on italic">−2 <span class="text-[10px] not-italic uppercase tracking-wider">auto</span></div>
             </div>
           </div>
-          <div class="mx-5 mb-3 px-4 py-2 bg-green-50 rounded-lg flex items-center justify-between">
-            <div class="text-xs text-slate-600">Tổng các ô</div>
-            <div class="font-semibold ios-green text-sm">0 ✓</div>
+          <div class="mx-5 mb-3 px-4 py-3 bg-pos-tint squircle-md flex items-center justify-between">
+            <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] text-muted-on font-semibold">Tổng các ô</div>
+            <div class="font-display font-semibold text-pos text-base">0 ✓</div>
           </div>
-          <div class="mt-auto bg-slate-200 p-2 grid grid-cols-3 gap-1.5">
-            <button class="bg-white rounded-lg py-3 font-medium">1</button>
-            <button class="bg-white rounded-lg py-3 font-medium">2</button>
-            <button class="bg-white rounded-lg py-3 font-medium">3</button>
-            <button class="bg-white rounded-lg py-3 font-medium">4</button>
-            <button class="bg-white rounded-lg py-3 font-medium">5</button>
-            <button class="bg-white rounded-lg py-3 font-medium">6</button>
-            <button class="bg-white rounded-lg py-3 font-medium">7</button>
-            <button class="bg-white rounded-lg py-3 font-medium">8</button>
-            <button class="bg-white rounded-lg py-3 font-medium">9</button>
-            <button class="bg-white rounded-lg py-3 font-medium">±</button>
-            <button class="bg-white rounded-lg py-3 font-medium">0</button>
-            <button class="bg-white rounded-lg py-3 font-medium">⌫</button>
+          <div class="mt-auto px-2 pb-2 pt-2 grid grid-cols-3 gap-1.5" style="background: rgba(0,0,0,0.25);">
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">1</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">2</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">3</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">4</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">5</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">6</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">7</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">8</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">9</button>
+            <button class="surface-card-on squircle-md py-4 font-display text-xl text-body-on">±</button>
+            <button class="surface-elevated-on squircle-md py-4 font-display text-2xl text-body-on">0</button>
+            <button class="surface-card-on squircle-md py-4 font-display text-xl text-body-on">⌫</button>
           </div>
-          <div class="p-3 bg-slate-200">
-            <button class="w-full bg-ios-blue text-white font-semibold py-3 rounded-xl">Lưu thay đổi</button>
+          <div class="p-3" style="background: rgba(0,0,0,0.25);">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-3.5 squircle-lg text-base">Lưu thay đổi</button>
           </div>
         </div>
       </div>
     </div>
     <div class="order-1 md:order-2">
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 6</div>
-      <h2 class="mt-2 text-3xl font-bold">Sửa ván cũ</h2>
-      <p class="mt-4 text-slate-600">Tap row ván X trong bảng điểm → cùng entry sheet, pre-fill số cũ. Sửa 1 ô → ô auto-fill ván đó tự cập nhật → tổng leaderboard reactive.</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Cùng UX entry sheet — không học cái mới.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Thêm nút <span class="ios-red font-medium">Xóa</span> ở header (double-confirm).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Không undo stack — sửa direct, tin user.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Alternative: swipe trái trên row → "Xóa" button hiện ra (iOS pattern).</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">06.</span>Sửa ván cũ</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Cùng sheet. Tin user, không undo.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Tap row ván trong bảng điểm → cùng entry sheet, pre-fill số cũ. Sửa 1 ô → ô auto-fill ván đó tự update → tổng leaderboard reactive.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Cùng UX entry sheet, không học cái mới.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Nút <span class="font-display font-semibold text-neg">Xóa</span> ở header (double-confirm).</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Không undo stack. Sửa direct, tin user.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Alternative: swipe trái trên row → Xóa button hiện ra (iOS pattern).</span></div>
+      </div>
     </div>
   </section>
 
   <!-- STEP 7: Summary -->
-  <section id="step-7" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center">
+  <section id="step-7" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div>
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 7</div>
-      <h2 class="mt-2 text-3xl font-bold">Tổng kết cuối buổi</h2>
-      <p class="mt-4 text-slate-600">Trigger: tap <strong>⋯ → Kết thúc</strong> hoặc tạo session mới khi đang có active. Sau khi tổng kết → session archive, vẫn xem lại từ History.</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Ranking</strong> 🥇🥈🥉💀 sorted bởi tổng.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Metadata: số ván, ngày, thời lượng (tự tính).</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Không money / settlement</strong> — pure điểm. Nhẩm tiền ngoài app.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Share button cuối → URL handoff (step 9).</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">07.</span>Tổng kết cuối buổi</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Ranking, không settlement.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Trigger: <span class="font-mono-sf text-ink">⋯ → Kết thúc</span> hoặc tạo session mới khi đang có active. Sau khi tổng kết → archive, vẫn xem lại từ History.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Ranking</strong> 🥇🥈🥉💀 sort theo tổng. Vàng viền top, đỏ viền bét.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Metadata: số ván, ngày, thời lượng (tự tính).</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Không money / settlement</strong>. Pure điểm. Nhẩm tiền ngoài app.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Share button cuối → URL handoff (step 9).</span></div>
+      </div>
     </div>
     <div class="flex justify-center">
       <div class="phone">
         <div class="phone-content flex flex-col">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold" style="color: var(--ink)">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted">•••</span>
           </div>
-          <div class="flex justify-between items-center px-5 py-3 bg-white border-b border-slate-200">
-            <button class="text-slate-500">✕</button>
-            <div class="font-semibold">Tổng kết</div>
+          <div class="flex justify-between items-center px-5 py-3 glass-regular">
+            <button class="text-muted-strong text-lg">✕</button>
+            <div class="font-display font-semibold text-ink">Tổng kết</div>
             <div class="w-6"></div>
           </div>
-          <div class="px-5 py-6 text-center bg-white border-b border-slate-200">
+          <div class="px-5 py-7 text-center border-b border-hairline bg-surface-card">
             <div class="text-3xl mb-2">🏆</div>
-            <div class="text-lg font-bold">Tối 24/05/2026</div>
-            <div class="text-sm text-slate-500 mt-1">19 ván · 4 người · 2h 14p</div>
+            <div class="font-display text-lg font-bold text-ink">Tối 24/05/2026</div>
+            <div class="font-mono-sf text-[11px] text-muted mt-1.5">19 ván · 4 người · 2h 14p</div>
           </div>
-          <div class="p-4 space-y-2">
-            <div class="bg-white rounded-2xl p-4 flex items-center justify-between border-2 border-yellow-200">
+          <div class="p-4 space-y-2.5">
+            <div class="bg-surface-card squircle-lg p-4 flex items-center justify-between border-2 border-brand">
               <div class="flex items-center gap-3">
                 <div class="text-2xl">🥇</div>
                 <div>
-                  <div class="font-semibold">Cường</div>
-                  <div class="text-xs text-slate-500">7 ván thắng</div>
+                  <div class="font-display font-semibold text-ink">Cường</div>
+                  <div class="font-mono-sf text-[11px] text-muted">7 ván thắng</div>
                 </div>
               </div>
-              <div class="font-mono text-2xl font-bold ios-green">+12</div>
+              <div class="font-mono-sf text-2xl font-bold text-pos">+12</div>
             </div>
-            <div class="bg-white rounded-2xl p-4 flex items-center justify-between">
+            <div class="bg-surface-card squircle-lg p-4 flex items-center justify-between border border-hairline">
               <div class="flex items-center gap-3">
                 <div class="text-2xl">🥈</div>
                 <div>
-                  <div class="font-semibold">Dũng</div>
-                  <div class="text-xs text-slate-500">5 ván thắng</div>
+                  <div class="font-display font-semibold text-ink">Dũng</div>
+                  <div class="font-mono-sf text-[11px] text-muted">5 ván thắng</div>
                 </div>
               </div>
-              <div class="font-mono text-2xl font-bold ios-green">+8</div>
+              <div class="font-mono-sf text-2xl font-bold text-pos">+8</div>
             </div>
-            <div class="bg-white rounded-2xl p-4 flex items-center justify-between">
+            <div class="bg-surface-card squircle-lg p-4 flex items-center justify-between border border-hairline">
               <div class="flex items-center gap-3">
-                <div class="text-2xl w-8 text-center text-slate-400">3</div>
+                <div class="font-mono-sf text-xl w-8 text-center text-muted font-semibold">3</div>
                 <div>
-                  <div class="font-semibold">Bình</div>
-                  <div class="text-xs text-slate-500">4 ván thắng</div>
+                  <div class="font-display font-semibold text-ink">Bình</div>
+                  <div class="font-mono-sf text-[11px] text-muted">4 ván thắng</div>
                 </div>
               </div>
-              <div class="font-mono text-2xl font-bold ios-red">-7</div>
+              <div class="font-mono-sf text-2xl font-bold text-neg">−7</div>
             </div>
-            <div class="bg-white rounded-2xl p-4 flex items-center justify-between border-2 border-red-200">
+            <div class="bg-surface-card squircle-lg p-4 flex items-center justify-between border-2 border-neg">
               <div class="flex items-center gap-3">
                 <div class="text-2xl">💀</div>
                 <div>
-                  <div class="font-semibold">An</div>
-                  <div class="text-xs text-slate-500">3 ván thắng</div>
+                  <div class="font-display font-semibold text-ink">An</div>
+                  <div class="font-mono-sf text-[11px] text-muted">3 ván thắng</div>
                 </div>
               </div>
-              <div class="font-mono text-2xl font-bold ios-red">-13</div>
+              <div class="font-mono-sf text-2xl font-bold text-neg">−13</div>
             </div>
           </div>
-          <div class="p-4 mt-auto bg-white border-t border-slate-200">
-            <button class="w-full bg-ios-blue text-white font-semibold py-3 rounded-xl mb-2">⤴ Chia sẻ session</button>
-            <button class="w-full text-slate-600 font-medium py-3 rounded-xl">Đóng</button>
+          <div class="p-4 mt-auto bg-canvas border-t border-hairline space-y-2">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-3.5 squircle-lg">↑ Chia sẻ session</button>
+            <button class="w-full text-muted-strong font-display font-medium py-3 squircle-lg">Đóng</button>
           </div>
         </div>
       </div>
@@ -615,62 +878,61 @@
   </section>
 
   <!-- STEP 8: History -->
-  <section id="step-8" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center bg-white rounded-3xl shadow-sm">
+  <section id="step-8" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div class="flex justify-center order-2 md:order-1">
       <div class="phone">
         <div class="phone-content flex flex-col">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold" style="color: var(--ink)">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted">•••</span>
           </div>
-          <div class="flex justify-between items-center px-5 py-3 bg-white border-b border-slate-200">
-            <button class="ios-blue text-2xl leading-none">‹</button>
-            <div class="font-semibold">Lịch sử</div>
+          <div class="flex justify-between items-center px-5 py-3 glass-regular">
+            <button class="text-brand text-2xl leading-none">‹</button>
+            <div class="font-display font-semibold text-ink">Lịch sử</div>
             <div class="w-6"></div>
           </div>
-          <div class="p-4 space-y-2">
-            <!-- Session row -->
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="p-4 space-y-2.5">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline">
               <div class="flex justify-between items-start mb-2">
-                <div class="font-semibold">Tối 24/05/2026</div>
-                <div class="text-xs text-slate-400">Hôm qua</div>
+                <div class="font-display font-semibold text-ink">Tối 24/05/2026</div>
+                <div class="font-mono-sf text-[11px] text-muted">Hôm qua</div>
               </div>
-              <div class="text-sm text-slate-500 mb-2">An · Bình · Cường · Dũng</div>
+              <div class="text-sm text-muted mb-2.5">An · Bình · Cường · Dũng</div>
               <div class="flex items-center gap-2 text-xs">
-                <span class="px-2 py-1 bg-slate-100 rounded">19 ván</span>
-                <span class="ios-green font-semibold">🥇 Cường +12</span>
+                <span class="px-2 py-1 bg-surface-elevated squircle-sm font-mono-sf text-muted">19 ván</span>
+                <span class="font-mono-sf text-pos font-semibold">🥇 Cường <span class="font-mono-sf">+12</span></span>
               </div>
             </div>
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline">
               <div class="flex justify-between items-start mb-2">
-                <div class="font-semibold">Cuối tuần ở quê</div>
-                <div class="text-xs text-slate-400">3 ngày trước</div>
+                <div class="font-display font-semibold text-ink">Cuối tuần ở quê</div>
+                <div class="font-mono-sf text-[11px] text-muted">3 ngày trước</div>
               </div>
-              <div class="text-sm text-slate-500 mb-2">An · Bình · Em · Phong</div>
+              <div class="text-sm text-muted mb-2.5">An · Bình · Em · Phong</div>
               <div class="flex items-center gap-2 text-xs">
-                <span class="px-2 py-1 bg-slate-100 rounded">12 ván</span>
-                <span class="ios-green font-semibold">🥇 Em +9</span>
+                <span class="px-2 py-1 bg-surface-elevated squircle-sm font-mono-sf text-muted">12 ván</span>
+                <span class="font-mono-sf text-pos font-semibold">🥇 Em <span class="font-mono-sf">+9</span></span>
               </div>
             </div>
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline">
               <div class="flex justify-between items-start mb-2">
-                <div class="font-semibold">Tối 22/05/2026</div>
-                <div class="text-xs text-slate-400">5 ngày trước</div>
+                <div class="font-display font-semibold text-ink">Tối 22/05/2026</div>
+                <div class="font-mono-sf text-[11px] text-muted">5 ngày trước</div>
               </div>
-              <div class="text-sm text-slate-500 mb-2">An · Bình · Cường · Dũng</div>
+              <div class="text-sm text-muted mb-2.5">An · Bình · Cường · Dũng</div>
               <div class="flex items-center gap-2 text-xs">
-                <span class="px-2 py-1 bg-slate-100 rounded">15 ván</span>
-                <span class="ios-green font-semibold">🥇 An +6</span>
+                <span class="px-2 py-1 bg-surface-elevated squircle-sm font-mono-sf text-muted">15 ván</span>
+                <span class="font-mono-sf text-pos font-semibold">🥇 An <span class="font-mono-sf">+6</span></span>
               </div>
             </div>
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline">
               <div class="flex justify-between items-start mb-2">
-                <div class="font-semibold">Phỏm tối Chủ Nhật</div>
-                <div class="text-xs text-slate-400">1 tuần trước</div>
+                <div class="font-display font-semibold text-ink">Phỏm tối Chủ Nhật</div>
+                <div class="font-mono-sf text-[11px] text-muted">1 tuần trước</div>
               </div>
-              <div class="text-sm text-slate-500 mb-2">An · Bình · Cường</div>
+              <div class="text-sm text-muted mb-2.5">An · Bình · Cường</div>
               <div class="flex items-center gap-2 text-xs">
-                <span class="px-2 py-1 bg-slate-100 rounded">21 ván</span>
-                <span class="ios-green font-semibold">🥇 Bình +14</span>
+                <span class="px-2 py-1 bg-surface-elevated squircle-sm font-mono-sf text-muted">21 ván</span>
+                <span class="font-mono-sf text-pos font-semibold">🥇 Bình <span class="font-mono-sf">+14</span></span>
               </div>
             </div>
           </div>
@@ -678,88 +940,89 @@
       </div>
     </div>
     <div class="order-1 md:order-2">
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 8</div>
-      <h2 class="mt-2 text-3xl font-bold">Lịch sử các session</h2>
-      <p class="mt-4 text-slate-600">Truy cập từ icon góc phải HomeView. List sorted newest first. Tap row → mở lại màn Tổng kết (read-only).</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Mỗi row: tên + thời gian relative + chip player + ranking compact.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>Long-press</strong> = menu Xóa.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Filter/search defer post-MVP. ~50-100 sessions sẽ scroll thoải mái.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Imported session (từ URL) cũng vào đây như session bình thường.</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">08.</span>Lịch sử các session</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">List newest-first. Tap = mở lại.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Truy cập từ icon góc phải HomeView. List sorted newest first. Tap row → mở lại màn Tổng kết (read-only).</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Mỗi row: tên + thời gian relative + chip player + ranking compact.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Long-press</strong> = menu Xóa.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Filter/search defer post-MVP. <span class="font-mono-sf text-ink">~50–100</span> sessions scroll thoải mái.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Imported session (từ URL) cũng vào đây như session bình thường.</span></div>
+      </div>
     </div>
   </section>
 
   <!-- STEP 9: Share -->
-  <section id="step-9" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center">
+  <section id="step-9" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div>
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 9</div>
-      <h2 class="mt-2 text-3xl font-bold">Share session qua AirDrop</h2>
-      <p class="mt-4 text-slate-600">Tap nút <strong>⤴ Share</strong> → SwiftUI <code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded">ShareLink</code> bung share sheet hệ thống. AirDrop xuất hiện sẵn.</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>URL format: <code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded">phorm://import?s=&lt;base64&gt;</code></span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Encoding: JSON → gzip → base64-url-safe. Typical session 20 ván 4 người ≈ 800-1500 bytes URL.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Cùng share sheet: AirDrop, iMessage, Zalo, Copy Link.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Không cần backend, không cần signup phía bạn bè.</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">09.</span>Share session</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">URL handoff. Không backend.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Tap nút <span class="font-mono-sf text-ink">↑ Share</span> → SwiftUI <code class="font-mono-sf text-xs bg-surface-elevated px-1.5 py-0.5 squircle-sm text-ink">ShareLink</code> bung share sheet hệ thống. AirDrop xuất hiện sẵn.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">URL: <code class="font-mono-sf text-xs bg-surface-elevated px-1.5 py-0.5 squircle-sm text-ink">phorm://import?s=&lt;base64&gt;</code></span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">JSON → gzip → base64-url-safe. Typical 20 ván 4 người ≈ <span class="font-mono-sf text-ink">800–1500 bytes</span>.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Cùng share sheet: AirDrop, iMessage, Zalo, Copy Link.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Không cần backend, không cần signup phía bạn bè.</span></div>
+      </div>
     </div>
     <div class="flex justify-center">
       <div class="phone">
-        <div class="phone-content flex flex-col bg-slate-300/50">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+        <div class="phone-content flex flex-col">
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold" style="color: var(--ink)">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted">•••</span>
           </div>
-          <!-- Dimmed background showing session view -->
-          <div class="px-4 py-2 bg-white border-b border-slate-200 opacity-30">
-            <div class="text-xs text-slate-500">Tối 24/05/2026 · 4 người · 19 ván</div>
+          <!-- Dimmed session behind sheet -->
+          <div class="px-4 py-3 glass-regular opacity-40">
+            <div class="font-mono-sf text-[11px] text-muted">Tối 24/05/2026 · 4 người · 19 ván</div>
           </div>
-          <div class="flex-1"></div>
-          <!-- Share sheet -->
-          <div class="bg-white rounded-t-3xl shadow-2xl p-5 space-y-4">
-            <div class="w-12 h-1 bg-slate-300 rounded-full mx-auto"></div>
-            <div class="flex items-center gap-3 pb-4 border-b border-slate-200">
-              <div class="w-12 h-12 rounded-xl bg-ios-blue flex items-center justify-center text-white text-xl">🎴</div>
+          <div class="flex-1 opacity-30 px-4 py-3 space-y-3">
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline h-16"></div>
+            <div class="bg-surface-card squircle-lg p-4 border border-hairline h-16"></div>
+          </div>
+          <!-- iOS share sheet (system) -->
+          <div class="bg-surface-card rounded-t-3xl shadow-2xl p-5 space-y-5 border-t border-hairline">
+            <div class="w-12 h-1 bg-hairline rounded-full mx-auto" style="background: var(--border-strong)"></div>
+            <div class="flex items-center gap-3 pb-4 border-b border-hairline">
+              <div class="w-12 h-12 squircle-md bg-brand flex items-center justify-center text-on-brand text-xl">🎴</div>
               <div class="flex-1">
-                <div class="font-semibold text-sm">Tối 24/05/2026</div>
-                <div class="text-xs text-slate-500 break-all">phorm://import?s=H4sI...</div>
+                <div class="font-display font-semibold text-sm text-ink">Tối 24/05/2026</div>
+                <div class="font-mono-sf text-[11px] text-muted break-all">phorm://import?s=H4sI...</div>
               </div>
             </div>
-            <!-- AirDrop row -->
             <div>
-              <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">AirDrop</div>
-              <div class="flex gap-3 overflow-x-auto">
-                <div class="flex-shrink-0 flex flex-col items-center gap-1 w-16">
-                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl">📱</div>
-                  <div class="text-[10px] text-center leading-tight">iPhone Bình</div>
+              <div class="font-mono-sf text-[10px] font-semibold uppercase tracking-[0.14em] text-muted mb-3">AirDrop</div>
+              <div class="flex gap-3 overflow-x-auto scroll-x">
+                <div class="flex-shrink-0 flex flex-col items-center gap-1.5 w-16">
+                  <div class="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl" style="background: linear-gradient(135deg, #60a5fa, #2563eb)">📱</div>
+                  <div class="text-[10px] text-center leading-tight text-ink">iPhone Bình</div>
                 </div>
-                <div class="flex-shrink-0 flex flex-col items-center gap-1 w-16">
-                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-2xl">📱</div>
-                  <div class="text-[10px] text-center leading-tight">iPad Cường</div>
+                <div class="flex-shrink-0 flex flex-col items-center gap-1.5 w-16">
+                  <div class="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl" style="background: linear-gradient(135deg, #c084fc, #7c3aed)">📱</div>
+                  <div class="text-[10px] text-center leading-tight text-ink">iPad Cường</div>
                 </div>
-                <div class="flex-shrink-0 flex flex-col items-center gap-1 w-16">
-                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white text-2xl">📱</div>
-                  <div class="text-[10px] text-center leading-tight">iPhone Dũng</div>
-                </div>
-              </div>
-            </div>
-            <!-- Apps row -->
-            <div>
-              <div class="flex gap-3 overflow-x-auto pt-2 border-t border-slate-200">
-                <div class="flex-shrink-0 flex flex-col items-center gap-1 w-16">
-                  <div class="w-14 h-14 rounded-2xl bg-green-500 flex items-center justify-center text-white text-2xl">💬</div>
-                  <div class="text-[10px]">Messages</div>
-                </div>
-                <div class="flex-shrink-0 flex flex-col items-center gap-1 w-16">
-                  <div class="w-14 h-14 rounded-2xl bg-blue-500 flex items-center justify-center text-white text-2xl">Z</div>
-                  <div class="text-[10px]">Zalo</div>
-                </div>
-                <div class="flex-shrink-0 flex flex-col items-center gap-1 w-16">
-                  <div class="w-14 h-14 rounded-2xl bg-slate-200 flex items-center justify-center text-slate-600 text-2xl">📋</div>
-                  <div class="text-[10px]">Copy</div>
+                <div class="flex-shrink-0 flex flex-col items-center gap-1.5 w-16">
+                  <div class="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl" style="background: linear-gradient(135deg, #4ade80, #16a34a)">📱</div>
+                  <div class="text-[10px] text-center leading-tight text-ink">iPhone Dũng</div>
                 </div>
               </div>
             </div>
-            <button class="w-full text-slate-600 font-semibold py-3 rounded-xl bg-slate-100">Hủy</button>
+            <div class="pt-3 border-t border-hairline">
+              <div class="flex gap-3 overflow-x-auto scroll-x">
+                <div class="flex-shrink-0 flex flex-col items-center gap-1.5 w-16">
+                  <div class="w-14 h-14 squircle-lg bg-green-500 flex items-center justify-center text-white text-2xl">💬</div>
+                  <div class="text-[10px] text-ink">Messages</div>
+                </div>
+                <div class="flex-shrink-0 flex flex-col items-center gap-1.5 w-16">
+                  <div class="w-14 h-14 squircle-lg bg-blue-500 flex items-center justify-center text-white text-xl font-bold">Z</div>
+                  <div class="text-[10px] text-ink">Zalo</div>
+                </div>
+                <div class="flex-shrink-0 flex flex-col items-center gap-1.5 w-16">
+                  <div class="w-14 h-14 squircle-lg bg-surface-elevated flex items-center justify-center text-muted-strong text-2xl">⎘</div>
+                  <div class="text-[10px] text-ink">Copy</div>
+                </div>
+              </div>
+            </div>
+            <button class="w-full text-ink font-display font-semibold py-3 squircle-lg bg-surface-elevated">Hủy</button>
           </div>
         </div>
       </div>
@@ -767,90 +1030,115 @@
   </section>
 
   <!-- STEP 10: Receive URL -->
-  <section id="step-10" class="step-anchor max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center bg-white rounded-3xl shadow-sm">
+  <section id="step-10" class="step-anchor section-rule max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
     <div class="flex justify-center order-2 md:order-1">
       <div class="phone">
-        <div class="phone-content flex flex-col bg-white">
-          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-slate-900">
-            <span>9:41</span><span>•••</span>
+        <div class="phone-content sheet-canvas flex flex-col">
+          <div class="flex justify-between items-center px-6 pt-2 pb-2 text-xs font-semibold text-body-on">
+            <span class="font-mono-sf">9:41</span><span class="font-mono-sf text-muted-on">•••</span>
           </div>
           <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
-            <div class="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-4xl mb-6">📥</div>
-            <div class="text-xl font-bold mb-1">Nhận session</div>
-            <div class="text-sm text-slate-500 mb-8">Ai đó gửi cho bạn 1 session qua AirDrop</div>
+            <div class="w-20 h-20 rounded-full bg-brand flex items-center justify-center text-3xl mb-6">📥</div>
+            <div class="font-display text-xl font-bold text-body-on mb-1.5">Nhận session</div>
+            <div class="text-sm text-muted-on mb-8 max-w-[260px]">Ai đó gửi cho bạn 1 session qua AirDrop</div>
 
-            <div class="w-full bg-slate-50 rounded-2xl p-5 mb-8 border border-slate-200">
-              <div class="font-semibold mb-2">Tối 24/05/2026</div>
-              <div class="text-sm text-slate-500 mb-3">An · Bình · Cường · Dũng</div>
+            <div class="w-full surface-elevated-on squircle-lg p-5 mb-8">
+              <div class="font-display font-semibold text-body-on mb-2">Tối 24/05/2026</div>
+              <div class="text-sm text-muted-on mb-3">An · Bình · Cường · Dũng</div>
               <div class="flex gap-2 text-xs">
-                <span class="px-2 py-1 bg-white rounded border border-slate-200">4 người</span>
-                <span class="px-2 py-1 bg-white rounded border border-slate-200">19 ván</span>
-                <span class="px-2 py-1 bg-white rounded border border-slate-200">2h 14p</span>
+                <span class="px-2.5 py-1 surface-card-on squircle-sm font-mono-sf text-body-on">4 người</span>
+                <span class="px-2.5 py-1 surface-card-on squircle-sm font-mono-sf text-body-on">19 ván</span>
+                <span class="px-2.5 py-1 surface-card-on squircle-sm font-mono-sf text-body-on">2h 14p</span>
               </div>
             </div>
 
-            <div class="text-xs text-slate-400 mb-6 px-4">
+            <div class="text-[11px] text-muted-on mb-6 px-4 leading-relaxed">
               Session đang chơi của bạn sẽ tự lưu vào History trước khi mở session này.
             </div>
           </div>
-          <div class="p-4 space-y-2 border-t border-slate-200">
-            <button class="w-full bg-ios-blue text-white font-semibold py-3.5 rounded-xl">Mở session này</button>
-            <button class="w-full text-slate-600 font-medium py-3 rounded-xl">Hủy</button>
+          <div class="p-4 space-y-2 border-t row-divider">
+            <button class="w-full bg-brand text-on-brand font-display font-semibold py-3.5 squircle-lg">Mở session này</button>
+            <button class="w-full text-muted-on font-display font-medium py-3 squircle-lg">Hủy</button>
           </div>
         </div>
       </div>
     </div>
     <div class="order-1 md:order-2">
-      <div class="text-sm font-semibold ios-blue uppercase tracking-wider">Step 10</div>
-      <h2 class="mt-2 text-3xl font-bold">Nhận session qua link</h2>
-      <p class="mt-4 text-slate-600">Click link <code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded">phorm://...</code> → app trigger <code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded">.onOpenURL</code> → modal confirm hiển thị preview trước khi import.</p>
-      <ul class="mt-6 space-y-3 text-sm">
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Preview: tên, players, số ván, thời lượng — để bạn biết là session gì.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span><strong>"Mở"</strong> = save vào SwiftData + archive session active cũ + activate cái mới.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Confirmation chống click nhầm link cũ trong chat → bay session đang chơi.</span></li>
-        <li class="flex gap-2"><span class="ios-blue">●</span><span>Imported session vào History như session bình thường — có thể sửa, share lại, v.v.</span></li>
-      </ul>
+      <div class="step-stamp"><span class="step-dot">10.</span>Nhận session qua link</div>
+      <h2 class="mt-3 font-display text-3xl font-bold text-ink leading-tight">Preview trước. Confirm rồi mới mở.</h2>
+      <p class="mt-4 text-muted-strong max-w-md leading-relaxed">Click link <code class="font-mono-sf text-xs bg-surface-elevated px-1.5 py-0.5 squircle-sm text-ink">phorm://...</code> → app trigger <code class="font-mono-sf text-xs bg-surface-elevated px-1.5 py-0.5 squircle-sm text-ink">.onOpenURL</code> → modal confirm preview trước khi import.</p>
+      <div class="mt-8 space-y-3 text-sm max-w-md">
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Preview: tên, players, số ván, thời lượng để biết là session gì.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted"><strong class="text-ink">Mở</strong> = save SwiftData + archive active cũ + activate cái mới.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Confirmation chống click nhầm link cũ trong chat, bay session đang chơi.</span></div>
+        <div class="point"><span class="point-marker">→</span><span class="text-muted">Imported session vào History như session bình thường — sửa, share lại, v.v.</span></div>
+      </div>
     </div>
   </section>
 
-  <!-- Footer summary -->
-  <footer class="max-w-5xl mx-auto px-6 py-16">
-    <div class="bg-slate-900 text-white rounded-3xl p-10">
-      <h2 class="text-2xl font-bold mb-4">Tóm tắt</h2>
-      <div class="grid md:grid-cols-3 gap-6 text-sm">
+  <!-- Footer summary: dark always -->
+  <footer class="max-w-7xl mx-auto px-6 py-20">
+    <div class="squircle-xl p-12" style="background: #0b0e11; color: #eaecef;">
+      <div class="flex items-center gap-3 mb-8">
+        <span class="inline-flex items-center justify-center w-8 h-8 squircle-sm bg-brand text-on-brand font-display font-bold">P</span>
+        <span class="font-display font-semibold text-lg" style="color: #eaecef;">Tóm tắt</span>
+      </div>
+      <div class="grid md:grid-cols-3 gap-10 text-sm">
         <div>
-          <div class="font-semibold text-blue-300 mb-2">Tech</div>
-          <ul class="space-y-1 text-slate-300">
-            <li>• SwiftUI · iOS 17+</li>
-            <li>• SwiftData + CloudKit</li>
-            <li>• ShareLink + onOpenURL</li>
-            <li>• Repo riêng `phorm-ios`</li>
+          <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] font-semibold mb-4" style="color: var(--primary)">Tech</div>
+          <ul class="space-y-2" style="color: #929aa5;">
+            <li>SwiftUI · iOS 17+</li>
+            <li>SwiftData + CloudKit</li>
+            <li>ShareLink + onOpenURL</li>
+            <li>Repo riêng <span class="font-mono-sf" style="color: #eaecef;">phorm-ios</span></li>
           </ul>
         </div>
         <div>
-          <div class="font-semibold text-blue-300 mb-2">UX</div>
-          <ul class="space-y-1 text-slate-300">
-            <li>• Dumb tracker (không hiểu luật)</li>
-            <li>• Auto-fill ô cuối zero-sum</li>
-            <li>• Empty = 0 ngầm cho sparse</li>
-            <li>• Custom keypad in-app</li>
+          <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] font-semibold mb-4" style="color: var(--primary)">UX</div>
+          <ul class="space-y-2" style="color: #929aa5;">
+            <li>Dumb tracker, không hiểu luật</li>
+            <li>Auto-fill ô cuối zero-sum</li>
+            <li>Empty = 0 ngầm cho sparse</li>
+            <li>Custom keypad in-app</li>
           </ul>
         </div>
         <div>
-          <div class="font-semibold text-blue-300 mb-2">Out of scope</div>
-          <ul class="space-y-1 text-slate-300">
-            <li>• Money / settlement</li>
-            <li>• Smart scorer (móm/ù)</li>
-            <li>• Multi-user collab</li>
-            <li>• Stats lifetime</li>
+          <div class="font-mono-sf text-[10px] uppercase tracking-[0.14em] font-semibold mb-4" style="color: var(--primary)">Out of scope (MVP)</div>
+          <ul class="space-y-2" style="color: #929aa5;">
+            <li>Money / settlement</li>
+            <li>Smart scorer (móm/ù)</li>
+            <li>Multi-user collab</li>
+            <li>Stats lifetime</li>
           </ul>
         </div>
       </div>
-      <div class="mt-8 pt-6 border-t border-slate-700 text-xs text-slate-400">
-        Plan file: <code class="bg-slate-800 px-2 py-1 rounded">/root/.claude/plans/lu-t-ch-i-v-c-ch-streamed-waffle.md</code>
+      <div class="mt-12 pt-6 border-t flex flex-wrap items-center gap-4 justify-between font-mono-sf text-[11px]" style="border-color: #2b3139; color: #707a8a;">
+        <span>PLAN.md · DESIGN.md · PRODUCT.md</span>
+        <span>v0.1 · alpha</span>
       </div>
     </div>
   </footer>
+
+  <script>
+    (function() {
+      const root = document.documentElement;
+      const stored = localStorage.getItem('phorm-theme');
+      if (stored === 'light' || stored === 'dark') {
+        root.setAttribute('data-theme', stored);
+      } else {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      }
+      const btn = document.getElementById('theme-toggle');
+      if (btn) {
+        btn.addEventListener('click', function() {
+          const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          localStorage.setItem('phorm-theme', next);
+        });
+      }
+    })();
+  </script>
 
 </body>
 </html>
