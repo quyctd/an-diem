@@ -53,4 +53,40 @@ struct SessionShareTests {
         let url = try SessionShare.url(for: s)
         #expect(url.absoluteString.utf8.count < 6_000)
     }
+
+    @Test func encodeDecodeRoundtrip() throws {
+        let container = try Self.makeContainer()
+        let original = Self.makeSession(in: container.mainContext,
+                                        players: ["An", "Bình", "Cường"],
+                                        rounds: 3)
+        let originalDTO = SessionDTO(from: original)
+        let url = try SessionShare.url(for: original)
+
+        let decoded = try SessionShare.decode(url)
+        #expect(decoded == originalDTO)
+    }
+
+    @Test func roundtripPreservesVietnameseDiacritics() throws {
+        let container = try Self.makeContainer()
+        let s = Self.makeSession(in: container.mainContext,
+                                 players: ["Đức", "Bằng", "Hưng", "Hoàng"],
+                                 rounds: 1)
+        let url = try SessionShare.url(for: s)
+        let decoded = try SessionShare.decode(url)
+        #expect(decoded.players == ["Đức", "Bằng", "Hưng", "Hoàng"])
+    }
+
+    @Test func invalidSchemeThrows() {
+        let url = URL(string: "https://example.com/import?s=abc")!
+        #expect(throws: SessionShare.ShareError.self) {
+            try SessionShare.decode(url)
+        }
+    }
+
+    @Test func missingQueryThrows() {
+        let url = URL(string: "phorm://import")!
+        #expect(throws: SessionShare.ShareError.self) {
+            try SessionShare.decode(url)
+        }
+    }
 }
