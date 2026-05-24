@@ -5,6 +5,8 @@ import SwiftData
 struct PhormApp: App {
     let container: ModelContainer
 
+    @State private var pendingImport: SessionDTO?
+
     init() {
         let schema = Schema([Session.self, Round.self, PlayerScore.self])
         let config = ModelConfiguration(
@@ -21,7 +23,14 @@ struct PhormApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Text("Phorm — models loaded")
+            HomeView()
+                .onOpenURL { url in
+                    pendingImport = try? SessionShare.decode(url)
+                }
+                .sheet(item: $pendingImport) { dto in
+                    ImportConfirmView(dto: dto, onDismiss: { pendingImport = nil })
+                        .interactiveDismissDisabled()
+                }
         }
         .modelContainer(container)
     }
