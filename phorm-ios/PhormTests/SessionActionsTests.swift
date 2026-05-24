@@ -48,4 +48,49 @@ struct SessionActionsTests {
         #expect(second.archivedAt == nil)
         #expect(second.playerNames == ["Bình", "Cường"])
     }
+
+    @Test func appendRoundIncrementsIndex() throws {
+        let ctx = try Self.makeContext()
+        let s = try SessionActions.createSession(
+            name: "t", playerNames: ["An", "Bình"], in: ctx
+        )
+
+        try SessionActions.appendRound(scores: ["An": -3, "Bình": 3], to: s, in: ctx)
+        try SessionActions.appendRound(scores: ["An": 2,  "Bình": -2], to: s, in: ctx)
+
+        let rounds = (s.rounds ?? []).sorted { $0.index < $1.index }
+        #expect(rounds.map(\.index) == [1, 2])
+        #expect(rounds[0].scores?.count == 2)
+    }
+
+    @Test func deleteRoundCascadesPlayerScores() throws {
+        let ctx = try Self.makeContext()
+        let s = try SessionActions.createSession(
+            name: "t", playerNames: ["An", "Bình"], in: ctx
+        )
+        try SessionActions.appendRound(scores: ["An": -3, "Bình": 3], to: s, in: ctx)
+        let round = (s.rounds ?? []).first!
+
+        try SessionActions.deleteRound(round, in: ctx)
+
+        let remaining = try ctx.fetch(FetchDescriptor<PlayerScore>())
+        #expect(remaining.isEmpty)
+        #expect((s.rounds ?? []).isEmpty)
+    }
+
+    @Test func updateRoundReplacesScores() throws {
+        let ctx = try Self.makeContext()
+        let s = try SessionActions.createSession(
+            name: "t", playerNames: ["An", "Bình"], in: ctx
+        )
+        try SessionActions.appendRound(scores: ["An": -3, "Bình": 3], to: s, in: ctx)
+        let round = (s.rounds ?? []).first!
+
+        try SessionActions.updateRound(round, scores: ["An": 5, "Bình": -5], in: ctx)
+
+        let scores = Dictionary(
+            uniqueKeysWithValues: (round.scores ?? []).map { ($0.playerName, $0.value) }
+        )
+        #expect(scores == ["An": 5, "Bình": -5])
+    }
 }
