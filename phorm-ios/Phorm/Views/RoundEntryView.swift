@@ -13,6 +13,7 @@ struct RoundEntryView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @State private var draft: RoundDraft
+    @State private var showDeleteConfirm = false
 
     init(session: Session, mode: Mode) {
         self.session = session
@@ -43,6 +44,17 @@ struct RoundEntryView: View {
             )
         }
         .background(.thickMaterial)
+        .confirmationDialog("Xóa ván này?", isPresented: $showDeleteConfirm) {
+            if case .edit(let round) = mode {
+                Button("Xóa", role: .destructive) {
+                    try? SessionActions.deleteRound(round, in: context)
+                    dismiss()
+                }
+            }
+            Button("Hủy", role: .cancel) {}
+        } message: {
+            Text("Không thể hoàn tác.")
+        }
     }
 
     private var header: some View {
@@ -59,8 +71,7 @@ struct RoundEntryView: View {
             Spacer()
             if case .edit(let round) = mode {
                 Button(role: .destructive) {
-                    try? SessionActions.deleteRound(round, in: context)
-                    dismiss()
+                    showDeleteConfirm = true
                 } label: {
                     Text("Xóa").foregroundStyle(Color.scoreNegative)
                 }

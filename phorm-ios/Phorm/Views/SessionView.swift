@@ -7,6 +7,7 @@ struct SessionView: View {
     @State private var showRoundEntry = false
     @State private var editingRound: Round?
     @State private var showEndConfirm = false
+    @State private var deletingRound: Round?
 
     private var sortedRounds: [Round] {
         (session.rounds ?? []).sorted { $0.index > $1.index }
@@ -23,7 +24,7 @@ struct SessionView: View {
                                 .onTapGesture { editingRound = round }
                                 .contextMenu {
                                     Button(role: .destructive) {
-                                        try? SessionActions.deleteRound(round, in: context)
+                                        deletingRound = round
                                     } label: {
                                         Label("Xóa", systemImage: "trash")
                                     }
@@ -76,6 +77,21 @@ struct SessionView: View {
             Button("Kết thúc", role: .destructive) {
                 try? SessionActions.endSession(session, in: context)
             }
+        }
+        .confirmationDialog(
+            "Xóa ván \(deletingRound?.index ?? 0)?",
+            isPresented: Binding(
+                get: { deletingRound != nil },
+                set: { if !$0 { deletingRound = nil } }
+            ),
+            presenting: deletingRound
+        ) { round in
+            Button("Xóa", role: .destructive) {
+                try? SessionActions.deleteRound(round, in: context)
+            }
+            Button("Hủy", role: .cancel) {}
+        } message: { _ in
+            Text("Không thể hoàn tác.")
         }
     }
 
