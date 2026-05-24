@@ -1,0 +1,67 @@
+name: phorm-ios
+options:
+  bundleIdPrefix: com.quyctd
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+  groupSortPosition: top
+  generateEmptyDirectories: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    CODE_SIGN_STYLE: Automatic
+    # Leave DEVELOPMENT_TEAM unset; user picks it once in Xcode for device builds.
+    # Simulator builds work without it.
+targets:
+  Phorm:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Phorm
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.quyctd.phorm
+        CODE_SIGN_ENTITLEMENTS: Phorm/Phorm.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: "YES"
+        INFOPLIST_KEY_CFBundleDisplayName: Phorm
+    info:
+      path: Phorm/Info.plist
+      properties:
+        CFBundleDisplayName: Phorm
+        UIBackgroundModes:
+          - remote-notification
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: com.quyctd.phorm.import
+            CFBundleURLSchemes:
+              - phorm
+        UILaunchScreen:
+          UIColorName: ""
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+  PhormTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: PhormTests
+    dependencies:
+      - target: Phorm
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.quyctd.phorm.Tests
+        GENERATE_INFOPLIST_FILE: "YES"
+schemes:
+  Phorm:
+    build:
+      targets:
+        Phorm: all
+        PhormTests: [test]
+    test:
+      targets:
+        - PhormTests
+      gatherCoverageData: false
