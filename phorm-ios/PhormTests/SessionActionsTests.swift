@@ -93,4 +93,31 @@ struct SessionActionsTests {
         )
         #expect(scores == ["An": 5, "Bình": -5])
     }
+
+    @Test func importSessionArchivesCurrentAndActivatesIncoming() throws {
+        let ctx = try Self.makeContext()
+        let current = try SessionActions.createSession(
+            name: "current", playerNames: ["An"], in: ctx
+        )
+        try SessionActions.appendRound(scores: ["An": 0], to: current, in: ctx)
+        let exported = try SessionShare.url(for: current)
+
+        // Simulate receive on (logically) another device by decoding back
+        let dto = try SessionShare.decode(exported)
+        let imported = try SessionActions.importSession(dto, in: ctx)
+
+        #expect(current.archivedAt != nil)
+        #expect(imported.archivedAt == nil)
+        #expect(imported.playerNames == ["An"])
+        #expect((imported.rounds ?? []).count == 1)
+    }
+
+    @Test func endSessionSetsArchivedAt() throws {
+        let ctx = try Self.makeContext()
+        let s = try SessionActions.createSession(
+            name: "t", playerNames: ["An"], in: ctx
+        )
+        try SessionActions.endSession(s, in: ctx)
+        #expect(s.archivedAt != nil)
+    }
 }
