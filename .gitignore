@@ -1,0 +1,10 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+.swiftpm/
+DerivedData/
+build/
+.DS_Store
+
+# xcodegen-generated project (regenerate with `xcodegen generate`)
+phorm-ios/phorm-ios.xcodeproj/

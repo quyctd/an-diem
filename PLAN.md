@@ -33,7 +33,7 @@ Vấn đề muốn giải: tránh nhẩm tổng trong đầu giữa ván, tránh
 
 ## Tech stack
 
-- **Repo**: mới, riêng — `phorm-ios` (không nằm trong repo `phorm-app` này; repo hiện tại giữ làm reference cho UX history)
+- **Repo**: iOS code lives in `./phorm-ios/` subfolder of this repo (one git history for spec + code; decision logged in `docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md`)
 - **Platform**: iOS native, target **iOS 17+** (để dùng SwiftData)
 - **UI**: SwiftUI (không UIKit)
 - **Storage**: SwiftData với CloudKit container → tự sync iCloud
