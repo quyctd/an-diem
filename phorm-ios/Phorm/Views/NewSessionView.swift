@@ -9,6 +9,33 @@ struct NewSessionView: View {
     @State private var players: [String] = []
     @State private var nameInput: String = ""
 
+    @Query(sort: [SortDescriptor(\Session.createdAt, order: .reverse)])
+    private var allSessions: [Session]
+
+    /// Distinct player names across history, ordered by recency of last appearance.
+    private var distinctPlayerNames: [String] {
+        var seen = Set<String>(), result: [String] = []
+        for s in allSessions {
+            for name in s.playerNames where !seen.contains(name) {
+                seen.insert(name); result.append(name)
+            }
+        }
+        return result
+    }
+
+    private var lastGroup: Session? {
+        allSessions.first(where: { !$0.playerNames.isEmpty })
+    }
+
+    private var autosuggestMatches: [String] {
+        let q = nameInput.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !q.isEmpty else { return [] }
+        return distinctPlayerNames
+            .filter { $0.lowercased().contains(q) && !players.contains($0) }
+            .prefix(5)
+            .map { $0 }
+    }
+
     private static func defaultName() -> String {
         let f = DateFormatter()
         f.dateFormat = "dd/MM/yyyy HH:mm"
@@ -19,6 +46,9 @@ struct NewSessionView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
+                    if let group = lastGroup, players.isEmpty {
+                        reuseCard(group)
+                    }
                     sectionLabel("TÊN SESSION")
                     TextField("", text: $sessionName)
                         .font(.phormTitleSm)
@@ -70,6 +100,35 @@ struct NewSessionView: View {
             .foregroundStyle(Color.phormMuted)
     }
 
+    @ViewBuilder private func reuseCard(_ group: Session) -> some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Nhóm vừa rồi")
+                    .font(.phormCaptionSection)
+                    .tracking(0.6).textCase(.uppercase)
+                    .foregroundStyle(Color.phormMuted)
+                Text(group.playerNames.joined(separator: " · "))
+                    .font(.phormTitleSm)
+                    .foregroundStyle(Color.bodyText)
+            }
+            Spacer()
+            Button {
+                players = group.playerNames
+            } label: {
+                Text("Dùng lại")
+                    .font(.phormCaption)
+                    .foregroundStyle(Color.onPrimary)
+                    .padding(.horizontal, Spacing.sm + 2)
+                    .padding(.vertical, 6)
+                    .background(Color.phormPrimary)
+                    .continuousRounded(Radius.pill)
+            }
+        }
+        .padding(Spacing.md)
+        .background(.regularMaterial)
+        .continuousRounded(Radius.lg)
+    }
+
     private var chipFlow: some View {
         FlowLayout(spacing: Spacing.xs) {
             ForEach(Array(players.enumerated()), id: \.offset) { idx, name in
@@ -91,22 +150,46 @@ struct NewSessionView: View {
     }
 
     private var addPlayerField: some View {
-        HStack {
-            TextField("+ Thêm người…", text: $nameInput)
-                .font(.phormBodyMd)
-                .submitLabel(.done)
-                .onSubmit { commitPlayer() }
-            if !nameInput.trimmingCharacters(in: .whitespaces).isEmpty {
-                Button("Thêm") { commitPlayer() }
-                    .foregroundStyle(Color.phormPrimary)
+        VStack(spacing: Spacing.xs) {
+            HStack {
+                TextField("+ Thêm người…", text: $nameInput)
+                    .font(.phormBodyMd)
+                    .submitLabel(.done)
+                    .onSubmit { commitPlayer() }
+                if !nameInput.trimmingCharacters(in: .whitespaces).isEmpty {
+                    Button("Thêm") { commitPlayer() }
+                        .foregroundStyle(Color.phormPrimary)
+                }
+            }
+            .padding(.horizontal, Spacing.md)
+            .padding(.vertical, 10)
+            .overlay(
+                RoundedRectangle(cornerRadius: Radius.md, style: .continuous)
+                    .strokeBorder(Color.hairline, style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+            )
+
+            if !autosuggestMatches.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(autosuggestMatches, id: \.self) { name in
+                        Button {
+                            players.append(name); nameInput = ""
+                        } label: {
+                            HStack {
+                                Text(name)
+                                    .font(.phormBodyMd)
+                                    .foregroundStyle(Color.bodyText)
+                                Spacer()
+                            }
+                            .padding(.horizontal, Spacing.md)
+                            .padding(.vertical, Spacing.sm)
+                        }
+                        if name != autosuggestMatches.last { Divider().background(Color.hairline) }
+                    }
+                }
+                .background(.regularMaterial)
+                .continuousRounded(Radius.md)
             }
         }
-        .padding(.horizontal, Spacing.md)
-        .padding(.vertical, 10)
-        .overlay(
-            RoundedRectangle(cornerRadius: Radius.md, style: .continuous)
-                .strokeBorder(Color.hairline, style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-        )
     }
 
     private func commitPlayer() {
