@@ -31,4 +31,21 @@ struct SessionActionsTests {
         try SessionActions.archiveActive(in: ctx)
         #expect(s.archivedAt != nil)
     }
+
+    @Test func createSessionArchivesPreviousActive() throws {
+        let ctx = try Self.makeContext()
+        let first = Session(name: "first", playerNames: ["An"])
+        ctx.insert(first)
+        try ctx.save()
+
+        let second = try SessionActions.createSession(
+            name: "second",
+            playerNames: ["Bình", "Cường"],
+            in: ctx
+        )
+
+        #expect(first.archivedAt != nil)
+        #expect(second.archivedAt == nil)
+        #expect(second.playerNames == ["Bình", "Cường"])
+    }
 }
