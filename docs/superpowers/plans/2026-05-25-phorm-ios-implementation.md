@@ -6,7 +6,7 @@
 
 **Architecture:** Direct `@Observable` + `@Query` SwiftUI on iOS 17+. SwiftData + CloudKit (`.automatic`) for storage and free iPhone↔iPad sync. Pure-function logic layer (`AutoFill`, `Totals`, `SessionShare`, `SessionActions`) keeps the active-session invariant and URL handoff testable. Sheet-local `@Observable` (`RoundDraft`) owns transient round-entry state.
 
-**Tech Stack:** Swift 5.9+, SwiftUI, SwiftData, CloudKit (`iCloud.com.quyctd.phorm`), Swift Testing (`import Testing`). Xcode 15+ required. URL scheme `phorm://import?s=<base64url(zlib(JSON))>`.
+**Tech Stack:** Swift 5.9+, SwiftUI, SwiftData, CloudKit (`iCloud.com.quyctd.phorm`), Swift Testing (`import Testing`). Xcode 15+ required. URL scheme `phorm://import?s=<base64url(zlib(JSON))>`. **Project file generation:** [xcodegen](https://github.com/yonaskolb/XcodeGen) — `phorm-ios/project.yml` is the source of truth; `phorm-ios.xcodeproj/` is regenerated and gitignored.
 
 **Source docs (read first):**
 - `docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md` — implementation spec (this plan implements it)
@@ -113,6 +113,9 @@ xcuserdata/
 DerivedData/
 build/
 .DS_Store
+
+# xcodegen-generated project (regenerate with `xcodegen generate`)
+phorm-ios/phorm-ios.xcodeproj/
 ```
 
 - [ ] **Step 4: Add README pointer**
@@ -134,74 +137,199 @@ git commit -m "Prep repo for ./phorm-ios subfolder"
 
 ---
 
-## Phase B — Xcode project skeleton
+## Phase B — Xcode project via xcodegen
 
-> **External dependency:** Tasks B1–B3 are Xcode GUI work. There is no clean CLI alternative for creating an iOS app project with SwiftData + CloudKit capabilities. Use Xcode 15.0 or newer. Apple Developer account must be active and signed into Xcode (Xcode → Settings → Accounts).
+> **Tooling:** This phase uses [xcodegen](https://github.com/yonaskolb/XcodeGen) so the project file is generated from a YAML spec and the subagent can drive the whole flow without Xcode GUI clicks. The `.xcodeproj/` is gitignored; `project.yml` is the source of truth.
+>
+> **One manual user step is unavoidable:** before TestFlight or any device build, open Xcode once and set the signing team in Signing & Capabilities → Team. Simulator builds work without it.
 
-### Task B1: Create Xcode project
+### Task B1: Install xcodegen + folder skeleton
 
 **Files:**
-- Create: `phorm-ios/phorm-ios.xcodeproj/` (Xcode-generated)
-- Create: `phorm-ios/Phorm/PhormApp.swift` (Xcode-generated; will be rewritten in Task C1)
-- Create: `phorm-ios/Phorm/Assets.xcassets/` (Xcode-generated)
-- Create: `phorm-ios/Phorm/ContentView.swift` (Xcode-generated; **delete** in Step 5)
+- Create: `phorm-ios/Phorm/Models/.gitkeep`
+- Create: `phorm-ios/Phorm/Logic/.gitkeep`
+- Create: `phorm-ios/Phorm/State/.gitkeep`
+- Create: `phorm-ios/Phorm/DesignSystem/.gitkeep`
+- Create: `phorm-ios/Phorm/Views/Components/.gitkeep`
+- Create: `phorm-ios/Phorm/Resources/Assets.xcassets/Contents.json`
+- Create: `phorm-ios/Phorm/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json`
+- Create: `phorm-ios/PhormTests/.gitkeep`
 
-- [ ] **Step 1: New project via Xcode**
+- [ ] **Step 1: Install xcodegen (idempotent)**
 
-Xcode → File → New → Project... → **iOS → App** → Next.
+```bash
+which xcodegen >/dev/null 2>&1 || brew install xcodegen
+xcodegen --version
+```
 
-Fill in exactly:
-- **Product Name:** `Phorm`
-- **Team:** (your Apple Developer team)
-- **Organization Identifier:** `com.quyctd`
-- **Bundle Identifier** (auto-derived): `com.quyctd.Phorm` — **change to lowercase**: `com.quyctd.phorm`
-- **Interface:** SwiftUI
-- **Language:** Swift
-- **Storage:** SwiftData
-- **Host in CloudKit:** ✓ (this auto-creates the container `iCloud.com.quyctd.phorm`)
-- **Include Tests:** ✓
+Expected: prints a version like `2.41.0` or newer.
 
-Next → **Save in:** `/Users/dinhquy/Documents/quyctd/saam-app` → **uncheck** "Create Git repository" (this repo already has git) → **Create**.
-
-Xcode places the project at `saam-app/Phorm/`. Quit Xcode, then move it to the right location:
+- [ ] **Step 2: Create folder skeleton**
 
 ```bash
 cd /Users/dinhquy/Documents/quyctd/saam-app
-mkdir -p phorm-ios
-mv Phorm phorm-ios/
-mv Phorm.xcodeproj phorm-ios/phorm-ios.xcodeproj  # also renames .xcodeproj
-mv PhormTests phorm-ios/
+mkdir -p phorm-ios/Phorm/{Models,Logic,State,DesignSystem,Views/Components,Resources/Assets.xcassets/AppIcon.appiconset}
+mkdir -p phorm-ios/PhormTests
+# .gitkeep files so empty dirs are tracked
+touch phorm-ios/Phorm/Models/.gitkeep \
+      phorm-ios/Phorm/Logic/.gitkeep \
+      phorm-ios/Phorm/State/.gitkeep \
+      phorm-ios/Phorm/DesignSystem/.gitkeep \
+      phorm-ios/Phorm/Views/Components/.gitkeep \
+      phorm-ios/PhormTests/.gitkeep
 ```
 
-Re-open `phorm-ios/phorm-ios.xcodeproj`. Xcode will reindex.
+- [ ] **Step 3: Write `Assets.xcassets/Contents.json`**
 
-> If Xcode complains the project file references are broken, that's because we renamed `Phorm.xcodeproj` → `phorm-ios.xcodeproj`. Right-click the broken `Phorm` group → Delete (Remove Reference) → drag the actual `Phorm/` folder back into the project navigator → check "Create groups", not "Create folder references".
+```json
+{
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
+```
 
-- [ ] **Step 2: Set deployment target to iOS 17.0**
+- [ ] **Step 4: Write `AppIcon.appiconset/Contents.json` (placeholder icon)**
 
-Project navigator → **Phorm** project (top entry) → Phorm **target** → General tab → **Minimum Deployments:** iOS **17.0**.
+```json
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
+```
 
-- [ ] **Step 3: Set display name**
+> The empty AppIcon set causes a build warning ("App icon set has no images") but builds succeed. Proper icon is post-MVP.
 
-Same target → General → **Display Name:** `Phorm`.
+- [ ] **Step 5: Commit**
 
-- [ ] **Step 4: Verify bundle ID**
+```bash
+git add phorm-ios/
+git commit -m "phorm-ios: folder skeleton + empty Assets.xcassets"
+```
 
-Same target → General → Identity → **Bundle Identifier:** `com.quyctd.phorm` (correct from Step 1; just confirm).
+### Task B2: Write `project.yml`, entitlements, placeholder Swift
 
-- [ ] **Step 5: Delete Xcode-default `ContentView.swift`**
+**Files:**
+- Create: `phorm-ios/project.yml`
+- Create: `phorm-ios/Phorm/Phorm.entitlements`
+- Create: `phorm-ios/Phorm/PhormApp.swift`
+- Create: `phorm-ios/PhormTests/PhormTests.swift`
 
-Project navigator → right-click `ContentView.swift` → Delete → Move to Trash. We'll add our own views from scratch.
+- [ ] **Step 1: Write `phorm-ios/project.yml`**
 
-Leave `PhormApp.swift` alone for now — we'll rewrite it in Task C1.
+```yaml
+name: phorm-ios
+options:
+  bundleIdPrefix: com.quyctd
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+  groupSortPosition: top
+  generateEmptyDirectories: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    CODE_SIGN_STYLE: Automatic
+    # Leave DEVELOPMENT_TEAM unset; user picks it once in Xcode for device builds.
+    # Simulator builds work without it.
+targets:
+  Phorm:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Phorm
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.quyctd.phorm
+        CODE_SIGN_ENTITLEMENTS: Phorm/Phorm.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: "YES"
+        INFOPLIST_KEY_CFBundleDisplayName: Phorm
+        INFOPLIST_KEY_UILaunchScreen_Generation: "YES"
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: "YES"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_UIBackgroundModes: "remote-notification"
+    info:
+      path: Phorm/Info.plist
+      properties:
+        CFBundleDisplayName: Phorm
+        UIBackgroundModes:
+          - remote-notification
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: com.quyctd.phorm.import
+            CFBundleURLSchemes:
+              - phorm
+        UILaunchScreen:
+          UIColorName: ""
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+  PhormTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: PhormTests
+    dependencies:
+      - target: Phorm
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.quyctd.phorm.Tests
+        GENERATE_INFOPLIST_FILE: "YES"
+schemes:
+  Phorm:
+    build:
+      targets:
+        Phorm: all
+        PhormTests: [test]
+    test:
+      targets:
+        - PhormTests
+      gatherCoverageData: false
+```
 
-- [ ] **Step 6: Build (⌘B) — verify project compiles**
+> `info.path` declares an Info.plist file but `GENERATE_INFOPLIST_FILE: YES` makes Xcode auto-generate one merged with the listed `properties`. This is xcodegen's idiomatic way to inject custom plist keys without hand-managing the whole file.
 
-Expected: build succeeds with one warning about `PhormApp.swift` referencing the now-deleted `ContentView`. Fix by opening `PhormApp.swift` and replacing the body with a placeholder:
+- [ ] **Step 2: Write `phorm-ios/Phorm/Phorm.entitlements`**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTD/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.developer.icloud-container-identifiers</key>
+    <array>
+        <string>iCloud.com.quyctd.phorm</string>
+    </array>
+    <key>com.apple.developer.icloud-services</key>
+    <array>
+        <string>CloudKit</string>
+    </array>
+    <key>aps-environment</key>
+    <string>development</string>
+</dict>
+</plist>
+```
+
+- [ ] **Step 3: Write placeholder `PhormApp.swift`**
+
+`phorm-ios/Phorm/PhormApp.swift`:
 
 ```swift
 import SwiftUI
-import SwiftData
 
 @main
 struct PhormApp: App {
@@ -213,62 +341,11 @@ struct PhormApp: App {
 }
 ```
 
-Build again (⌘B). Expected: **Build Succeeded**, no warnings.
+This is a placeholder; Task C1 wires the real `ModelContainer`.
 
-- [ ] **Step 7: Run on simulator (⌘R) — verify launches**
+- [ ] **Step 4: Write sanity test**
 
-Choose any iPhone simulator (e.g., iPhone 15 Pro). Hit ⌘R. Expected: simulator boots, app launches, shows "Phorm — placeholder" text. Cmd+Q the simulator.
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add phorm-ios/
-git commit -m "phorm-ios: bootstrap Xcode project"
-```
-
-### Task B2: Configure capabilities (CloudKit + URL scheme)
-
-**Files:**
-- Modify: `phorm-ios/Phorm/Phorm.entitlements` (Xcode-managed)
-- Modify: `phorm-ios/Phorm/Info.plist` (Xcode-managed)
-
-- [ ] **Step 1: Confirm CloudKit capability**
-
-Target Phorm → Signing & Capabilities tab. CloudKit should already be present from "Host in CloudKit: ✓" in Task B1.
-
-Verify: under **iCloud** capability, **Services** → ✓ CloudKit; **Containers** → `iCloud.com.quyctd.phorm`. If the container isn't listed, click **+** under Containers → enter `iCloud.com.quyctd.phorm` → Add.
-
-- [ ] **Step 2: Add Background Modes capability**
-
-Same tab → **+ Capability** → search "Background Modes" → double-click. In the new section, ✓ **Remote notifications** (silent push needed for CloudKit subscriptions).
-
-- [ ] **Step 3: Add URL Types**
-
-Target Phorm → Info tab → expand **URL Types** at the bottom → click **+**:
-- **Identifier:** `com.quyctd.phorm.import`
-- **URL Schemes:** `phorm`
-- **Role:** Editor
-- **Icon:** leave blank
-
-- [ ] **Step 4: Build — verify capabilities compile**
-
-⌘B. Expected: Build Succeeded. If Xcode reports "No matching provisioning profiles", Xcode → Settings → Accounts → select your team → Download Manual Profiles, then ⌘B again.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add phorm-ios/
-git commit -m "phorm-ios: enable CloudKit, background remote notifications, phorm:// URL scheme"
-```
-
-### Task B3: Convert test target to Swift Testing
-
-**Files:**
-- Modify: `phorm-ios/PhormTests/PhormTests.swift` (Xcode-generated, currently XCTest)
-
-- [ ] **Step 1: Rewrite default test file**
-
-Replace the entire contents of `phorm-ios/PhormTests/PhormTests.swift` with:
+`phorm-ios/PhormTests/PhormTests.swift`:
 
 ```swift
 import Testing
@@ -282,90 +359,170 @@ struct SanityTests {
 }
 ```
 
-- [ ] **Step 2: Run tests (⌘U)**
-
-Expected: 1 test passes (`Sanity / canImportAppModule()`). If Xcode reports "missing module Testing", ensure the test target's iOS Deployment Target is 17.0 (target → General → Minimum Deployments) — Swift Testing requires iOS 17+.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add phorm-ios/PhormTests/
-git commit -m "phorm-ios: convert test target to Swift Testing"
-```
-
-### Task B4: Folder skeleton
-
-**Files:**
-- Create: empty folders for `Models/`, `Logic/`, `State/`, `DesignSystem/`, `Views/Components/`, `Resources/`
-
-- [ ] **Step 1: Create folders in Finder**
-
-Inside `phorm-ios/Phorm/`:
-
-```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios/Phorm
-mkdir -p Models Logic State DesignSystem Views/Components Resources
-```
-
-- [ ] **Step 2: Add to Xcode project as groups**
-
-In Xcode, right-click `Phorm` group → **Add Files to "Phorm"...** → select all six new folders → **Create groups** (not "folder references") → Add.
-
-- [ ] **Step 3: Move `Assets.xcassets` into `Resources/`**
-
-In Finder, drag `phorm-ios/Phorm/Assets.xcassets` into `phorm-ios/Phorm/Resources/`. In Xcode, delete the old red reference and drag the file back in from its new location into the `Resources` group.
-
-⌘B → Build Succeeded.
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add phorm-ios/
-git commit -m "phorm-ios: folder skeleton (Models/Logic/State/DesignSystem/Views/Resources)"
+git commit -m "phorm-ios: project.yml + entitlements + placeholder app + sanity test"
 ```
 
-### Task B5: CloudKit provisioning notes
+### Task B3: Generate project, verify build + tests
+
+**Files:** none new — verifies the previous tasks.
+
+- [ ] **Step 1: Generate the Xcode project**
+
+```bash
+cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+xcodegen generate
+```
+
+Expected: `Created project at /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios/phorm-ios.xcodeproj`.
+
+- [ ] **Step 2: Pick an available iOS 17 simulator**
+
+```bash
+xcrun simctl list devices available | grep -iE "iPhone (15|16) Pro" | head -3
+```
+
+Take note of one device name like `iPhone 15 Pro`. If none match, use any iOS 17.x device from the listing. Below, replace `iPhone 15 Pro` with whatever you picked.
+
+- [ ] **Step 3: Verify build (simulator, no signing)**
+
+```bash
+cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+xcodebuild \
+  -project phorm-ios.xcodeproj \
+  -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  -configuration Debug \
+  CODE_SIGNING_ALLOWED=NO \
+  build 2>&1 | tail -50
+```
+
+Expected: `** BUILD SUCCEEDED **` near the end.
+
+- [ ] **Step 4: Verify tests**
+
+```bash
+cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+xcodebuild \
+  -project phorm-ios.xcodeproj \
+  -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  CODE_SIGNING_ALLOWED=NO \
+  test 2>&1 | tail -30
+```
+
+Expected: `** TEST SUCCEEDED **`. 1 test passes (`SanityTests.canImportAppModule`).
+
+> If you see `** TEST FAILED **` with "missing module Testing", confirm Xcode is 15.0+ (`xcodebuild -version`) — Swift Testing ships with Xcode 15.
+
+- [ ] **Step 5: Confirm `.xcodeproj` is gitignored**
+
+```bash
+cd /Users/dinhquy/Documents/quyctd/saam-app
+git status --short phorm-ios/phorm-ios.xcodeproj
+```
+
+Expected: no output (file is ignored). If output appears, the .gitignore entry from Task A1 is missing — fix and re-stage.
+
+### Task B4: CloudKit provisioning notes
 
 **Files:**
 - Create: `phorm-ios/README.md`
 
-- [ ] **Step 1: Document CloudKit container setup**
-
-Create `phorm-ios/README.md` with:
+- [ ] **Step 1: Write README**
 
 ```markdown
 # Phorm iOS
 
-Implementation of the Phorm score tracker. See sibling `../docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md` for the architecture spec and `../docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md` for the implementation plan.
+Implementation of the Phorm score tracker. See `../docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md` for the architecture spec and `../docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md` for the implementation plan.
 
 ## Requirements
 - Xcode 15.0+
 - iOS 17.0+ (deployment target)
-- Apple Developer account signed into Xcode (CloudKit requires a real team ID)
+- [xcodegen](https://github.com/yonaskolb/XcodeGen): `brew install xcodegen`
+- Apple Developer account in Xcode → Settings → Accounts (only needed for device builds + CloudKit)
+
+## Generating the project
+
+The Xcode project file is generated from `project.yml`; it is **not** checked into git.
+
+```sh
+cd phorm-ios
+xcodegen generate
+open phorm-ios.xcodeproj
+```
+
+Regenerate whenever `project.yml` changes.
+
+## Building & testing from the CLI
+
+```sh
+# Build (simulator, no signing required)
+xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  CODE_SIGNING_ALLOWED=NO build
+
+# Run unit tests
+xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  CODE_SIGNING_ALLOWED=NO test
+```
+
+## One-time setup for device builds
+
+1. Open `phorm-ios.xcodeproj` in Xcode.
+2. Select the Phorm target → Signing & Capabilities → set **Team** to your Apple Developer team.
+3. Xcode auto-provisions the bundle ID + CloudKit container on first build.
 
 ## CloudKit container
 
 Container ID: `iCloud.com.quyctd.phorm`
 
-On first build with a fresh Apple Developer account, Xcode auto-creates the container in the developer portal. Verify at https://developer.apple.com/account/resources/identifiers/list/cloudContainer → search "phorm".
+On first device build, Xcode auto-creates the container in the developer portal. Verify at https://developer.apple.com/account/resources/identifiers/list/cloudContainer.
 
-After the first device run that writes data, the CloudKit Console (https://icloud.developer.apple.com/dashboard/) will show the schema (Session, Round, PlayerScore record types). For the development environment this is automatic. **Before TestFlight**, manually promote the schema from Development → Production via the Console.
+After the first run that writes data, the CloudKit Console (https://icloud.developer.apple.com/dashboard/) shows the schema. **Before TestFlight, promote the schema from Development → Production** via the Console.
 
-## Running tests
-
-Open `phorm-ios.xcodeproj` and ⌘U. Tests are Swift Testing (`import Testing`). No CI.
-
-## Running the app
-
-⌘R in Xcode. Pick any iPhone simulator (iOS 17.0+).
+If you build on simulator only, CloudKit calls will fail silently (no container provisioned). The app works local-only; SwiftData persists locally.
 ```
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add phorm-ios/README.md
-git commit -m "phorm-ios: add README with CloudKit provisioning notes"
+git commit -m "phorm-ios: README with xcodegen + CloudKit setup notes"
 ```
+
+---
+
+## Build & regen convention (applies to Phases C–M)
+
+After **adding** any new Swift file or asset, regenerate the project before building/testing — xcodegen captures the file list at generate time and `xcodebuild` won't see new files otherwise:
+
+```bash
+cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+xcodegen generate
+```
+
+`xcodegen generate` is idempotent and runs in <1 sec. Modifying an existing file does **not** require regen.
+
+The canonical build + test commands (use whichever simulator name Task B3 confirmed available):
+
+```bash
+# Build
+xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -30
+
+# Test
+xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  CODE_SIGNING_ALLOWED=NO test 2>&1 | tail -40
+```
+
+Whenever a task says "Build (⌘B)" or "Run tests (⌘U)", run the CLI equivalents above (after `xcodegen generate` if files were added).
 
 ---
 
@@ -1364,24 +1521,57 @@ git commit -m "phorm-ios: SessionActions importSession + endSession + tests"
 - Modify: `phorm-ios/Phorm/Resources/Assets.xcassets/` (add color sets)
 - Create: `phorm-ios/Phorm/DesignSystem/Color+Tokens.swift`
 
-- [ ] **Step 1: Add adaptive color sets to Assets.xcassets**
+- [ ] **Step 1: Write 10 `.colorset/Contents.json` files**
 
-In Xcode, open `Assets.xcassets` (under Resources). For each name below, right-click → **New Color Set**, rename, then in the Attributes inspector set **Appearances: Any, Dark**, and enter the hex values:
+Asset Catalog color sets are folders containing a `Contents.json` describing light + dark variants. Write the JSON files directly — no Xcode GUI needed.
 
-| Color set name | Light hex (Any) | Dark hex |
-|---|---|---|
-| `Canvas` | `#FFFFFF` | `#0B0E11` |
-| `SurfaceCard` | `#FFFFFF` | `#1E2329` |
-| `SurfaceElevated` | `#F5F5F5` | `#2B3139` |
-| `SurfaceSoft` | `#FAFAFA` | `#1E2329` |
-| `Hairline` | `#EAECEF` | `#2B3139` |
-| `Body` | `#181A20` | `#EAECEF` |
-| `MutedStrong` | `#707A8A` | `#929AA5` |
-| `FocusRowTint` | `#FCD535` @ 16% alpha | `#FCD535` @ 12% alpha |
-| `ScorePositiveTint` | `#E8FAF2` | `#0ECB81` @ 14% alpha |
-| `ScoreNegativeTint` | `#FDECEF` | `#F6465D` @ 14% alpha |
+Schema (single colorset Contents.json — light & dark pair, opaque):
 
-For alpha values: in the color picker, set the 8th-bit slider; or switch Input Method to **8-bit Hexadecimal** and use `RRGGBBAA` (e.g., `FCD53528` for 16% alpha).
+```json
+{
+  "colors" : [
+    {
+      "color" : {
+        "color-space" : "srgb",
+        "components" : { "alpha" : "1.000", "red" : "0xFF", "green" : "0xFF", "blue" : "0xFF" }
+      },
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        { "appearance" : "luminosity", "value" : "dark" }
+      ],
+      "color" : {
+        "color-space" : "srgb",
+        "components" : { "alpha" : "1.000", "red" : "0x0B", "green" : "0x0E", "blue" : "0x11" }
+      },
+      "idiom" : "universal"
+    }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}
+```
+
+For tinted colors, replace the `alpha` value (e.g., `"alpha" : "0.16"` for 16%).
+
+Create one folder + Contents.json per color set under `phorm-ios/Phorm/Resources/Assets.xcassets/`:
+
+| Folder | Light (Any) hex | Light alpha | Dark hex | Dark alpha |
+|---|---|---|---|---|
+| `Canvas.colorset` | `0xFFFFFF` | 1.000 | `0x0B0E11` | 1.000 |
+| `SurfaceCard.colorset` | `0xFFFFFF` | 1.000 | `0x1E2329` | 1.000 |
+| `SurfaceElevated.colorset` | `0xF5F5F5` | 1.000 | `0x2B3139` | 1.000 |
+| `SurfaceSoft.colorset` | `0xFAFAFA` | 1.000 | `0x1E2329` | 1.000 |
+| `Hairline.colorset` | `0xEAECEF` | 1.000 | `0x2B3139` | 1.000 |
+| `Body.colorset` | `0x181A20` | 1.000 | `0xEAECEF` | 1.000 |
+| `MutedStrong.colorset` | `0x707A8A` | 1.000 | `0x929AA5` | 1.000 |
+| `FocusRowTint.colorset` | `0xFCD535` | 0.16 | `0xFCD535` | 0.12 |
+| `ScorePositiveTint.colorset` | `0xE8FAF2` | 1.000 | `0x0ECB81` | 0.14 |
+| `ScoreNegativeTint.colorset` | `0xFDECEF` | 1.000 | `0xF6465D` | 0.14 |
+
+Hex must be in `0xRR`, `0xGG`, `0xBB` form (zero-padded uppercase). Components keys appear in the exact order shown: `alpha`, `red`, `green`, `blue` (Xcode is order-tolerant but consistency helps diffs).
+
+After writing all 10 colorsets, run `xcodegen generate` so the new files are picked up.
 
 - [ ] **Step 2: Create `Color+Tokens.swift`**
 
@@ -3365,7 +3555,15 @@ git commit -m "phorm-ios: ImportConfirmView with preview + import action"
 
 - [ ] **Step 1: Run all unit tests**
 
-⌘U. Expected: ~22 tests pass across AutoFill / Totals / SessionShare / SessionActions. If any fail, fix before continuing.
+```bash
+cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+xcodegen generate
+xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  CODE_SIGNING_ALLOWED=NO test 2>&1 | tail -40
+```
+
+Expected: `** TEST SUCCEEDED **` with ~22 tests passing across AutoFill / Totals / SessionShare / SessionActions / Sanity. If any fail, fix before continuing.
 
 - [ ] **Step 2: Walk PLAN.md §Verification (13 steps) on simulator**
 
