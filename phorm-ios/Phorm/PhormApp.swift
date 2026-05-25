@@ -6,6 +6,7 @@ struct PhormApp: App {
     let container: ModelContainer
 
     @State private var pendingImport: SessionDTO?
+    @State private var showSplash = true
 
     init() {
         let schema = Schema([Session.self, Round.self, PlayerScore.self])
@@ -23,17 +24,26 @@ struct PhormApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
-                .preferredColorScheme(.dark)
-                .tint(.phormPrimary)
-                .onOpenURL { url in
-                    pendingImport = try? SessionShare.decode(url)
-                }
-                .sheet(item: $pendingImport) { dto in
-                    ImportConfirmView(dto: dto, onDismiss: { pendingImport = nil })
-                        .interactiveDismissDisabled()
+            ZStack {
+                HomeView()
+                    .preferredColorScheme(.dark)
+                    .tint(.phormPrimary)
+                    .onOpenURL { url in
+                        pendingImport = try? SessionShare.decode(url)
+                    }
+                    .sheet(item: $pendingImport) { dto in
+                        ImportConfirmView(dto: dto, onDismiss: { pendingImport = nil })
+                            .interactiveDismissDisabled()
+                            .preferredColorScheme(.dark)
+                    }
+
+                if showSplash {
+                    SplashView(isVisible: $showSplash)
                         .preferredColorScheme(.dark)
+                        .transition(.opacity)
+                        .zIndex(1)
                 }
+            }
         }
         .modelContainer(container)
     }

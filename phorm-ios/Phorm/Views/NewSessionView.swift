@@ -44,8 +44,10 @@ struct NewSessionView: View {
     private static func defaultName() -> String {
         let f = DateFormatter()
         f.locale = Locale(identifier: "vi_VN")
+        // vi_VN locale renders EEEE as "Thứ Sáu" / "Chủ Nhật" already — no
+        // .capitalized; that would title-case "tối" too, which is wrong in Vietnamese.
         f.dateFormat = "EEEE 'tối' dd/MM"
-        return f.string(from: .now).capitalized
+        return f.string(from: .now)
     }
 
     var body: some View {
@@ -225,7 +227,7 @@ struct NewSessionView: View {
                 Text("+")
                     .font(.phormNameDisplay)
                     .foregroundStyle(Color.phormPrimary)
-                TextField("Quý Nam \"Quý Anh\" Linh…", text: $nameInput, onCommit: commitPlayers)
+                TextField("Nam Hà \"Anh Tuấn\" Mai…", text: $nameInput, onCommit: commitPlayers)
                     .font(.phormNameMd)
                     .foregroundStyle(Color.phormCream)
                     .focused($nameInputFocused)
@@ -255,7 +257,7 @@ struct NewSessionView: View {
             )
             .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
 
-            Text("Cách bằng dấu cách · dùng \"…\" cho tên có khoảng trắng")
+            Text("Cách nhau bằng dấu cách · dùng \"…\" cho tên dài hai từ")
                 .font(.phormCaptionSection)
                 .tracking(1.4)
                 .textCase(.uppercase)

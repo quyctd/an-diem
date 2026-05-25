@@ -10,8 +10,7 @@ settings:
   base:
     SWIFT_VERSION: "5.9"
     CODE_SIGN_STYLE: Automatic
-    # Leave DEVELOPMENT_TEAM unset; user picks it once in Xcode for device builds.
-    # Simulator builds work without it.
+    DEVELOPMENT_TEAM: 97J4X88D7H
 targets:
   Phorm:
     type: application
@@ -25,11 +24,22 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Phorm/Phorm.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: "YES"
-        INFOPLIST_KEY_CFBundleDisplayName: Phorm
+        INFOPLIST_KEY_CFBundleDisplayName: Ấn Điểm
+        # GENERATE_INFOPLIST_FILE=YES means Xcode synthesizes these into the
+        # bundled Info.plist — they MUST be build settings, not plist keys, or
+        # the App Store upload validator sees empty strings and rejects.
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "3"
+        # iPhone-only — the lacquer surface assumes single-pane portrait (see
+        # DESIGN.md "Known Gaps"). Universal would force us to declare all four
+        # iPad orientations, which the app isn't designed for. 1 = iPhone, 2 =
+        # iPad, "1,2" = universal.
+        TARGETED_DEVICE_FAMILY: "1"
     info:
       path: Phorm/Info.plist
       properties:
-        CFBundleDisplayName: Phorm
+        CFBundleDisplayName: Ấn Điểm
+        ITSAppUsesNonExemptEncryption: false
         UIBackgroundModes:
           - remote-notification
         CFBundleURLTypes:
@@ -38,7 +48,7 @@ targets:
             CFBundleURLSchemes:
               - phorm
         UILaunchScreen:
-          UIColorName: ""
+          UIColorName: LaunchBackground
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UIApplicationSceneManifest:

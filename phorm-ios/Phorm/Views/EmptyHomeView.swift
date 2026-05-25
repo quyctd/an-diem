@@ -20,7 +20,7 @@ struct EmptyHomeView: View {
                             .italic()
                             .foregroundStyle(Color.phormCream)
                             .multilineTextAlignment(.center)
-                        Text("phỏm, sâm lốc, hay bất cứ ván nào — app chỉ ghi điểm, không phân định luật.")
+                        Text("phỏm, sâm lốc — sổ thay trí nhớ, mỗi vòng một dấu vàng, không ai cãi được.")
                             .font(.phormBodyMd)
                             .foregroundStyle(Color.phormCream.opacity(0.65))
                             .multilineTextAlignment(.center)

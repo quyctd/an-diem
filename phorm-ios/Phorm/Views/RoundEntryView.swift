@@ -171,6 +171,14 @@ struct RoundEntryView: View {
         let isFocused = draft.focusedIndex == idx
         let isAuto = draft.autoFillIndex == idx
         HStack(spacing: Spacing.md) {
+            // Seat seal — Hán numeral per player position. Gives a fixed glyph anchor
+            // the host can verify before typing ("I'm entering for 叁, that's Linh").
+            // Bright winner-gold when focused; muted default otherwise.
+            Seal(
+                glyph: SealGlyph.forRank(idx + 1),
+                variant: isFocused ? .winner : .default,
+                size: 30
+            )
             Text(name)
                 .font(.phormNameMd)
                 .foregroundStyle(
@@ -213,11 +221,19 @@ struct RoundEntryView: View {
         if isAuto, let v = draft.autoFillValue {
             Text(ScoreFormat.signed(v))
                 .font(.phormNumberScript)
-                .foregroundStyle(Color.phormPrimary)
+                .foregroundStyle(ScoreFormat.color(for: v))
         } else if let v = draft.entries[idx] {
+            // Typed value: sign-aware color (mint +, ochre −, cream 0). The same
+            // color appears in the keypad's sign key — closing the loop between
+            // mode you're in and what you see in the cell.
             Text(ScoreFormat.signed(v))
                 .font(.phormNumberEntry)
-                .foregroundStyle(isFocused ? Color.phormPrimary : Color.phormCream)
+                .foregroundStyle(ScoreFormat.color(for: v))
+        } else if isFocused {
+            // Empty placeholder on the focused row hints at the active sign mode.
+            Text(draft.signMode < 0 ? "\u{2212}" : "+")
+                .font(.phormNumberEntry)
+                .foregroundStyle(modeColor.opacity(0.50))
         } else {
             Text("0")
                 .font(.phormNumberEntry)
@@ -225,13 +241,19 @@ struct RoundEntryView: View {
         }
     }
 
+    /// Current sign-mode accent color — mint for add, ochre for subtract. Drives
+    /// the focused cell border, value text, placeholder hint, and keypad sign key.
+    private var modeColor: Color {
+        draft.signMode < 0 ? .scoreNegative : .scorePositive
+    }
+
     @ViewBuilder
     private func cellBackground(isFocused: Bool, isAuto: Bool) -> some View {
         let shape = RoundedRectangle(cornerRadius: 2, style: .continuous)
         ZStack {
             if isFocused {
-                shape.fill(Color.phormPrimary.opacity(0.14))
-                shape.strokeBorder(Color.phormPrimary, lineWidth: 1.5)
+                shape.fill(modeColor.opacity(0.14))
+                shape.strokeBorder(modeColor, lineWidth: 1.5)
             } else if isAuto {
                 shape.fill(Color.phormPrimary.opacity(0.06))
                 shape.strokeBorder(Color.phormPrimaryActive, lineWidth: 1)

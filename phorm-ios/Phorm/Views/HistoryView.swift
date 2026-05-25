@@ -85,7 +85,7 @@ struct HistoryView: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 6) {
-                SectionLabel(text: sessions.count == 1 ? "Phiên" : "Phiên")
+                SectionLabel(text: "Phiên")
                 Text("\(sessions.count)")
                     .font(.phormTitleLg)
                     .foregroundStyle(Color.phormCreamDim)

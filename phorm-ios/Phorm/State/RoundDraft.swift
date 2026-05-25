@@ -8,6 +8,20 @@ enum KeypadKey: Equatable {
     case next
 }
 
+/// User preference for sticky keypad sign — persists across sessions.
+/// Default is `−`: in Phỏm/Sâm Lốc the host most often records losses, so
+/// the cheaper-friction starting position is subtract.
+enum SignModePreference {
+    private static let key = "phorm.keypad.signMode"
+    static func load() -> Int {
+        let raw = UserDefaults.standard.integer(forKey: key)
+        return raw == 0 ? -1 : raw
+    }
+    static func save(_ value: Int) {
+        UserDefaults.standard.set(value, forKey: key)
+    }
+}
+
 /// Sheet-local round-entry state. Lives only as long as the round-entry sheet;
 /// nothing persists until `materialize()` is handed to `SessionActions.appendRound`
 /// / `.updateRound`.
@@ -17,13 +31,14 @@ final class RoundDraft {
     var entries: [Int?]
     var focusedIndex: Int?
 
-    /// Sticky sign for keypad input — persists across rows until the user toggles it.
-    /// In Phỏm/Sâm Lốc most rounds are negative for the losing players, so once the
-    /// host taps `−` the next several rows inherit it without re-tapping. `+1` or `-1`.
-    var signMode: Int = 1
+    /// Sticky sign for keypad input — persists across rows AND across rounds via
+    /// UserDefaults. `+1` or `-1`. Once the host taps `−`, every later round opens
+    /// in subtract mode until they flip it back.
+    var signMode: Int
 
     init(playerNames: [String], existing: [String: Int]? = nil) {
         self.playerNames = playerNames
+        self.signMode = SignModePreference.load()
         if let existing {
             self.entries = playerNames.map { existing[$0] }
             // Open edit mode in whatever sign mode the first non-empty entry implies.
@@ -75,6 +90,7 @@ final class RoundDraft {
         case .sign:
             // Toggle the mode AND flip the current cell's sign so the visual matches.
             signMode = -signMode
+            SignModePreference.save(signMode)
             if let v = entries[i], v != 0 {
                 entries[i] = -v
             }

@@ -259,10 +259,14 @@ struct SessionView: View {
 
     private var roundDetailsSection: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            HStack {
-                SectionLabel(text: "Từng vòng")
+            HStack(alignment: .firstTextBaseline) {
+                Text("Từng vòng")
+                    .font(.phormNameMd)
+                    .foregroundStyle(Color.phormCream)
                 Spacer()
-                SectionLabel(text: "Chạm để sửa")
+                Text("chạm để sửa")
+                    .font(.system(size: 12, weight: .regular, design: .serif).italic())
+                    .foregroundStyle(Color.phormCreamDim)
             }
             VStack(spacing: Spacing.sm) {
                 ForEach(sortedRounds) { round in
@@ -284,13 +288,10 @@ struct SessionView: View {
     // MARK: - CTA
 
     private var cta: some View {
-        VStack(spacing: Spacing.xs) {
-            LacquerPrimaryButton(
-                title: "Vòng \((session.rounds ?? []).count + 1) — đóng dấu"
-            ) {
-                showRoundEntry = true
-            }
-            SectionLabel(text: "Vuốt xuống · xem từng vòng")
+        LacquerPrimaryButton(
+            title: "+ Vòng \((session.rounds ?? []).count + 1)"
+        ) {
+            showRoundEntry = true
         }
         .padding(.horizontal, Spacing.lg)
         .padding(.bottom, Spacing.sm)

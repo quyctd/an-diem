@@ -85,7 +85,7 @@ struct Keypad: View {
                 .frame(height: 52)
                 .background(
                     RoundedRectangle(cornerRadius: 3, style: .continuous)
-                        .fill(isUtility(kind) ? Color.black.opacity(0.28) : Color.black.opacity(0.18))
+                        .fill(keyBackgroundFill(kind))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 3, style: .continuous)
@@ -95,11 +95,25 @@ struct Keypad: View {
         .buttonStyle(.plain)
     }
 
-    /// Sign key border lifts to gold whenever a sign mode is active — reinforces
-    /// the `+` or `−` highlight inside the key.
+    /// Sign-mode accent — mint when add, ochre when subtract. The sign key uses
+    /// this for its glyph, border, and background tint so the active mode is
+    /// loud enough that the host won't mistake `+` for `−` mid-typing.
+    private var modeColor: Color {
+        sign < 0 ? .scoreNegative : .scorePositive
+    }
+
+    /// Sign key border picks up the mode color at 0.7 opacity — strong enough
+    /// to read as "this key is what colors the cells above."
     private func signKeyBorderColor(_ kind: KeyKind) -> Color {
-        if case .sign = kind { return Color.phormPrimary.opacity(0.55) }
+        if case .sign = kind { return modeColor.opacity(0.70) }
         return Color.phormCream.opacity(0.18)
+    }
+
+    /// Background of the sign key gets a faint mode-color wash on top of the
+    /// utility-key dark tint — same trick as the focused cell.
+    private func keyBackgroundFill(_ kind: KeyKind) -> Color {
+        if case .sign = kind { return modeColor.opacity(0.18) }
+        return isUtility(kind) ? Color.black.opacity(0.28) : Color.black.opacity(0.18)
     }
 
     @ViewBuilder
@@ -110,13 +124,15 @@ struct Keypad: View {
                 .font(.phormKeypadDigit)
                 .foregroundStyle(Color.phormCream)
         case .sign:
-            HStack(spacing: 8) {
+            // Active glyph is bigger and mode-colored; inactive shrinks and dims.
+            // Asymmetry is the affordance — the bigger one is what gets typed.
+            HStack(spacing: 6) {
                 Text("+")
-                    .font(.system(size: 22, weight: .bold, design: .serif))
-                    .foregroundStyle(sign > 0 ? Color.phormPrimary : Color.phormCream.opacity(0.32))
+                    .font(.system(size: sign > 0 ? 28 : 18, weight: .bold, design: .serif))
+                    .foregroundStyle(sign > 0 ? Color.scorePositive : Color.phormCream.opacity(0.22))
                 Text("\u{2212}")
-                    .font(.system(size: 22, weight: .bold, design: .serif))
-                    .foregroundStyle(sign < 0 ? Color.phormPrimary : Color.phormCream.opacity(0.32))
+                    .font(.system(size: sign < 0 ? 28 : 18, weight: .bold, design: .serif))
+                    .foregroundStyle(sign < 0 ? Color.scoreNegative : Color.phormCream.opacity(0.22))
             }
         case .delete:
             Image(systemName: "delete.left")

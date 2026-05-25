@@ -112,17 +112,16 @@ struct SummaryView: View {
                     .foregroundStyle(Color.phormPrimary)
             }
 
-            // ấn vàng tablet
-            HStack(spacing: Spacing.sm) {
-                Seal(glyph: "壹", variant: .winner, size: 26)
-                Text("壹 · ấn vàng")
-                    .font(.phormCaptionSection)
-                    .tracking(1.8)
-                    .textCase(.uppercase)
+            // ấn vàng tablet — the ceremonial seal designation. The seal carries 壹,
+            // the italic serif label carries the name. Big enough to feel awarded.
+            HStack(spacing: Spacing.md) {
+                Seal(glyph: "壹", variant: .winner, size: 34)
+                Text("Ấn vàng")
+                    .font(.system(size: 22, weight: .semibold, design: .serif).italic())
                     .foregroundStyle(Color.phormGoldBright)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.sm)
+            .padding(.vertical, Spacing.md)
             .background(
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
                     .fill(Color.black.opacity(0.22))
