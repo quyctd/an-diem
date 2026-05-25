@@ -4,21 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-This is a **design/planning repo, not the iOS app codebase.** Per `PLAN.md`, the actual native iOS implementation lives in a separate repo (`phorm-ios`). This repo holds the spec, the design system, and an interactive HTML mockup that drives that implementation.
+This repo holds the spec, the design system, and the iOS app implementation (`phorm-ios/`).
 
 Contents:
 - `PLAN.md` — the source of truth for product scope, UX decisions (numbered 1–14, treat as locked), data model sketch, screens, and manual verification steps.
 - `PRODUCT.md` — the brand brief: who the user is, product purpose, voice, anti-references, design principles, accessibility commitments. Shorter than DESIGN.md/PLAN.md; read it whole when product framing matters.
-- `DESIGN.md` — design tokens as YAML-in-Markdown frontmatter: colors, Liquid Glass materials, typography (SF Pro Display/Text + SF Mono for all numerics), spacing, components. ~860 lines; read the frontmatter, don't paraphrase it.
-- `design-walkthrough.html` — single-file Tailwind (CDN) mockup of every screen. Open directly in a browser, or view via raw.githack: https://raw.githack.com/quyctd/saam-app/main/design-walkthrough.html
+- `DESIGN.md` — design tokens for the **Hà Nội cũ** visual language (Vietnamese vernacular print). YAML-in-Markdown frontmatter: lacquer surfaces (cinnabar/ochre/jade), cream ink, gold-leaf accent, Noto Serif Display + Cormorant Garamond + IBM Plex Serif typography, halftone/grain textures, components. Read the frontmatter, don't paraphrase it.
+- `themes-preview.html` — single-file Tailwind (CDN) mockup of the Hà Nội cũ direction across four key screens. This is the canonical visual reference. View via raw.githack: https://raw.githack.com/quyctd/saam-app/main/themes-preview.html
+- `design-walkthrough.html` — older mockup of the prior trading-terminal direction. **Superseded by `themes-preview.html`** but kept for diff reference.
+- `phorm-ios/` — the SwiftUI iOS implementation.
 - `README.md` — short pointer to the above.
-
-There is no Swift code, no `package.json`, no build/lint/test pipeline in this repo. Don't fabricate one.
 
 ## Working in this repo
 
-- Editing `design-walkthrough.html`: it's standalone — no build step. Open the file in a browser to preview changes. Tailwind is loaded from `cdn.jsdelivr.net/npm/@tailwindcss/browser@4`.
+- Editing `themes-preview.html`: it's standalone — no build step. Open the file in a browser to preview changes. Tailwind is loaded from `cdn.jsdelivr.net/npm/@tailwindcss/browser@4`. Google Fonts (Noto Serif Display, Cormorant Garamond, IBM Plex Serif, Spectral) load via CDN.
 - Editing `PLAN.md` / `PRODUCT.md` / `DESIGN.md`: prose/spec changes only. The 14 numbered UX decisions in PLAN.md, the 5 design principles + anti-references in PRODUCT.md, and the token frontmatter in DESIGN.md are intentional commitments — don't soften, expand, or "improve" them without explicit ask. Same for the "Out of scope (MVP)" list at the bottom of PLAN.md.
+- Editing `phorm-ios/`: SwiftUI codebase. Theme tokens (colors, fonts) should pull from a single source of truth that mirrors DESIGN.md's YAML frontmatter — don't scatter hex literals across views.
 - `.expect/` is gitignored except for `.gitignore` itself — it's scratch for the `mcp__expect__*` browser tools and shouldn't be checked in.
 
 ## Non-negotiable product principles (from PLAN.md)
@@ -44,15 +45,16 @@ When discussing implementation (even though the code is elsewhere), assume:
 
 - **User is the host at the table** — one Vietnamese-speaking adult holding the phone between rounds in a low-light social setting, attention split. Optimize for the scribe, not the strongest player.
 - **Confident, fast, deliberate.** Voice is terse Vietnamese with no marketing fluff and no game-show energy. Warnings are matter-of-fact ("Tổng: −3 ⚠"), never apologetic or alarming.
-- **Reference register: trading terminals + Apple data-dense apps (Stocks, Fitness, Health) + pro tools (Linear, Raycast, Things 3).** Numbers carry the personality; chrome stays restrained.
-- **Anti-references — reject on sight:** SaaS-dashboard sameness (Linear/Stripe/Notion pastel-gradient look), Apple Notes / Numbers blandness, cartoony game-tracker energy (confetti, mascots, "🎉 You won!"), gambling/casino chrome (felt green, playing cards, slot-machine red). The 🥇🥈🥉💀 on the leaderboard is the only decoration the app earns.
-- **Score up/down must pair color with a non-color cue** (sign, arrow, weight). Color-blind parsing of the leaderboard is a real requirement, not a nice-to-have.
-- **WCAG AA across both themes.** Yellow primary on its surface and green/red score text on every background it appears on must clear contrast. Dynamic Type scales Vietnamese body copy; SF Mono numerics stay fixed-size for column alignment — that trade-off is deliberate.
+- **Reference register: Vietnamese vernacular print** — Diêm Thống Nhất matchbox labels, vỏ chai Bia Hà Nội, lacquerware seals, áo dài silk patterns — read through a contemporary designer's eye, not pastiche. The app should feel like a lacquered scorebook a friend group keeps.
+- **Anti-references — reject on sight:** SaaS-dashboard sameness, Notes-app blandness, **trading-terminal nihilism** (Bloomberg-on-black, Binance-yellow, SF Mono LED — the category reflex; reject it), cartoony game-tracker energy (confetti, mascots, "🎉 You won!"), gambling/casino chrome, nostalgia kitsch (literal aged-paper textures). The winner's **ấn vàng** (gold seal) and last-place **tem chéo** (×) are the only decoration the app earns.
+- **Score up/down must pair color with a non-color cue** — mint (+) up, ochre (−) down, always with explicit sign prefix. Color-blind parsing is a hard requirement, not a nice-to-have.
+- **WCAG AA, measured per surface.** Cinnabar lacquer is the contrast-critical layer; tokens declare their ratio explicitly. Cream on cinnabar 6.96:1, gold-bright on cinnabar 5.10:1 (small labels), gold on cinnabar 4.27:1 (display ≥18px only).
 
 ## Design system anchors (from DESIGN.md)
 
-- Single brand color: saturated yellow `#fcd535` carries every primary action. Don't introduce a second accent.
-- Score semantics: green `#0ecb81` = up, red `#f6465d` = down — **as text color, never as card fill.**
-- Surfaces use Liquid Glass materials (nav bars, sheets, in-app keypad). Four variants defined in DESIGN.md `materials:` — use those, don't invent new blurs.
-- All numeric values (round scores, totals, rankings) use SF Mono so digits stay column-aligned.
-- App follows system appearance — light and dark are equal peers, not one as primary.
+- Single accent color: **gold-leaf** `#d9b25a` (large) + `#e8c570` (small labels). Carries every primary CTA, focus border, and the winner's seal. Don't introduce a second accent.
+- Score semantics: **mint** `#b6e0c2` = up (5.81:1), **ochre-warm** `#e6a665` = down (4.02:1, large only). Text color, never card fill. Always paired with `+`/`−` sign.
+- **No Liquid Glass.** Surfaces are lacquer (cinnabar `#8c2a22` default + ochre/jade/oxblood variants), overlaid with halftone dots + paper grain. The texture system replaces glassmorphism entirely.
+- **No SF Mono.** Forbidden — its presence is a category-reflex failure. Numerals use **Noto Serif Display** (hero/display ≥20px) and **IBM Plex Serif** with `tabular-nums` (body/small). Italic Cormorant Garamond for player names and auto-fill computed values.
+- App does NOT have binary light/dark equal peers. One drenched lacquer surface per session; iOS appearance subtly deepens/lightens, but chromatic identity persists.
+- Canonical visual reference is `themes-preview.html`. When the doc disagrees with the preview, the preview wins; update the doc.

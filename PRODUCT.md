@@ -18,16 +18,18 @@ Success looks like: app cold-launches into an active session in 0 taps. A round 
 
 ## Brand Personality
 
-Confident, fast, deliberate. Voice: terse, Vietnamese, no marketing fluff and no game-show energy. The interface feels like a pro tool that respects the user's time. Trust comes from numeric density and clarity, not from reassurance copy. Borrows the visual confidence of trading terminals and Apple's own data-dense apps (Stocks, Fitness, Health) and the precision of pro productivity tools (Linear, Raycast, Things 3). Tone in moments of warning is matter-of-fact, never apologetic and never alarming: "Tổng: −3 ⚠" tells the host something is off; it doesn't scold them.
+Confident, fast, deliberate. Voice: terse, Vietnamese, no marketing fluff and no game-show energy. The interface feels like a pro tool that respects the user's time. Trust comes from numeric density, typographic confidence, and clarity — not from reassurance copy. Visual register borrows from **Vietnamese vernacular print**: Diêm Thống Nhất matchbox labels, vỏ chai Bia Hà Nội, 1980s lottery tickets, old TTXVN newsprint, áo dài silk patterns — read through a contemporary designer's eye, not as pastiche. The leaderboard reads like a lacquered scorebook a friend group keeps; numbers are inked with character, not LED. Tone in moments of warning is matter-of-fact, never apologetic and never alarming: "Tổng: −3 ⚠" tells the host something is off; it doesn't scold them.
 
 ## Anti-references
 
 What this should NOT look or feel like:
 
-- **Generic SaaS dashboards.** No Linear/Stripe/Notion sameness: no pastel gradients, no cream backgrounds, no Inter-everywhere, no identical card grids, no "Welcome back, here are your metrics" hero blocks.
+- **Generic SaaS dashboards.** No Linear/Stripe/Notion sameness: no pastel gradients, no Inter-everywhere, no identical card grids, no "Welcome back, here are your metrics" hero blocks.
 - **Generic notes or spreadsheet apps.** No Apple Notes mimicry, no Numbers-style default tables, no soft-gray system blandness, no "this is just a list with a + button."
-- **Casual game-tracker apps with cartoony energy.** No confetti, no mascot illustrations, no bright pastel celebration screens, no "🎉 You won!" toasts. The leaderboard's 🥇🥈🥉💀 is the only decoration the app earns; everything else stays restrained.
+- **Trading-terminal nihilism.** No Bloomberg-orange-on-black, no Binance-yellow-on-charcoal, no SF Mono LED readouts. The category reflex for a "data-dense card-game tracker" is *exactly* this — reject it on sight.
+- **Casual game-tracker apps with cartoony energy.** No confetti, no mascot illustrations, no bright pastel celebration screens, no "🎉 You won!" toasts. The winner's **ấn vàng** (gold seal) and the last-place's tem chéo (cross stamp) are the only decoration the app earns; everything else stays restrained.
 - **Gambling / casino chrome.** No felt-green tables, no playing-card iconography in UI, no slot-machine red, no trophy textures. The game happens off-screen; the app stays neutral.
+- **Nostalgia kitsch.** Vernacular references are filtered through modern design discipline. No literal matchbox-cover photo backgrounds, no fake-aged paper textures applied without restraint, no "retro" framing chrome.
 
 ## Design Principles
 
@@ -37,16 +39,18 @@ What this should NOT look or feel like:
 
 3. **Open in 0 taps, log a round in N−1.** Speed is positioning, not optimization. App launch with an active session goes straight to the leaderboard. Round entry requires only N−1 numeric inputs; the last cell auto-fills. Anything that adds a tap to either path must justify itself against this principle.
 
-4. **Native iOS, pro-tools register.** Borrow Apple's own data-dense confidence (Stocks, Fitness, Health) and trading-terminal density. Use Liquid Glass only where Apple uses it. Avoid both poles of failure: SaaS-dashboard sameness above, Notes-app blandness below. The app should feel like it belongs on iOS without disappearing into the system.
+4. **Native iOS, Vietnamese vernacular register.** Built in SwiftUI and respects iOS interaction grammar (sheets, ShareLink, system gestures), but the visual identity is rooted in Vietnamese print history — lacquer surfaces, gold-leaf seals, inked serif numerals — not Apple's default chrome. The app should feel like it was made for *this* table, not localized from English. Avoid both poles of failure: SaaS-dashboard sameness above, terminal-dark category reflex below.
 
-5. **Numbers carry the personality.** Chrome stays restrained: one yellow accent, one type family for copy, SF Mono for every digit so columns stay aligned as values tick. Score up/down is communicated by color and a non-color cue together. Any decoration that doesn't make a number more readable, or a tap more confident, is removed.
+5. **Inked numbers carry the personality.** Each session lives on a single drenched lacquer surface (cinnabar, ochre, jade, or oxblood). Numerals are display serifs with character (Noto Serif Display, Cormorant Garamond, IBM Plex Serif tabular figures) — they have weight, italics, ink — they are *not* monospaced LED. Score up/down pairs color (mint up, ochre down) with an explicit `+`/`−` sign. The winner earns a gold seal (ấn vàng) and the last place gets a tem chéo (×). Beyond those two stamps, no decoration earns its place.
 
 ## Accessibility & Inclusion
 
-- **WCAG AA contrast across both themes.** Light and dark are equal peers. All text, icons, and interactive elements clear 4.5:1 for normal text and 3:1 for large text and UI controls. Includes the yellow primary button against its surface and the green/red score text against any background it appears on.
+- **WCAG AA contrast, measured per token.** The lacquer-color surface system is the contrast-critical layer; all small-text + UI combinations are measured against the active surface, not generic dark/light pairs. On cinnabar (`#8c2a22`): cream body text 6.96:1 ✓, cream-dim labels 4.94:1 ✓, gold-bright small labels 5.10:1 ✓, mint positive scores 5.81:1 ✓. The gold seals (ấn vàng) use gold-fill + cinnabar-deep ink at 6.76:1 — the contrast is the design, not an afterthought.
 
-- **Score up/down never relies on color alone.** Pair the green/red text color with a sign (+/−), arrow, or weight cue so red-green color-blind players parse the leaderboard correctly. Roughly 8% of male users are affected; for a table-of-friends app this is a real population.
+- **System appearance shifts surface depth, not chromatic identity.** The app does not have binary light/dark equal peers. Instead, every session is *one* lacquer surface; the user's iOS appearance preference subtly deepens or lightens that surface, but cinnabar stays cinnabar, ochre stays ochre. This is a deliberate trade-off: chromatic identity beats theme parity for a host-at-the-table app where every glance must be instantly recognizable.
 
-- **Dynamic Type for Vietnamese body copy.** Button labels, headers, empty-state copy, and confirmation strings scale with the user's iOS text-size setting. SF Mono numerics may remain fixed-size to preserve column alignment on the leaderboard and round cards; this trade-off is deliberate.
+- **Score up/down never relies on color alone.** Pair the mint/ochre text color with an explicit `+`/`−` sign so red-green color-blind players parse the leaderboard correctly. Roughly 8% of male users are affected; for a table-of-friends app this is a real population. The winner/last-place seals add a second non-color cue (ấn vàng vs. tem chéo).
 
-- **Vietnamese-only for MVP.** No i18n scaffolding, no English fallbacks, no language picker. All UI copy is Vietnamese.
+- **Dynamic Type for Vietnamese body copy.** Button labels, headers, empty-state copy, and confirmation strings scale with the user's iOS text-size setting. IBM Plex Serif numerics use tabular figures (`font-variant-numeric: tabular-nums`) and may opt out of Dynamic Type at the leaderboard / round-entry tier to preserve column alignment — this trade-off is deliberate.
+
+- **Vietnamese-only for MVP.** No i18n scaffolding, no English fallbacks, no language picker. All UI copy is Vietnamese. Display fonts are picked specifically for full Vietnamese diacritic coverage (Noto Serif Display, Cormorant Garamond — verified for Đ, Ô, Ư, ỷ, ặ, etc.).

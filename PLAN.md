@@ -92,7 +92,8 @@ Vấn đề muốn giải: tránh nhẩm tổng trong đầu giữa ván, tránh
    - Swipe-down hoặc ✕ để hủy
 
 5. **SummaryView** (modal hoặc push khi kết thúc):
-   - Ranking 🥇🥈🥉💀, tổng từng người, số ván, ngày
+   - Ranking với **ấn vàng** (gold seal) cho vô địch và **tem chéo** (×) cho người cuối — visual identity từ DESIGN.md, không dùng medal emoji.
+   - Tổng từng người, số ván, ngày
    - Open lại từ History anytime
    - `ShareLink` cuối màn
 
