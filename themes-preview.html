@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phorm — Hai hướng thiết kế</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Noto+Serif+Display:wght@400;500;600;700;800;900&family=IBM+Plex+Serif:wght@300;400;500;600;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ---------- Page chrome ---------- */
+    :root {
+      --page: #1a1612;
+      --page-ink: #e8dcc4;
+      --page-muted: #8a7e68;
+      --rule: rgba(232, 220, 196, 0.08);
+    }
+    html, body {
+      background: var(--page);
+      color: var(--page-ink);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* iPhone frame */
+    .phone {
+      width: 286px;
+      height: 600px;
+      border-radius: 44px;
+      padding: 10px;
+      background: linear-gradient(180deg, #2a2520 0%, #1d1815 100%);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.06) inset,
+        0 -1px 0 rgba(0,0,0,0.5) inset,
+        0 40px 60px -20px rgba(0,0,0,0.55),
+        0 12px 24px -8px rgba(0,0,0,0.4);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88px;
+      height: 22px;
+      border-radius: 999px;
+      background: #050403;
+      z-index: 50;
+      pointer-events: none;
+    }
+    .phone-label {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--page-muted);
+    }
+
+    .row-phones {
+      display: flex;
+      gap: 28px;
+      overflow-x: auto;
+      padding: 24px 4px 8px;
+      scroll-snap-type: x mandatory;
+    }
+    .row-phones > * { scroll-snap-align: start; }
+    @media (min-width: 1320px) {
+      .row-phones { overflow-x: visible; justify-content: center; }
+    }
+
+    /* ============================================================
+       THEME 1 — HÀ NỘI CŨ (Vietnamese vernacular print)
+       ============================================================ */
+    .hanoi {
+      --surface: #8c2a22;          /* cinnabar lacquer */
+      --surface-deep: #5a1612;
+      --surface-light: #a8362d;
+      --cream: #f3e8d2;            /* 6.96:1 on cinnabar (AA Normal+) */
+      --cream-dim: #d6c4a0;        /* 4.94:1 on cinnabar (AA Normal) */
+      --cream-faint: rgba(243, 232, 210, 0.34); /* UI hairline ~3:1 */
+      --gold: #d9b25a;             /* 4.27:1 — AA Large only (display text) */
+      --gold-bright: #e8c570;      /* 5.10:1 — AA Normal (small labels) */
+      --gold-dim: #a88438;
+      --jade: #6ea088;
+      --mint: #b6e0c2;             /* 5.81:1 — positive scores */
+      --ochre: #e6a665;            /* 4.62:1 — negative scores, AA Normal */
+      --ink-stamp: #f3e8d2;
+
+      font-family: 'Spectral', Georgia, serif;
+      color: var(--cream);
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,220,180,0.10), transparent 55%),
+        radial-gradient(circle at 70% 80%, rgba(0,0,0,0.18), transparent 60%),
+        var(--surface);
+      position: relative;
+    }
+    .hanoi::before {
+      /* halftone dots */
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(rgba(243, 232, 210, 0.06) 1px, transparent 1px);
+      background-size: 4px 4px;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hanoi::after {
+      /* paper grain */
+      content: "";
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.92  0 0 0 0 0.85  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      mix-blend-mode: overlay;
+      opacity: 0.55;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .hanoi > * { position: relative; z-index: 3; }
+
+    .h-display { font-family: 'Noto Serif Display', 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: -0.01em; }
+    .h-name { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-style: italic; letter-spacing: -0.005em; }
+    .h-num { font-family: 'IBM Plex Serif', 'Spectral', serif; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .h-num-display { font-family: 'Noto Serif Display', serif; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .h-label { font-family: 'Spectral', serif; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; font-size: 9px; color: var(--cream-dim); }
+    .h-hairline { background: var(--cream); height: 1px; opacity: 0.18; }
+    .h-thick-line { background: var(--cream); height: 2px; opacity: 0.32; }
+
+    /* Seal stamp (rank badge) */
+    .h-seal {
+      width: 32px; height: 32px;
+      border: 1.5px solid var(--gold);
+      border-radius: 4px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      font-family: 'Noto Serif Display', serif; font-weight: 800;
+      transform: rotate(-3deg);
+      background: rgba(217, 178, 90, 0.08);
+    }
+    .h-seal--win {
+      background: var(--gold);
+      color: var(--surface-deep);
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(217, 178, 90, 0.32);
+    }
+    /* gold seal char gets cinnabar-deep ink (6.76:1) */
+    .h-seal--last {
+      border-color: var(--cream-dim);
+      color: var(--cream-dim);
+      transform: rotate(2deg);
+    }
+
+    /* Round entry stamp animation */
+    @keyframes h-stamp {
+      0% { transform: scale(0.7) rotate(-8deg); opacity: 0; }
+      40% { transform: scale(1.08) rotate(-3deg); opacity: 1; }
+      70% { transform: scale(1) rotate(-3deg); }
+      100% { transform: scale(1) rotate(-3deg); opacity: 1; }
+    }
+    .h-stamp-in { animation: h-stamp 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+    .h-cell {
+      border: 1px solid var(--cream-faint);
+      background: rgba(0,0,0,0.12);
+      border-radius: 2px;
+    }
+    .h-cell--active {
+      border-color: var(--gold);
+      background: rgba(217, 178, 90, 0.14);
+      box-shadow: inset 0 0 0 1px var(--gold);
+    }
+    .h-cell--sealed {
+      border-color: var(--gold-dim);
+      background: rgba(217, 178, 90, 0.06);
+      color: var(--gold);
+    }
+    .h-btn-primary {
+      background: var(--gold);
+      color: var(--surface-deep);
+      font-family: 'Spectral', serif;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .h-tally {
+      letter-spacing: 0.05em;
+      color: var(--cream-dim);
+      font-family: 'IBM Plex Serif', serif;
+    }
+    .h-pos { color: var(--mint); }      /* 5.81:1 on cinnabar */
+    .h-neg { color: var(--ochre); }     /* 4.02:1 — used only at ≥18px display weight */
+    .h-pip {
+      width: 6px; height: 6px; border-radius: 999px;
+      background: var(--cream);
+      opacity: 0.5;
+    }
+
+    /* History card on cinnabar — slight printed-card feel */
+    .h-card {
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--cream-faint);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .h-card::before {
+      content: "";
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--gold);
+    }
+
+    /* ============================================================
+       THEME 2 — SỔ TAY (the inked notebook)
+       ============================================================ */
+    .notebook {
+      --paper: #f3ead7;
+      --paper-deep: #ebe0c8;
+      --paper-shadow: rgba(120, 90, 50, 0.10);
+      --ink: #1b2a44;
+      --ink-soft: #3d4e6c;
+      --ink-faint: #8c93a3;
+      --rule-line: #b8c2cf;
+      --margin-line: #c64a3a;
+      --ink-green: #2d5a3d;
+      --ink-red: #a83824;
+      --highlight: rgba(245, 200, 80, 0.42);
+
+      font-family: 'Spectral', Georgia, serif;
+      color: var(--ink);
+      background: var(--paper);
+      position: relative;
+    }
+    .notebook::before {
+      /* paper grain */
+      content: "";
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.30  0 0 0 0 0.22  0 0 0 0 0.10  0 0 0 0.12 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      mix-blend-mode: multiply;
+      opacity: 0.65;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .notebook::after {
+      /* very subtle vignette + warm wash */
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(245, 210, 140, 0.18), transparent 60%),
+        radial-gradient(ellipse at 50% 100%, rgba(80, 50, 20, 0.12), transparent 60%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .notebook > * { position: relative; z-index: 2; }
+
+    .n-margin {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 32px;
+      width: 1px;
+      background: var(--margin-line);
+      opacity: 0.65;
+      z-index: 1;
+    }
+    .n-ruled {
+      background-image: linear-gradient(transparent calc(28px - 1px), var(--rule-line) calc(28px - 1px), var(--rule-line) 28px, transparent 28px);
+      background-size: 100% 28px;
+      background-repeat: repeat-y;
+    }
+
+    .n-display { font-family: 'Cormorant Garamond', 'Noto Serif Display', serif; font-weight: 700; letter-spacing: -0.012em; }
+    .n-name { font-family: 'Cormorant Garamond', serif; font-weight: 600; letter-spacing: -0.005em; }
+    .n-num { font-family: 'IBM Plex Serif', 'Spectral', serif; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .n-num-display { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .n-num-script { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-style: italic; font-variant-numeric: tabular-nums; }
+    .n-label { font-family: 'Spectral', serif; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; font-size: 9px; color: var(--ink-faint); }
+
+    .n-pos { color: var(--ink-green); }
+    .n-neg { color: var(--ink-red); }
+
+    .n-highlight {
+      background: var(--highlight);
+      box-shadow: -2px 0 0 var(--highlight), 2px 0 0 var(--highlight);
+      padding: 0 2px;
+    }
+
+    .n-btn-primary {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .n-cell {
+      border-bottom: 1.5px solid var(--ink);
+    }
+    .n-cell--active {
+      border-bottom-color: var(--margin-line);
+      box-shadow: inset 0 -3px 0 -1px var(--highlight);
+    }
+    .n-cell--computed {
+      border-bottom-style: dashed;
+      color: var(--ink-soft);
+    }
+
+    /* Hand-drawn check */
+    .n-check {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 1.5px solid var(--ink);
+      border-radius: 3px;
+      transform: rotate(-2deg);
+      position: relative;
+    }
+    .n-check::after {
+      content: "✓";
+      position: absolute;
+      left: 1px; top: -7px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink-green);
+      transform: rotate(-6deg);
+    }
+
+    /* Page binding shadow on edges */
+    .n-page-bind {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 0;
+      width: 14px;
+      background: linear-gradient(90deg, var(--paper-shadow), transparent);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Tally / rank seal */
+    .n-rank-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-style: italic;
+      font-size: 32px;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .n-rank-num--last { color: var(--ink-faint); }
+    .n-rank-num--win { color: var(--margin-line); }
+
+    @keyframes n-ink-in {
+      0% { clip-path: inset(0 100% 0 0); opacity: 0.3; }
+      100% { clip-path: inset(0 0 0 0); opacity: 1; }
+    }
+    .n-ink-in { animation: n-ink-in 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+    @keyframes float-in {
+      0% { transform: translateY(8px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .float-in { animation: float-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    /* ---------- Static helpers shared ---------- */
+    .ml-mono { font-feature-settings: "tnum"; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ============================================================
+       INTRO
+       ============================================================ -->
+  <header class="max-w-5xl mx-auto px-6 pt-16 pb-10">
+    <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Phorm — hai hướng thiết kế</p>
+    <h1 style="font-family:'Noto Serif Display',serif; font-weight:800;" class="text-5xl md:text-6xl mt-4 leading-[1.02]">
+      Không phải <span class="italic" style="color:#d9b25a;">terminal đen</span>.<br/>
+      Không phải <span class="italic" style="color:#f5c850;">SaaS xám</span>.
+    </h1>
+    <p class="mt-6 max-w-2xl text-base leading-relaxed text-amber-50/70" style="font-family:'Spectral',serif;">
+      Cùng một dữ liệu, cùng bốn màn hình (bảng xếp hạng, nhập vòng, kết thúc, lịch sử) — render bằng hai gu hoàn toàn khác. Mục tiêu là tìm cái nhìn riêng cho app, không phải bản thứ N của một game-tracker.
+    </p>
+    <div class="mt-8 flex gap-3 text-xs uppercase tracking-[0.18em] text-amber-50/40">
+      <span>Quý <span class="opacity-50">·</span></span>
+      <span>Nam <span class="opacity-50">·</span></span>
+      <span>Linh <span class="opacity-50">·</span></span>
+      <span>Hoàng</span>
+      <span class="opacity-60 ml-2">— 6 vòng đã chơi</span>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       THEME 1 — HÀ NỘI CŨ
+       ============================================================ -->
+  <section class="max-w-[1400px] mx-auto px-6 pt-10 pb-6">
+    <div class="flex items-end justify-between border-b border-amber-50/10 pb-6">
+      <div>
+        <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Hướng 01</p>
+        <h2 style="font-family:'Noto Serif Display',serif; font-weight:800;" class="text-4xl md:text-5xl mt-2 italic" >Hà Nội cũ</h2>
+        <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60" style="font-family:'Spectral',serif;">
+          Nhãn bao diêm Thống Nhất, vỏ chai Bia Hà Nội, lá thư đánh máy ngày cũ — đọc lại bằng con mắt thiết kế đương đại. Mỗi session là một <em>màu lacquer</em> riêng (son, ngà, ngọc, hoàng thổ). Số liệu in nét, dấu son đóng lên thứ hạng.
+        </p>
+      </div>
+      <div class="hidden md:flex gap-2 text-[10px] uppercase tracking-[0.18em] text-amber-50/40">
+        <span>Cinnabar</span><span class="opacity-40">·</span>
+        <span>Gold leaf</span><span class="opacity-40">·</span>
+        <span>Cream</span>
+      </div>
+    </div>
+
+    <div class="row-phones">
+
+      <!-- 1A: Hà Nội — Leaderboard -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen hanoi">
+            <div class="px-5 pt-12 pb-4 flex items-center justify-between">
+              <div>
+                <p class="h-label">Phiên đang chơi</p>
+                <p class="h-display text-[20px] leading-tight mt-1">Phỏm tối thứ Sáu</p>
+              </div>
+              <div class="text-right">
+                <p class="h-label">Vòng</p>
+                <p class="h-num text-[20px] leading-none mt-1">06</p>
+              </div>
+            </div>
+
+            <div class="h-hairline mx-5"></div>
+
+            <!-- Player rows -->
+            <div class="px-5 mt-5 space-y-5">
+              <!-- Row: Quý — 1st -->
+              <div class="flex items-center gap-3">
+                <div class="h-seal h-seal--win">壹</div>
+                <div class="flex-1">
+                  <p class="h-name text-[19px] leading-none">Quý</p>
+                  <p class="h-label mt-1">Đang dẫn</p>
+                </div>
+                <div class="text-right">
+                  <p class="h-num-display text-[26px] leading-none h-pos">+7</p>
+                </div>
+              </div>
+              <!-- Row: Nam -->
+              <div class="flex items-center gap-3">
+                <div class="h-seal">贰</div>
+                <div class="flex-1">
+                  <p class="h-name text-[19px] leading-none">Nam</p>
+                  <p class="h-label mt-1">Sát nút</p>
+                </div>
+                <div class="text-right">
+                  <p class="h-num-display text-[26px] leading-none h-neg">−1</p>
+                </div>
+              </div>
+              <!-- Row: Linh -->
+              <div class="flex items-center gap-3">
+                <div class="h-seal">叁</div>
+                <div class="flex-1">
+                  <p class="h-name text-[19px] leading-none">Linh</p>
+                  <p class="h-label mt-1">—</p>
+                </div>
+                <div class="text-right">
+                  <p class="h-num-display text-[26px] leading-none h-neg">−3</p>
+                </div>
+              </div>
+              <!-- Row: Hoàng — last -->
+              <div class="flex items-center gap-3">
+                <div class="h-seal h-seal--last">肆</div>
+                <div class="flex-1">
+                  <p class="h-name text-[19px] leading-none">Hoàng</p>
+                  <p class="h-label mt-1">Đi sau</p>
+                </div>
+                <div class="text-right">
+                  <p class="h-num-display text-[26px] leading-none h-neg">−3</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Round history strip -->
+            <div class="mx-5 mt-7 pt-4 border-t border-amber-50/15">
+              <p class="h-label">Sáu vòng vừa qua</p>
+              <div class="mt-2 grid grid-cols-6 gap-2">
+                <div class="h-card !border-0 !bg-black/15 px-1 py-1 text-center"><p class="h-num text-[11px]">−8</p></div>
+                <div class="h-card !border-0 !bg-black/15 px-1 py-1 text-center"><p class="h-num text-[11px] h-pos">+12</p></div>
+                <div class="h-card !border-0 !bg-black/15 px-1 py-1 text-center"><p class="h-num text-[11px]">−6</p></div>
+                <div class="h-card !border-0 !bg-black/15 px-1 py-1 text-center"><p class="h-num text-[11px] h-pos">+4</p></div>
+                <div class="h-card !border-0 !bg-black/15 px-1 py-1 text-center"><p class="h-num text-[11px]">−2</p></div>
+                <div class="h-card !border-0 !bg-black/15 px-1 py-1 text-center"><p class="h-num text-[11px] h-pos">+7</p></div>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="absolute left-5 right-5 bottom-7">
+              <button class="h-btn-primary w-full py-3.5 rounded-[3px] text-[14px] tracking-wider uppercase">
+                Vòng mới
+              </button>
+              <p class="h-label text-center mt-3">Vuốt xuống · xem chi tiết</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Bảng xếp hạng</p>
+      </div>
+
+      <!-- 1B: Hà Nội — Round entry -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen hanoi">
+            <div class="px-5 pt-12 pb-3 flex items-center justify-between">
+              <p class="h-label">Đóng dấu vòng</p>
+              <p class="h-num text-[14px]">07</p>
+            </div>
+
+            <div class="px-5">
+              <h3 class="h-display text-[26px] leading-tight mt-1">
+                <span style="color:#d9b25a">Vòng bảy</span><br/>
+                <span class="text-[18px] opacity-80">điểm ai bao nhiêu?</span>
+              </h3>
+            </div>
+
+            <div class="px-5 mt-6 space-y-3.5">
+              <!-- Quý cell — filled -->
+              <div class="flex items-center justify-between">
+                <p class="h-name text-[18px]">Quý</p>
+                <div class="h-cell px-3 py-2 w-[100px] text-right">
+                  <p class="h-num-display text-[22px] leading-none h-neg">−4</p>
+                </div>
+              </div>
+              <!-- Nam cell — filled -->
+              <div class="flex items-center justify-between">
+                <p class="h-name text-[18px]">Nam</p>
+                <div class="h-cell px-3 py-2 w-[100px] text-right">
+                  <p class="h-num-display text-[22px] leading-none h-pos">+6</p>
+                </div>
+              </div>
+              <!-- Linh cell — active focus -->
+              <div class="flex items-center justify-between">
+                <p class="h-name text-[18px]" style="color:#d9b25a">Linh</p>
+                <div class="h-cell h-cell--active px-3 py-2 w-[100px] text-right">
+                  <p class="h-num-display text-[22px] leading-none" style="color:#d9b25a">+5<span class="inline-block w-[2px] h-[20px] ml-1 align-middle" style="background:#d9b25a; animation: blink 1s steps(1) infinite;"></span></p>
+                </div>
+              </div>
+              <!-- Hoàng cell — sealed (auto-fill) -->
+              <div class="flex items-center justify-between">
+                <p class="h-name text-[18px]" style="color:#d6c4a0;">Hoàng</p>
+                <div class="h-cell h-cell--sealed px-3 py-2 w-[100px] text-right relative">
+                  <p class="h-num-display text-[22px] leading-none">−7</p>
+                  <span class="absolute -top-2 -right-2 h-seal h-stamp-in" style="width:22px;height:22px;font-size:11px;color:var(--surface-deep);background:var(--gold);border-color:var(--gold);">封</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation row -->
+            <div class="mx-5 mt-7 pt-3 border-t border-amber-50/15">
+              <div class="flex items-center justify-between">
+                <p class="h-label">Tổng</p>
+                <p class="h-num text-[15px]" style="color:#b6e0c2;">0 · cân</p>
+              </div>
+            </div>
+
+            <!-- Number pad hint -->
+            <div class="mx-5 mt-4 grid grid-cols-3 gap-2">
+              <div class="h-card !py-2 text-center"><p class="h-num text-[14px]">7</p></div>
+              <div class="h-card !py-2 text-center"><p class="h-num text-[14px]">8</p></div>
+              <div class="h-card !py-2 text-center"><p class="h-num text-[14px]">9</p></div>
+              <div class="h-card !py-2 text-center"><p class="h-num text-[14px]">4</p></div>
+              <div class="h-card !py-2 text-center"><p class="h-num text-[14px]">5</p></div>
+              <div class="h-card !py-2 text-center"><p class="h-num text-[14px]">6</p></div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7">
+              <button class="h-btn-primary w-full py-3.5 rounded-[3px] text-[14px] tracking-wider uppercase">
+                Đóng dấu — lưu vòng
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Nhập vòng · N−1</p>
+      </div>
+
+      <!-- 1C: Hà Nội — End-of-session ranking -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen hanoi" style="background:
+            radial-gradient(circle at 50% 0%, rgba(217, 178, 90, 0.18), transparent 55%),
+            radial-gradient(circle at 50% 100%, rgba(0,0,0,0.28), transparent 60%),
+            #6e1d18;">
+            <div class="px-5 pt-12 pb-3">
+              <p class="h-label" style="color:var(--gold-bright);">Phiên kết thúc</p>
+              <p class="h-display text-[24px] leading-tight mt-1 italic">Phỏm tối thứ Sáu</p>
+              <p class="h-label mt-1">12 vòng · 1g 48p · 25.05</p>
+            </div>
+
+            <div class="h-thick-line mx-5"></div>
+
+            <!-- Champion -->
+            <div class="px-5 mt-6">
+              <div class="flex items-end justify-between">
+                <div>
+                  <p class="h-label" style="color:var(--gold-bright);">Vô địch ván</p>
+                  <p class="h-name text-[32px] leading-none mt-1" style="color:var(--cream);">Quý</p>
+                </div>
+                <div class="text-right">
+                  <p class="h-num-display text-[44px] leading-none" style="color:var(--gold);">+24</p>
+                </div>
+              </div>
+              <div class="mt-3 h-card flex items-center justify-center py-2" style="background:rgba(0,0,0,0.20); border-color: rgba(217, 178, 90, 0.55);">
+                <p class="h-label" style="color:var(--gold-bright);">壹 · ấn vàng</p>
+              </div>
+            </div>
+
+            <!-- Runners -->
+            <div class="px-5 mt-5 space-y-3.5">
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-3">
+                  <span class="h-num text-[14px]" style="color:#d6c4a0;">02</span>
+                  <p class="h-name text-[20px]">Nam</p>
+                </div>
+                <p class="h-num-display text-[22px]">+4</p>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-3">
+                  <span class="h-num text-[14px]" style="color:#d6c4a0;">03</span>
+                  <p class="h-name text-[20px]">Linh</p>
+                </div>
+                <p class="h-num-display text-[22px] h-neg">−9</p>
+              </div>
+              <div class="flex items-baseline justify-between opacity-80">
+                <div class="flex items-baseline gap-3">
+                  <span class="h-num text-[14px]" style="color:#d6c4a0;">04</span>
+                  <p class="h-name text-[20px]">Hoàng</p>
+                </div>
+                <p class="h-num-display text-[22px] h-neg">−19</p>
+              </div>
+            </div>
+
+            <!-- Last place seal -->
+            <div class="mx-5 mt-6 pt-4 border-t border-amber-50/15 flex items-center justify-between">
+              <div>
+                <p class="h-label">Tem cuối bàn</p>
+                <p class="h-name text-[16px] mt-1">Hoàng</p>
+              </div>
+              <div class="h-seal h-seal--last" style="font-size:16px;">×</div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7 flex gap-2">
+              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #d9b25a; color:#d9b25a; font-family:'Spectral',serif; font-weight:600;">
+                Chia sẻ
+              </button>
+              <button class="flex-1 h-btn-primary py-3 rounded-[3px] text-[12px] tracking-wider uppercase">
+                Phiên mới
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Kết thúc · phong ấn</p>
+      </div>
+
+      <!-- 1D: Hà Nội — History list -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen hanoi">
+            <div class="px-5 pt-12 pb-3 flex items-center justify-between">
+              <div>
+                <p class="h-label">Lưu trữ</p>
+                <p class="h-display text-[22px] leading-tight mt-1 italic">Lịch sử phiên</p>
+              </div>
+              <p class="h-num text-[14px]" style="color:#d6c4a0;">37 phiên</p>
+            </div>
+
+            <div class="h-hairline mx-5"></div>
+
+            <div class="px-5 mt-4 space-y-3">
+              <!-- Card 1 -->
+              <div class="h-card px-4 py-3">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="h-label">25.05 · thứ Sáu</p>
+                    <p class="h-name text-[17px] leading-none mt-1">Phỏm tối thứ Sáu</p>
+                    <p class="h-num text-[11px] mt-1.5" style="color:#d6c4a0;">Quý · Nam · Linh · Hoàng</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="h-label">Vô địch</p>
+                    <p class="h-num-display text-[20px] leading-none mt-1" style="color:#d9b25a;">+24</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="h-card px-4 py-3" style="background:rgba(0,0,0,0.10);">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="h-label">18.05 · thứ Sáu</p>
+                    <p class="h-name text-[17px] leading-none mt-1">Sâm Lốc nhà Hoàng</p>
+                    <p class="h-num text-[11px] mt-1.5" style="color:#d6c4a0;">Quý · Hoàng · Mai</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="h-label">Vô địch</p>
+                    <p class="h-num-display text-[20px] leading-none mt-1">+18</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div class="h-card px-4 py-3" style="background:rgba(0,0,0,0.06);">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="h-label">11.05 · thứ Sáu</p>
+                    <p class="h-name text-[17px] leading-none mt-1">Cafe sau giờ làm</p>
+                    <p class="h-num text-[11px] mt-1.5" style="color:#d6c4a0;">Nam · Linh · Trang · Quý</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="h-label">Vô địch</p>
+                    <p class="h-num-display text-[20px] leading-none mt-1">+11</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 4 — dimmer -->
+              <div class="h-card px-4 py-3 opacity-70" style="background:rgba(0,0,0,0.04);">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="h-label">04.05 · thứ Sáu</p>
+                    <p class="h-name text-[17px] leading-none mt-1">Sinh nhật Linh</p>
+                    <p class="h-num text-[11px] mt-1.5" style="color:#d6c4a0;">Linh · Quý · Nam · Mai · Trang</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="h-label">Vô địch</p>
+                    <p class="h-num-display text-[20px] leading-none mt-1">+32</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7">
+              <p class="h-label text-center">Chạm để mở · vuốt trái xoá</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Lịch sử</p>
+      </div>
+
+    </div>
+
+    <!-- Theme rationale row -->
+    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm" style="font-family:'Spectral',serif;">
+      <div>
+        <p class="h-label" style="color:#d9b25a;">Mặt phẳng</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Mỗi phiên được đẫm trong một màu lacquer Việt — son, ngà, ngọc, hoàng thổ. Không có nền xám, không có card xếp lưới. Halftone hạt mịn + thớ giấy giả lập đem lại độ ấm mà màn hình OLED hay đánh mất.
+        </p>
+      </div>
+      <div>
+        <p class="h-label" style="color:#d9b25a;">Chữ</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Noto Serif Display cho tiêu đề, Cormorant Garamond italic cho tên người chơi, IBM Plex Serif cho số. Không một dòng SF Mono — số là chữ có nét, không phải đèn LED.
+        </p>
+      </div>
+      <div>
+        <p class="h-label" style="color:#d9b25a;">Khoảnh khắc</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Ô auto-fill hiện ra như một con dấu đóng xuống (<em>封</em>). Cuối phiên hiện ấn vàng cho người dẫn, tem chéo cho người cuối — không pop-up confetti, không &quot;You won&quot;.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="max-w-5xl mx-auto my-20 px-6">
+    <div class="h-px w-full" style="background:linear-gradient(90deg, transparent, rgba(232,220,196,0.25), transparent);"></div>
+  </div>
+
+  <!-- ============================================================
+       THEME 2 — SỔ TAY
+       ============================================================ -->
+  <section class="max-w-[1400px] mx-auto px-6 pt-2 pb-24">
+    <div class="flex items-end justify-between border-b border-amber-50/10 pb-6">
+      <div>
+        <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Hướng 02</p>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-weight:700;" class="text-4xl md:text-5xl mt-2 italic" >Sổ tay</h2>
+        <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60" style="font-family:'Spectral',serif;">
+          App là một cuốn sổ ghi điểm đẹp mà nhóm bạn cùng giữ. Mặt giấy ngà, dòng kẻ xanh nhạt, lề đỏ son — đúng cuốn vở học sinh, nhưng được in lại với mắt designer. Đêm xuống thì giấy thành mực, mực thành phấn.
+        </p>
+      </div>
+      <div class="hidden md:flex gap-2 text-[10px] uppercase tracking-[0.18em] text-amber-50/40">
+        <span>Cream paper</span><span class="opacity-40">·</span>
+        <span>Ink navy</span><span class="opacity-40">·</span>
+        <span>Margin red</span>
+      </div>
+    </div>
+
+    <div class="row-phones">
+
+      <!-- 2A: Notebook — Leaderboard -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen notebook">
+            <div class="n-margin"></div>
+            <div class="n-page-bind"></div>
+
+            <div class="px-5 pt-12 pb-3 pl-12 flex items-center justify-between">
+              <div>
+                <p class="n-label">Sổ phiên</p>
+                <p class="n-display text-[20px] leading-tight mt-1">Phỏm tối thứ Sáu</p>
+              </div>
+              <div class="text-right">
+                <p class="n-label">Vòng</p>
+                <p class="n-num-display text-[22px] leading-none mt-1">06</p>
+              </div>
+            </div>
+
+            <div class="px-5 pl-12">
+              <div class="h-[1.5px] w-full" style="background: var(--ink); opacity:0.85;"></div>
+              <div class="flex items-baseline justify-between pt-2">
+                <p class="n-label">Người chơi</p>
+                <p class="n-label">Tổng</p>
+              </div>
+            </div>
+
+            <!-- Rows -->
+            <div class="px-5 pl-12 mt-3 space-y-4">
+              <!-- Quý — leading -->
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-2">
+                  <span class="n-rank-num n-rank-num--win" style="font-size:22px;">i.</span>
+                  <p class="n-name text-[22px] leading-none">Quý</p>
+                </div>
+                <p class="n-num-display text-[26px] leading-none n-pos float-in" style="animation-delay:0ms;">
+                  <span class="n-highlight">+7</span>
+                </p>
+              </div>
+              <!-- Nam -->
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-2">
+                  <span class="n-rank-num" style="font-size:22px;">ii.</span>
+                  <p class="n-name text-[22px] leading-none">Nam</p>
+                </div>
+                <p class="n-num-display text-[26px] leading-none n-neg float-in" style="animation-delay:80ms;">−1</p>
+              </div>
+              <!-- Linh -->
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-2">
+                  <span class="n-rank-num" style="font-size:22px;">iii.</span>
+                  <p class="n-name text-[22px] leading-none">Linh</p>
+                </div>
+                <p class="n-num-display text-[26px] leading-none n-neg float-in" style="animation-delay:160ms;">−3</p>
+              </div>
+              <!-- Hoàng -->
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-2">
+                  <span class="n-rank-num n-rank-num--last" style="font-size:22px;">iv.</span>
+                  <p class="n-name text-[22px] leading-none" style="color: var(--ink-soft);">Hoàng</p>
+                </div>
+                <p class="n-num-display text-[26px] leading-none n-neg float-in" style="animation-delay:240ms;">−3</p>
+              </div>
+            </div>
+
+            <!-- Round history -->
+            <div class="px-5 pl-12 mt-7">
+              <p class="n-label">Sáu vòng · ghi tay</p>
+              <div class="mt-2 flex gap-1 items-baseline">
+                <p class="n-num-script text-[16px] n-neg">−8</p>
+                <span style="color:var(--ink-faint)">·</span>
+                <p class="n-num-script text-[16px] n-pos">+12</p>
+                <span style="color:var(--ink-faint)">·</span>
+                <p class="n-num-script text-[16px] n-neg">−6</p>
+                <span style="color:var(--ink-faint)">·</span>
+                <p class="n-num-script text-[16px] n-pos">+4</p>
+                <span style="color:var(--ink-faint)">·</span>
+                <p class="n-num-script text-[16px] n-neg">−2</p>
+                <span style="color:var(--ink-faint)">·</span>
+                <p class="n-num-script text-[16px] n-pos">+7</p>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="absolute left-5 right-5 bottom-7 pl-7">
+              <button class="n-btn-primary w-full py-3.5 rounded-[6px] text-[15px]">
+                Ghi vòng mới
+              </button>
+              <p class="n-label text-center mt-3">Vuốt xuống · trang chi tiết</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Bảng xếp hạng</p>
+      </div>
+
+      <!-- 2B: Notebook — Round entry -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen notebook">
+            <div class="n-margin"></div>
+            <div class="n-page-bind"></div>
+
+            <div class="px-5 pt-12 pl-12 pb-2 flex items-center justify-between">
+              <p class="n-label">Trang mới</p>
+              <p class="n-num text-[13px]" style="color: var(--ink-soft);">07</p>
+            </div>
+
+            <div class="px-5 pl-12">
+              <h3 class="n-display text-[26px] leading-tight italic">
+                Vòng bảy<br/>
+                <span class="text-[16px] not-italic" style="color: var(--ink-soft); font-family:'Spectral',serif; font-weight:400;">ai bao nhiêu?</span>
+              </h3>
+            </div>
+
+            <!-- Entry rows -->
+            <div class="px-5 pl-12 mt-6 space-y-5">
+              <!-- Quý — filled -->
+              <div class="flex items-end justify-between">
+                <p class="n-name text-[20px]">Quý</p>
+                <div class="n-cell w-[110px] text-right pb-1">
+                  <p class="n-num-display text-[24px] n-neg leading-none n-ink-in">−4</p>
+                </div>
+              </div>
+              <!-- Nam — filled -->
+              <div class="flex items-end justify-between">
+                <p class="n-name text-[20px]">Nam</p>
+                <div class="n-cell w-[110px] text-right pb-1">
+                  <p class="n-num-display text-[24px] n-pos leading-none n-ink-in" style="animation-delay:120ms;">+6</p>
+                </div>
+              </div>
+              <!-- Linh — active focus -->
+              <div class="flex items-end justify-between">
+                <p class="n-name text-[20px]" style="color: var(--margin-line);">Linh</p>
+                <div class="n-cell n-cell--active w-[110px] text-right pb-1 relative">
+                  <p class="n-num-display text-[24px] leading-none" style="color: var(--ink);">
+                    +5<span class="inline-block w-[2px] h-[18px] ml-0.5 align-middle" style="background:var(--ink); animation: blink 1s steps(1) infinite;"></span>
+                  </p>
+                </div>
+              </div>
+              <!-- Hoàng — computed -->
+              <div class="flex items-end justify-between">
+                <p class="n-name text-[20px]" style="color: var(--ink-faint);">Hoàng</p>
+                <div class="n-cell n-cell--computed w-[110px] text-right pb-1 relative">
+                  <p class="n-num-display text-[24px] leading-none n-num-script" style="color: var(--ink-soft);">−7</p>
+                  <span class="absolute -right-1 -top-3 text-[10px] italic" style="color: var(--ink-soft); font-family:'Cormorant Garamond',serif;">(tính)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation -->
+            <div class="mx-5 ml-12 mt-7 pt-3 border-t" style="border-color: var(--ink); opacity: 0.85;">
+              <div class="flex items-center justify-between">
+                <p class="n-label">Tổng tay</p>
+                <div class="flex items-center gap-2">
+                  <span class="n-check"></span>
+                  <p class="n-num text-[14px] n-pos">= 0 · cân</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Number pad -->
+            <div class="mx-5 ml-12 mt-4 grid grid-cols-3 gap-1.5">
+              <div class="text-center py-2 border" style="border-color: var(--ink); border-radius: 3px;"><p class="n-num text-[14px]">7</p></div>
+              <div class="text-center py-2 border" style="border-color: var(--ink); border-radius: 3px;"><p class="n-num text-[14px]">8</p></div>
+              <div class="text-center py-2 border" style="border-color: var(--ink); border-radius: 3px;"><p class="n-num text-[14px]">9</p></div>
+              <div class="text-center py-2 border" style="border-color: var(--ink); border-radius: 3px;"><p class="n-num text-[14px]">4</p></div>
+              <div class="text-center py-2 border" style="border-color: var(--ink); border-radius: 3px;"><p class="n-num text-[14px]">5</p></div>
+              <div class="text-center py-2 border" style="border-color: var(--ink); border-radius: 3px;"><p class="n-num text-[14px]">6</p></div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7 pl-7">
+              <button class="n-btn-primary w-full py-3.5 rounded-[6px] text-[15px]">
+                Lật trang — lưu vòng
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Nhập vòng · N−1</p>
+      </div>
+
+      <!-- 2C: Notebook — End of session -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen notebook" style="background: var(--paper-deep);">
+            <div class="n-margin"></div>
+            <div class="n-page-bind"></div>
+
+            <div class="px-5 pt-12 pb-3 pl-12">
+              <p class="n-label">Trang cuối</p>
+              <p class="n-display text-[22px] italic leading-tight mt-1">Phỏm tối thứ Sáu</p>
+              <p class="n-label mt-1">12 vòng · 1g 48p · 25 tháng 5</p>
+            </div>
+
+            <div class="px-5 pl-12 mt-3">
+              <div class="h-[2px] w-full" style="background: var(--ink); opacity: 0.85;"></div>
+            </div>
+
+            <!-- Champion -->
+            <div class="px-5 pl-12 mt-5">
+              <p class="n-label" style="color: var(--margin-line);">Vô địch</p>
+              <div class="flex items-end justify-between mt-1">
+                <p class="n-display text-[40px] leading-none italic">Quý</p>
+                <p class="n-num-display text-[48px] leading-none" style="color: var(--margin-line);">+24</p>
+              </div>
+              <div class="mt-2 flex items-center gap-2">
+                <span class="n-check"></span>
+                <p class="n-label">Đã ghi vào sổ</p>
+              </div>
+            </div>
+
+            <!-- Standings -->
+            <div class="px-5 pl-12 mt-6 space-y-3">
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-2">
+                  <span class="n-rank-num" style="font-size:18px;">ii.</span>
+                  <p class="n-name text-[20px]">Nam</p>
+                </div>
+                <p class="n-num-display text-[22px] n-pos">+4</p>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-2">
+                  <span class="n-rank-num" style="font-size:18px;">iii.</span>
+                  <p class="n-name text-[20px]">Linh</p>
+                </div>
+                <p class="n-num-display text-[22px] n-neg">−9</p>
+              </div>
+              <div class="flex items-baseline justify-between opacity-80">
+                <div class="flex items-baseline gap-2">
+                  <span class="n-rank-num n-rank-num--last" style="font-size:18px;">iv.</span>
+                  <p class="n-name text-[20px]" style="color: var(--ink-soft);">Hoàng</p>
+                </div>
+                <p class="n-num-display text-[22px] n-neg">−19</p>
+              </div>
+            </div>
+
+            <!-- Footer note -->
+            <div class="mx-5 ml-12 mt-6 pt-4 border-t" style="border-color: var(--rule-line);">
+              <p class="n-name text-[14px] italic" style="color: var(--ink-soft);">
+                "Hoàng nợ Quý 19, bù chai bia."
+              </p>
+              <p class="n-label mt-1.5" style="color: var(--ink-faint);">— ghi chú phiên</p>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7 pl-7 flex gap-2">
+              <button class="flex-1 py-3 rounded-[6px] text-[13px]" style="border:1.5px solid var(--ink); color:var(--ink); font-family:'Cormorant Garamond',serif; font-weight:600;">
+                Chia sẻ
+              </button>
+              <button class="flex-1 n-btn-primary py-3 rounded-[6px] text-[13px]">
+                Phiên mới
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Kết thúc · đóng sổ</p>
+      </div>
+
+      <!-- 2D: Notebook — History -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen notebook">
+            <div class="n-margin"></div>
+            <div class="n-page-bind"></div>
+
+            <div class="px-5 pt-12 pb-3 pl-12 flex items-center justify-between">
+              <div>
+                <p class="n-label">Mục lục</p>
+                <p class="n-display text-[22px] italic leading-tight mt-1">Lịch sử phiên</p>
+              </div>
+              <p class="n-num text-[14px]" style="color: var(--ink-soft);">37</p>
+            </div>
+
+            <div class="px-5 pl-12">
+              <div class="h-[1.5px] w-full" style="background: var(--ink); opacity:0.85;"></div>
+              <div class="flex items-baseline justify-between pt-2">
+                <p class="n-label">Phiên</p>
+                <p class="n-label">Vô địch</p>
+              </div>
+            </div>
+
+            <!-- Index list -->
+            <div class="px-5 pl-12 mt-4 space-y-4">
+              <div>
+                <div class="flex items-baseline justify-between">
+                  <div class="flex items-baseline gap-2">
+                    <span class="n-num text-[14px]" style="color: var(--ink-soft);">25.05</span>
+                    <p class="n-name text-[18px] leading-none">Phỏm tối thứ Sáu</p>
+                  </div>
+                  <p class="n-num-display text-[18px]" style="color: var(--margin-line);">+24</p>
+                </div>
+                <p class="n-num text-[11px] mt-1 italic" style="color: var(--ink-faint); font-family:'Cormorant Garamond',serif;">Quý · Nam · Linh · Hoàng</p>
+              </div>
+              <div>
+                <div class="flex items-baseline justify-between">
+                  <div class="flex items-baseline gap-2">
+                    <span class="n-num text-[14px]" style="color: var(--ink-soft);">18.05</span>
+                    <p class="n-name text-[18px] leading-none">Sâm Lốc nhà Hoàng</p>
+                  </div>
+                  <p class="n-num-display text-[18px]">+18</p>
+                </div>
+                <p class="n-num text-[11px] mt-1 italic" style="color: var(--ink-faint); font-family:'Cormorant Garamond',serif;">Quý · Hoàng · Mai</p>
+              </div>
+              <div>
+                <div class="flex items-baseline justify-between">
+                  <div class="flex items-baseline gap-2">
+                    <span class="n-num text-[14px]" style="color: var(--ink-soft);">11.05</span>
+                    <p class="n-name text-[18px] leading-none">Cafe sau giờ làm</p>
+                  </div>
+                  <p class="n-num-display text-[18px]">+11</p>
+                </div>
+                <p class="n-num text-[11px] mt-1 italic" style="color: var(--ink-faint); font-family:'Cormorant Garamond',serif;">Nam · Linh · Trang · Quý</p>
+              </div>
+              <div class="opacity-70">
+                <div class="flex items-baseline justify-between">
+                  <div class="flex items-baseline gap-2">
+                    <span class="n-num text-[14px]" style="color: var(--ink-soft);">04.05</span>
+                    <p class="n-name text-[18px] leading-none">Sinh nhật Linh</p>
+                  </div>
+                  <p class="n-num-display text-[18px]">+32</p>
+                </div>
+                <p class="n-num text-[11px] mt-1 italic" style="color: var(--ink-faint); font-family:'Cormorant Garamond',serif;">Linh · Quý · Nam · Mai · Trang</p>
+              </div>
+              <div class="opacity-50">
+                <div class="flex items-baseline justify-between">
+                  <div class="flex items-baseline gap-2">
+                    <span class="n-num text-[14px]" style="color: var(--ink-soft);">27.04</span>
+                    <p class="n-name text-[18px] leading-none">Thứ Bảy mưa</p>
+                  </div>
+                  <p class="n-num-display text-[18px]">+8</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7 pl-7">
+              <p class="n-label text-center">Chạm để mở · vuốt trái xoá</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Lịch sử</p>
+      </div>
+
+    </div>
+
+    <!-- Theme rationale row -->
+    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm" style="font-family:'Spectral',serif;">
+      <div>
+        <p class="n-label" style="color:#d2614a;">Mặt phẳng</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Giấy ngà, lề son, dòng kẻ xanh nhạt — đúng kết cấu cuốn vở. Không card, không grid. Tất cả lề trái thụt vào sau đường lề đỏ; rhythm dọc do dòng kẻ quyết định, không do padding.
+        </p>
+      </div>
+      <div>
+        <p class="n-label" style="color:#d2614a;">Chữ</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Cormorant Garamond italic cho tên người (như chữ ký), Cormorant số cho điểm, Spectral cho UI. Số dương được tô <em>highlighter</em> vàng — chính là cây bút dạ quang trong cuốn sổ thực sự.
+        </p>
+      </div>
+      <div>
+        <p class="n-label" style="color:#d2614a;">Khoảnh khắc</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Số được "viết vào" từ trái sang phải khi nhập (ink-in animation). Ô auto-fill ghi bằng nét italic mảnh + "(tính)" — phân biệt rõ &quot;máy ghi giúp&quot; với &quot;người ghi&quot;. Cuối phiên không reveal pháo hoa, chỉ là dấu tick vào sổ.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Closing note
+       ============================================================ -->
+  <footer class="max-w-3xl mx-auto px-6 pb-24 text-center">
+    <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Bước tiếp</p>
+    <p class="mt-4 text-sm leading-relaxed text-amber-50/70" style="font-family:'Spectral',serif;">
+      Cả hai đều ở giai đoạn concept — chữ, màu, layout đã chốt; chuyển động và haptic chỉ mới gợi ý. Chọn một hướng, mình build prototype thật trong SwiftUI để cảm nhận trên iPhone, hoặc mock thêm screen (history detail, share preview, empty state) trên hướng đã chốt.
+    </p>
+  </footer>
+
+  <style>
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+
+</body>
+</html>
