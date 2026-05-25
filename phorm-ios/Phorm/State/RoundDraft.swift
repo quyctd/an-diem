@@ -17,10 +17,20 @@ final class RoundDraft {
     var entries: [Int?]
     var focusedIndex: Int?
 
+    /// Sticky sign for keypad input — persists across rows until the user toggles it.
+    /// In Phỏm/Sâm Lốc most rounds are negative for the losing players, so once the
+    /// host taps `−` the next several rows inherit it without re-tapping. `+1` or `-1`.
+    var signMode: Int = 1
+
     init(playerNames: [String], existing: [String: Int]? = nil) {
         self.playerNames = playerNames
         if let existing {
             self.entries = playerNames.map { existing[$0] }
+            // Open edit mode in whatever sign mode the first non-empty entry implies.
+            // Avoids the surprise of editing a round full of negatives in `+` mode.
+            if let firstSigned = entries.compactMap({ $0 }).first(where: { $0 != 0 }) {
+                self.signMode = firstSigned < 0 ? -1 : 1
+            }
         } else {
             self.entries = Array(repeating: nil, count: playerNames.count)
         }
@@ -29,7 +39,14 @@ final class RoundDraft {
 
     // MARK: - Derived
 
-    var liveSum: Int { entries.compactMap { $0 }.reduce(0, +) }
+    /// Live total = sum of typed entries + the auto-fill suggestion (if active).
+    /// Mirrors `materialize()` so the validation row matches what actually saves.
+    /// Without folding the auto-fill in, the host sees `Tổng: +7 ⚠` while the
+    /// committed round is actually balanced — the bug this fixes.
+    var liveSum: Int {
+        let filled = entries.compactMap { $0 }.reduce(0, +)
+        return filled + (autoFillValue ?? 0)
+    }
 
     var autoFillValue: Int? { AutoFill.suggestion(for: entries) }
 
@@ -49,18 +66,22 @@ final class RoundDraft {
         guard let i = focusedIndex else { return }
         switch key {
         case .digit(let d):
-            let current = entries[i] ?? 0
-            let sign = current < 0 ? -1 : 1
-            let abs = Swift.abs(current)
-            let next = abs * 10 + d
-            entries[i] = sign * next
+            // Always apply the sticky signMode — append digit on top of the existing
+            // magnitude. Means: typing into a cell that holds a value of opposite sign
+            // (rare) flips it to match the current mode, which matches the highlighted
+            // `+`/`−` button.
+            let absVal = Swift.abs(entries[i] ?? 0)
+            entries[i] = signMode * (absVal * 10 + d)
         case .sign:
-            if let v = entries[i] { entries[i] = -v }
-            else { entries[i] = 0 } // sign on empty sets up a negative
+            // Toggle the mode AND flip the current cell's sign so the visual matches.
+            signMode = -signMode
+            if let v = entries[i], v != 0 {
+                entries[i] = -v
+            }
         case .delete:
             guard let v = entries[i] else { return }
             let abs = Swift.abs(v) / 10
-            entries[i] = abs == 0 ? nil : (v < 0 ? -abs : abs)
+            entries[i] = abs == 0 ? nil : signMode * abs
         case .next:
             nextField()
         }

@@ -9,76 +9,101 @@ struct ImportConfirmView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack(spacing: Spacing.lg) {
-            VStack(spacing: Spacing.md) {
-                ZStack {
-                    Circle()
-                        .fill(Color.phormPrimary)
-                        .frame(width: 80, height: 80)
-                    Text("📥").font(.system(size: 36))
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Spacing.lg) {
+                    headerStrip
+                    LacquerHairline()
+                    detailBlock
+                    Text("Phiên đang chơi của bạn sẽ tự đóng vào lịch sử trước khi mở phiên này.")
+                        .font(.phormBodySm)
+                        .foregroundStyle(Color.phormCream.opacity(0.6))
                 }
-                .padding(.top, Spacing.lg)
-                Text("Nhận session")
-                    .font(.phormTitleLg)
-                    .foregroundStyle(Color.bodyText)
-                Text("Ai đó gửi cho bạn 1 session qua AirDrop")
-                    .font(.phormBodySm)
-                    .foregroundStyle(Color.phormMuted)
-                    .multilineTextAlignment(.center)
+                .padding(.horizontal, Spacing.lg)
+                .padding(.top, Spacing.xl)
             }
+            .scrollIndicators(.hidden)
 
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text(dto.name)
-                    .font(.phormTitleSm)
-                    .foregroundStyle(Color.bodyText)
-                Text(dto.players.joined(separator: " · "))
-                    .font(.phormBodySm)
-                    .foregroundStyle(Color.phormMuted)
-                HStack(spacing: Spacing.xs) {
-                    chip("\(dto.players.count) người")
-                    chip("\(dto.rounds.count) ván")
-                }
-            }
-            .padding(Spacing.md)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.surfaceElevated)
-            .continuousRounded(Radius.lg)
-
-            Text("Session đang chơi của bạn sẽ tự lưu vào History trước khi mở session này.")
-                .font(.phormCaption)
-                .foregroundStyle(Color.phormMuted)
-                .multilineTextAlignment(.center)
-
-            VStack(spacing: Spacing.sm) {
-                Button(action: confirm) {
-                    Text("Mở session này")
-                        .font(.phormButton)
-                        .foregroundStyle(Color.onPrimary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 54)
-                        .background(Color.phormPrimary)
-                        .continuousRounded(Radius.lg)
-                }
-                Button("Hủy") {
-                    onDismiss(); dismiss()
-                }
-                .foregroundStyle(Color.phormPrimary)
-            }
+            cta
         }
-        .padding(Spacing.lg)
-        .background(Color.canvas)
+        .lacquerBackground(.phormSurfaceOchre)
+        .presentationBackground(Color.phormSurfaceOchre)
         .presentationDetents([.medium, .large])
-        .presentationBackground(Color.canvas)
+        .presentationDragIndicator(.visible)
+        .preferredColorScheme(.dark)
     }
 
-    private func chip(_ s: String) -> some View {
+    private var headerStrip: some View {
+        HStack(alignment: .top) {
+            Seal(glyph: "印", variant: .winner, size: 36)
+            VStack(alignment: .leading, spacing: 4) {
+                SectionLabel(text: "Nhận phiên", tone: .gold)
+                Text("Có ai vừa gửi")
+                    .font(.phormTitleLg)
+                    .italic()
+                    .foregroundStyle(Color.phormCream)
+            }
+            Spacer()
+        }
+    }
+
+    private var detailBlock: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text(dto.name)
+                .font(.phormNameDisplay)
+                .foregroundStyle(Color.phormCream)
+                .lineLimit(2)
+            Text(dto.players.joined(separator: " · "))
+                .font(.phormNumberSm)
+                .foregroundStyle(Color.phormCreamDim)
+            HStack(spacing: Spacing.sm) {
+                detailChip("\(dto.players.count) người")
+                detailChip("\(dto.rounds.count) vòng")
+            }
+            .padding(.top, 2)
+        }
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.md)
+        .background(Color.black.opacity(0.20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+    }
+
+    private func detailChip(_ s: String) -> some View {
         Text(s)
-            .font(.phormCaption)
-            .foregroundStyle(Color.bodyText)
-            .padding(.horizontal, Spacing.xs + 2)
+            .font(.phormCaptionSection)
+            .tracking(1.6)
+            .textCase(.uppercase)
+            .foregroundStyle(Color.phormGoldBright)
+            .padding(.horizontal, Spacing.sm)
             .padding(.vertical, 4)
-            .background(Color.surfaceCard)
-            .continuousRounded(Radius.sm)
+            .background(
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .stroke(Color.phormGoldBright.opacity(0.55), lineWidth: 1)
+            )
+    }
+
+    private var cta: some View {
+        VStack(spacing: Spacing.sm) {
+            LacquerPrimaryButton(title: "Mở phiên này", action: confirm)
+            Button {
+                onDismiss(); dismiss()
+            } label: {
+                Text("Huỷ")
+                    .font(.phormButton)
+                    .tracking(1.5)
+                    .textCase(.uppercase)
+                    .foregroundStyle(Color.phormCreamDim)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, Spacing.lg)
+        .padding(.bottom, Spacing.sm)
     }
 
     private func confirm() {

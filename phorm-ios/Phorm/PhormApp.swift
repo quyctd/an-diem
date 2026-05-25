@@ -24,12 +24,15 @@ struct PhormApp: App {
     var body: some Scene {
         WindowGroup {
             HomeView()
+                .preferredColorScheme(.dark)
+                .tint(.phormPrimary)
                 .onOpenURL { url in
                     pendingImport = try? SessionShare.decode(url)
                 }
                 .sheet(item: $pendingImport) { dto in
                     ImportConfirmView(dto: dto, onDismiss: { pendingImport = nil })
                         .interactiveDismissDisabled()
+                        .preferredColorScheme(.dark)
                 }
         }
         .modelContainer(container)

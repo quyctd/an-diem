@@ -1,9 +1,14 @@
 import SwiftUI
 
+/// Custom numeric keypad — lives at the bottom of RoundEntryView on lacquer.
+/// Sharp 2pt corners, dark tint, cream ink. Save CTA is the gold primary button.
 struct Keypad: View {
     let onKey: (KeypadKey) -> Void
     let onSave: () -> Void
     let canSave: Bool
+    /// Current sticky sign — drives the `+`/`−` highlight in the sign key.
+    /// Pass `+1` or `-1`; defaults to `+1` if not supplied (preserves the older callsite).
+    var sign: Int = 1
 
     private let layout: [[KeyKind]] = [
         [.digit(1), .digit(2), .digit(3)],
@@ -12,64 +17,111 @@ struct Keypad: View {
         [.sign,     .digit(0), .delete]
     ]
 
-    private enum KeyKind { case digit(Int), sign, delete }
+    private enum KeyKind {
+        case digit(Int)
+        case sign
+        case delete
+    }
 
     var body: some View {
-        // DESIGN.md: keypad inherits the sheet's thickMaterial — no own background
-        // (avoids "glass on glass" stacking).
-        VStack(spacing: 6) {
-            ForEach(0..<layout.count, id: \.self) { row in
-                HStack(spacing: 6) {
-                    ForEach(0..<layout[row].count, id: \.self) { col in
-                        key(layout[row][col])
+        VStack(spacing: 8) {
+            VStack(spacing: 6) {
+                ForEach(0..<layout.count, id: \.self) { row in
+                    HStack(spacing: 6) {
+                        ForEach(0..<layout[row].count, id: \.self) { col in
+                            key(layout[row][col])
+                        }
                     }
                 }
             }
-            // PLAN.md §8: keypad has a Next button (jumps focus past auto-fill row).
-            Button { onKey(.next) } label: {
-                Text("Tiếp →")
-                    .font(.phormButton)
-                    .foregroundStyle(Color.bodyText)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .background(Color.surfaceCard)
-                    .continuousRounded(Radius.md)
+
+            HStack(spacing: 8) {
+                Button {
+                    Haptics.nav()
+                    onKey(.next)
+                } label: {
+                    Text("Tiếp")
+                        .font(.phormButton)
+                        .tracking(1.5)
+                        .textCase(.uppercase)
+                        .foregroundStyle(Color.phormCream)
+                        .frame(width: 90, height: 48)
+                        .background(
+                            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                .stroke(Color.phormCream.opacity(0.30), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+
+                LacquerPrimaryButton(
+                    title: "Đóng dấu — lưu vòng",
+                    enabled: canSave,
+                    action: {
+                        Haptics.success()
+                        onSave()
+                    }
+                )
             }
-            Button(action: onSave) {
-                Text("Lưu ván →")
-                    .font(.phormButton)
-                    .foregroundStyle(Color.onPrimary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .background(canSave ? Color.phormPrimary : Color.phormPrimaryDisabled)
-                    .continuousRounded(Radius.lg)
-            }
-            .disabled(!canSave)
         }
-        .padding(8)
     }
 
     @ViewBuilder
     private func key(_ kind: KeyKind) -> some View {
         Button {
             switch kind {
-            case .digit(let d): onKey(.digit(d))
-            case .sign:         onKey(.sign)
-            case .delete:       onKey(.delete)
+            case .digit(let d):
+                Haptics.tap()
+                onKey(.digit(d))
+            case .sign:
+                Haptics.toggle()
+                onKey(.sign)
+            case .delete:
+                Haptics.toggle()
+                onKey(.delete)
             }
         } label: {
-            Group {
-                switch kind {
-                case .digit(let d): Text("\(d)").font(.phormKeypadDigit)
-                case .sign:         Image(systemName: "plus.forwardslash.minus").font(.system(size: 22))
-                case .delete:       Image(systemName: "delete.left.fill").font(.system(size: 22))
-                }
+            keyLabel(for: kind)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(
+                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        .fill(isUtility(kind) ? Color.black.opacity(0.28) : Color.black.opacity(0.18))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        .stroke(signKeyBorderColor(kind), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Sign key border lifts to gold whenever a sign mode is active — reinforces
+    /// the `+` or `−` highlight inside the key.
+    private func signKeyBorderColor(_ kind: KeyKind) -> Color {
+        if case .sign = kind { return Color.phormPrimary.opacity(0.55) }
+        return Color.phormCream.opacity(0.18)
+    }
+
+    @ViewBuilder
+    private func keyLabel(for kind: KeyKind) -> some View {
+        switch kind {
+        case .digit(let d):
+            Text("\(d)")
+                .font(.phormKeypadDigit)
+                .foregroundStyle(Color.phormCream)
+        case .sign:
+            HStack(spacing: 8) {
+                Text("+")
+                    .font(.system(size: 22, weight: .bold, design: .serif))
+                    .foregroundStyle(sign > 0 ? Color.phormPrimary : Color.phormCream.opacity(0.32))
+                Text("\u{2212}")
+                    .font(.system(size: 22, weight: .bold, design: .serif))
+                    .foregroundStyle(sign < 0 ? Color.phormPrimary : Color.phormCream.opacity(0.32))
             }
-            .foregroundStyle(Color.bodyText)
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(isUtility(kind) ? Color.surfaceCard : Color.surfaceElevated)
-            .continuousRounded(Radius.md)
+        case .delete:
+            Image(systemName: "delete.left")
+                .font(.system(size: 20, weight: .regular))
+                .foregroundStyle(Color.phormCreamDim)
         }
     }
 

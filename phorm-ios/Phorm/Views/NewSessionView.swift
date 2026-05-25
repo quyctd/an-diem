@@ -8,11 +8,11 @@ struct NewSessionView: View {
     @State private var sessionName: String = Self.defaultName()
     @State private var players: [String] = []
     @State private var nameInput: String = ""
+    @FocusState private var nameInputFocused: Bool
 
     @Query(sort: [SortDescriptor(\Session.createdAt, order: .reverse)])
     private var allSessions: [Session]
 
-    /// Distinct player names across history, ordered by recency of last appearance.
     private var distinctPlayerNames: [String] {
         var seen = Set<String>(), result: [String] = []
         for s in allSessions {
@@ -27,9 +27,14 @@ struct NewSessionView: View {
         allSessions.first(where: { !$0.playerNames.isEmpty })
     }
 
+    /// Autosuggest only when the user is typing a single token. As soon as a
+    /// space appears (i.e., they're entering multiple names at once), step out
+    /// of the way — the "Thêm N" pill is the better affordance there.
     private var autosuggestMatches: [String] {
-        let q = nameInput.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !q.isEmpty else { return [] }
+        let trimmed = nameInput.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty,
+              !trimmed.contains(where: { $0.isWhitespace }) else { return [] }
+        let q = trimmed.lowercased()
         return distinctPlayerNames
             .filter { $0.lowercased().contains(q) && !players.contains($0) }
             .prefix(5)
@@ -38,170 +43,331 @@ struct NewSessionView: View {
 
     private static func defaultName() -> String {
         let f = DateFormatter()
-        f.dateFormat = "dd/MM/yyyy HH:mm"
-        return f.string(from: .now)
+        f.locale = Locale(identifier: "vi_VN")
+        f.dateFormat = "EEEE 'tối' dd/MM"
+        return f.string(from: .now).capitalized
     }
 
     var body: some View {
-        NavigationStack {
+        ZStack(alignment: .bottom) {
             ScrollView {
-                VStack(alignment: .leading, spacing: Spacing.lg) {
+                VStack(alignment: .leading, spacing: 0) {
+                    headerStrip
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.lg)
+
+                    LacquerHairline()
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.md)
+
+                    sessionNameBlock
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.xl)
+
                     if let group = lastGroup, players.isEmpty {
-                        reuseCard(group)
+                        reuseBlock(group)
+                            .padding(.horizontal, Spacing.lg)
+                            .padding(.top, Spacing.lg)
                     }
-                    sectionLabel("TÊN SESSION")
-                    TextField("", text: $sessionName)
-                        .font(.phormTitleSm)
-                        .foregroundStyle(Color.bodyText)
-                        .padding(.horizontal, Spacing.md)
-                        .padding(.vertical, Spacing.sm)
-                        .frame(height: 50)
-                        .background(Color.surfaceElevated)
-                        .continuousRounded(Radius.md)
 
-                    sectionLabel("NGƯỜI CHƠI")
-                    chipFlow
-                    addPlayerField
-                }
-                .padding(Spacing.lg)
-            }
-            .background(Color.canvas)
-            .scrollContentBackground(.hidden)
-            .toolbarBackground(Color.canvas, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .navigationTitle("Session mới")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Hủy") { dismiss() }
-                        .foregroundStyle(Color.phormPrimary)
+                    playersBlock
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.xl)
+
+                    Spacer().frame(height: 140) // CTA clearance
                 }
             }
-            .safeAreaInset(edge: .bottom) {
-                Button {
-                    create()
-                } label: {
-                    Text("Bắt đầu →")
-                        .font(.phormButton)
-                        .foregroundStyle(Color.onPrimary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 54)
-                        .background(players.count >= 2 ? Color.phormPrimary : Color.phormPrimaryDisabled)
-                        .continuousRounded(Radius.lg)
-                }
-                .disabled(players.count < 2)
-                .padding(.horizontal, Spacing.lg)
-                .padding(.bottom, Spacing.sm)
-            }
+            .scrollIndicators(.hidden)
+
+            cta
         }
-        .presentationBackground(Color.canvas)
+        .lacquerBackground(.phormSurfaceCinnabarDeep)
+        .presentationBackground(Color.phormSurfaceCinnabarDeep)
+        .presentationDragIndicator(.visible)
     }
 
-    @ViewBuilder private func sectionLabel(_ text: String) -> some View {
-        Text(text)
-            .font(.phormCaptionSection)
-            .tracking(0.6)
-            .textCase(.uppercase)
-            .foregroundStyle(Color.phormMuted)
-    }
+    // MARK: - Header
 
-    @ViewBuilder private func reuseCard(_ group: Session) -> some View {
+    private var headerStrip: some View {
         HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Nhóm vừa rồi")
-                    .font(.phormCaptionSection)
-                    .tracking(0.6).textCase(.uppercase)
-                    .foregroundStyle(Color.phormMuted)
-                Text(group.playerNames.joined(separator: " · "))
-                    .font(.phormTitleSm)
-                    .foregroundStyle(Color.bodyText)
+            Button { dismiss() } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.phormCreamDim)
+                    .frame(width: 32, height: 32)
+                    .background(Circle().fill(Color.black.opacity(0.18)))
             }
             Spacer()
+            VStack(alignment: .trailing, spacing: 6) {
+                SectionLabel(text: "Khai phiên")
+                Text("Mở phiên mới")
+                    .font(.phormTitleLg)
+                    .italic()
+                    .foregroundStyle(Color.phormCream)
+            }
+        }
+    }
+
+    // MARK: - Session name
+
+    private var sessionNameBlock: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            SectionLabel(text: "Tên phiên")
+            TextField("", text: $sessionName)
+                .font(.phormNameDisplay)
+                .foregroundStyle(Color.phormCream)
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, Spacing.sm)
+                .background(
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(Color.black.opacity(0.18))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .stroke(Color.phormCream.opacity(0.30), lineWidth: 1)
+                )
+        }
+    }
+
+    // MARK: - Reuse last group
+
+    @ViewBuilder
+    private func reuseBlock(_ group: Session) -> some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                SectionLabel(text: "Nhóm vừa rồi")
+                Text(group.playerNames.joined(separator: " · "))
+                    .font(.phormNameMd)
+                    .foregroundStyle(Color.phormCream)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: Spacing.sm)
             Button {
                 players = group.playerNames
             } label: {
                 Text("Dùng lại")
-                    .font(.phormCaption)
+                    .font(.phormCaptionSection)
+                    .tracking(1.6)
+                    .textCase(.uppercase)
                     .foregroundStyle(Color.onPrimary)
                     .padding(.horizontal, Spacing.sm + 2)
-                    .padding(.vertical, 6)
-                    .background(Color.phormPrimary)
-                    .continuousRounded(Radius.pill)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                            .fill(Color.phormPrimary)
+                    )
             }
+            .buttonStyle(.plain)
         }
-        .padding(Spacing.md)
-        .background(Color.surfaceCard)
-        .continuousRounded(Radius.lg)
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.sm)
+        .background(Color.black.opacity(0.18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
     }
 
-    private var chipFlow: some View {
-        FlowLayout(spacing: Spacing.xs) {
-            ForEach(Array(players.enumerated()), id: \.offset) { idx, name in
-                HStack(spacing: Spacing.xs) {
-                    Text(name).font(.phormBodyMd).foregroundStyle(Color.bodyText)
-                    Button {
-                        players.remove(at: idx)
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(Color.phormMuted)
+    // MARK: - Players block
+
+    private var playersBlock: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            HStack {
+                SectionLabel(text: "Người chơi")
+                Spacer()
+                SectionLabel(text: "\(players.count)")
+            }
+
+            if !players.isEmpty {
+                FlowLayout(spacing: Spacing.xs) {
+                    ForEach(Array(players.enumerated()), id: \.offset) { idx, name in
+                        playerChip(name: name, index: idx)
                     }
                 }
-                .padding(.horizontal, Spacing.sm)
-                .padding(.vertical, 6)
-                .background(Color.surfaceElevated)
-                .continuousRounded(Radius.pill)
+            }
+
+            addPlayerField
+
+            if !autosuggestMatches.isEmpty {
+                autosuggestList
             }
         }
+    }
+
+    @ViewBuilder
+    private func playerChip(name: String, index: Int) -> some View {
+        HStack(spacing: Spacing.xs) {
+            Text(name)
+                .font(.phormNameMd)
+                .foregroundStyle(Color.phormCream)
+            Button {
+                players.remove(at: index)
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.phormCreamDim)
+            }
+        }
+        .padding(.horizontal, Spacing.sm)
+        .padding(.vertical, 6)
+        .background(Color.phormPrimary.opacity(0.10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .stroke(Color.phormPrimary.opacity(0.55), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
     }
 
     private var addPlayerField: some View {
-        VStack(spacing: Spacing.xs) {
-            HStack {
-                TextField("+ Thêm người…", text: $nameInput)
-                    .font(.phormBodyMd)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: Spacing.xs) {
+                Text("+")
+                    .font(.phormNameDisplay)
+                    .foregroundStyle(Color.phormPrimary)
+                TextField("Quý Nam \"Quý Anh\" Linh…", text: $nameInput, onCommit: commitPlayers)
+                    .font(.phormNameMd)
+                    .foregroundStyle(Color.phormCream)
+                    .focused($nameInputFocused)
                     .submitLabel(.done)
-                    .onSubmit { commitPlayer() }
-                if !nameInput.trimmingCharacters(in: .whitespaces).isEmpty {
-                    Button("Thêm") { commitPlayer() }
-                        .foregroundStyle(Color.phormPrimary)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled()
+                if pendingTokenCount > 0 {
+                    Button(action: commitPlayers) {
+                        Text("Thêm \(pendingTokenCount)")
+                            .font(.phormCaptionSection)
+                            .tracking(1.6)
+                            .textCase(.uppercase)
+                            .foregroundStyle(Color.phormPrimary)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, Spacing.md)
-            .padding(.vertical, 10)
+            .padding(.vertical, Spacing.sm)
+            .background(Color.black.opacity(0.18))
             .overlay(
-                RoundedRectangle(cornerRadius: Radius.md, style: .continuous)
-                    .strokeBorder(Color.hairline, style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .stroke(
+                        nameInputFocused ? Color.phormPrimary : Color.phormCream.opacity(0.30),
+                        style: StrokeStyle(lineWidth: nameInputFocused ? 1.5 : 1, dash: nameInputFocused ? [] : [4, 3])
+                    )
             )
+            .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
 
-            if !autosuggestMatches.isEmpty {
-                VStack(spacing: 0) {
-                    ForEach(autosuggestMatches, id: \.self) { name in
-                        Button {
-                            players.append(name); nameInput = ""
-                        } label: {
-                            HStack {
-                                Text(name)
-                                    .font(.phormBodyMd)
-                                    .foregroundStyle(Color.bodyText)
-                                Spacer()
-                            }
-                            .padding(.horizontal, Spacing.md)
-                            .padding(.vertical, Spacing.sm)
-                        }
-                        if name != autosuggestMatches.last { Divider().background(Color.hairline) }
-                    }
-                }
-                .background(Color.surfaceCard)
-                .continuousRounded(Radius.md)
-            }
+            Text("Cách bằng dấu cách · dùng \"…\" cho tên có khoảng trắng")
+                .font(.phormCaptionSection)
+                .tracking(1.4)
+                .textCase(.uppercase)
+                .foregroundStyle(Color.phormCreamDim.opacity(0.7))
+                .padding(.leading, 2)
         }
     }
 
-    private func commitPlayer() {
-        let trimmed = nameInput.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty, !players.contains(trimmed) else { return }
-        players.append(trimmed)
+    /// Tokens in `nameInput` that aren't already in `players` — drives the "Thêm N" affordance.
+    private var pendingTokenCount: Int {
+        parseTokens(nameInput).count
+    }
+
+    /// Split on whitespace + commas, but keep `"…"` (straight or curly) as one token.
+    /// Trim, dedupe against current roster + each other, preserve order.
+    private func parseTokens(_ input: String) -> [String] {
+        let quoteChars: Set<Character> = ["\"", "\u{201C}", "\u{201D}"] // " " "
+        let separators: Set<Character> = [" ", "\t", "\n", ","]
+
+        var raw: [String] = []
+        var current = ""
+        var inQuotes = false
+        for ch in input {
+            if quoteChars.contains(ch) {
+                inQuotes.toggle()
+                continue
+            }
+            if !inQuotes, separators.contains(ch) {
+                if !current.isEmpty { raw.append(current); current = "" }
+                continue
+            }
+            current.append(ch)
+        }
+        if !current.isEmpty { raw.append(current) }
+
+        var seen = Set(players.map { $0.lowercased() })
+        var out: [String] = []
+        for token in raw {
+            let trimmed = token.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty else { continue }
+            let key = trimmed.lowercased()
+            guard !seen.contains(key) else { continue }
+            seen.insert(key)
+            out.append(trimmed)
+        }
+        return out
+    }
+
+    private var autosuggestList: some View {
+        VStack(spacing: 0) {
+            ForEach(autosuggestMatches, id: \.self) { name in
+                Button {
+                    players.append(name); nameInput = ""
+                } label: {
+                    HStack {
+                        Text(name)
+                            .font(.phormNameMd)
+                            .foregroundStyle(Color.phormCream)
+                        Spacer()
+                        Image(systemName: "plus")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color.phormPrimary)
+                    }
+                    .padding(.horizontal, Spacing.md)
+                    .padding(.vertical, Spacing.sm)
+                }
+                .buttonStyle(.plain)
+                if name != autosuggestMatches.last {
+                    Rectangle()
+                        .fill(Color.phormCream.opacity(0.12))
+                        .frame(height: 1)
+                }
+            }
+        }
+        .background(Color.black.opacity(0.18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+    }
+
+    // MARK: - CTA
+
+    private var cta: some View {
+        VStack(spacing: Spacing.xs) {
+            LacquerPrimaryButton(
+                title: players.count >= 2 ? "Bắt đầu — \(players.count) người" : "Cần ít nhất 2 người",
+                enabled: players.count >= 2,
+                action: create
+            )
+        }
+        .padding(.horizontal, Spacing.lg)
+        .padding(.bottom, Spacing.sm)
+        .background(
+            LinearGradient(
+                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.55), .phormSurfaceCinnabarDeep.opacity(0.9)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 120)
+            .allowsHitTesting(false),
+            alignment: .bottom
+        )
+    }
+
+    /// Append every fresh whitespace-separated token in `nameInput`.
+    /// Pre-existing roster names (case-insensitive) are silently dropped.
+    private func commitPlayers() {
+        let tokens = parseTokens(nameInput)
+        guard !tokens.isEmpty else { return }
+        players.append(contentsOf: tokens)
         nameInput = ""
     }
 

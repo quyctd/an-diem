@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Single-round detail card on the lacquer surface — gold left edge + dark tint.
 struct RoundCard: View {
     let round: Round
     let playerOrder: [String]
@@ -17,37 +18,47 @@ struct RoundCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
-            HStack {
-                Text("Ván \(round.index)")
-                    .font(.phormCaption.weight(.semibold))
-                    .foregroundStyle(Color.phormMuted)
-                Spacer()
-                Text(timestamp)
-                    .font(.phormCaption)
-                    .foregroundStyle(Color.phormMuted)
-            }
+        HStack(alignment: .top, spacing: 0) {
+            Rectangle()
+                .fill(Color.phormPrimary)
+                .frame(width: 3)
 
-            FlowLayout(spacing: Spacing.sm) {
-                ForEach(playerOrder, id: \.self) { name in
-                    HStack(spacing: 4) {
-                        Text(name).font(.phormBodyMd).foregroundStyle(Color.phormMuted)
-                        Text(format(scoreByName[name] ?? 0))
-                            .font(.phormNumberMd)
-                            .foregroundStyle(color(for: scoreByName[name] ?? 0))
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Vòng \(round.index)")
+                        .font(.phormCaptionSection)
+                        .tracking(1.6)
+                        .textCase(.uppercase)
+                        .foregroundStyle(Color.phormGoldBright)
+                    Spacer()
+                    Text(timestamp)
+                        .font(.phormNumberSm)
+                        .foregroundStyle(Color.phormCreamDim)
+                }
+
+                VStack(spacing: 6) {
+                    ForEach(playerOrder, id: \.self) { name in
+                        let value = scoreByName[name] ?? 0
+                        HStack {
+                            Text(name)
+                                .font(.phormNameMd)
+                                .foregroundStyle(Color.phormCream.opacity(0.86))
+                            Spacer()
+                            Text(ScoreFormat.signed(value))
+                                .font(.phormNumberMd)
+                                .foregroundStyle(ScoreFormat.color(for: value))
+                        }
                     }
                 }
             }
+            .padding(.horizontal, Spacing.md)
+            .padding(.vertical, Spacing.sm)
         }
-        .padding(Spacing.md)
-        .background(Color.surfaceCard)
-        .continuousRounded(Radius.lg)
-    }
-
-    private func format(_ v: Int) -> String { v > 0 ? "+\(v)" : "\(v)" }
-    private func color(for v: Int) -> Color {
-        if v > 0 { return .scorePositive }
-        if v < 0 { return .scoreNegative }
-        return .bodyText
+        .background(Color.black.opacity(0.18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
     }
 }

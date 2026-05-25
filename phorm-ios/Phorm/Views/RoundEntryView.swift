@@ -30,22 +30,37 @@ struct RoundEntryView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            playerList
-            Spacer(minLength: 0)
-            SumIndicator(sum: draft.liveSum)
-                .padding(.horizontal, Spacing.lg)
-                .padding(.bottom, Spacing.sm)
-            Keypad(
-                onKey: { draft.keypad($0) },
-                onSave: save,
-                canSave: true
-            )
+        ZStack(alignment: .bottom) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    headerStrip
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.lg)
+
+                    titleBlock
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.sm)
+
+                    playerCells
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.xl)
+
+                    validationRow
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.top, Spacing.lg)
+
+                    Spacer().frame(height: 360) // keypad + CTA clearance
+                }
+            }
+            .scrollIndicators(.hidden)
+
+            bottomDock
         }
-        .background(Color.canvas)
-        .presentationBackground(Color.canvas)
-        .confirmationDialog("Xóa ván này?", isPresented: $showDeleteConfirm) {
+        .lacquerBackground(.phormSurfaceCinnabarDeep)
+        .presentationBackground(Color.phormSurfaceCinnabarDeep)
+        .presentationDragIndicator(.visible)
+        .preferredColorScheme(.dark)
+        .confirmationDialog("Xóa vòng này?", isPresented: $showDeleteConfirm) {
             if case .edit(let round) = mode {
                 Button("Xóa", role: .destructive) {
                     try? SessionActions.deleteRound(round, in: context)
@@ -58,91 +73,218 @@ struct RoundEntryView: View {
         }
     }
 
-    private var header: some View {
-        HStack {
+    // MARK: - Header
+
+    private var headerStrip: some View {
+        HStack(alignment: .center) {
             Button { dismiss() } label: {
                 Image(systemName: "xmark")
-                    .font(.phormTitleSm)
-                    .foregroundStyle(Color.phormMuted)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.phormCreamDim)
+                    .frame(width: 32, height: 32)
+                    .background(Circle().fill(Color.black.opacity(0.18)))
             }
             Spacer()
-            Text(headerTitle)
-                .font(.phormTitleSm)
-                .foregroundStyle(Color.bodyText)
+            SectionLabel(text: headerLabel)
             Spacer()
-            if case .edit(let round) = mode {
-                Button(role: .destructive) {
-                    showDeleteConfirm = true
-                } label: {
-                    Text("Xóa").foregroundStyle(Color.scoreNegative)
+            Group {
+                if case .edit = mode {
+                    Button {
+                        showDeleteConfirm = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Color.scoreNegative)
+                            .frame(width: 32, height: 32)
+                    }
+                } else {
+                    Color.clear.frame(width: 32, height: 32)
                 }
-            } else {
-                Color.clear.frame(width: 40)
             }
         }
-        .padding(Spacing.md)
     }
 
-    private var headerTitle: String {
+    private var headerLabel: String {
         switch mode {
-        case .new: return "Ván \((session.rounds ?? []).count + 1)"
-        case .edit(let r): return "Sửa ván \(r.index)"
+        case .new:     return "Đóng dấu vòng"
+        case .edit:    return "Sửa vòng"
         }
     }
 
-    private var playerList: some View {
-        VStack(spacing: 0) {
+    // MARK: - Title block
+
+    private var titleBlock: some View {
+        HStack(alignment: .firstTextBaseline) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(roundDisplayTitle)
+                    .font(.phormDisplayMd)
+                    .foregroundStyle(Color.phormPrimary)
+                Text("điểm ai bao nhiêu?")
+                    .font(.system(size: 18, weight: .regular, design: .serif))
+                    .italic()
+                    .foregroundStyle(Color.phormCream.opacity(0.82))
+            }
+            Spacer()
+            Text(String(format: "%02d", roundIndex))
+                .font(.phormNumberMd)
+                .foregroundStyle(Color.phormCreamDim)
+        }
+    }
+
+    private var roundIndex: Int {
+        switch mode {
+        case .new:           return (session.rounds ?? []).count + 1
+        case .edit(let r):   return r.index
+        }
+    }
+
+    private var roundDisplayTitle: String {
+        "Vòng \(vietnameseNumeral(roundIndex))"
+    }
+
+    private func vietnameseNumeral(_ n: Int) -> String {
+        let units = ["không","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"]
+        if n < 10 { return units[n] }
+        if n < 20 {
+            let u = n - 10
+            return u == 0 ? "mười" : "mười \(units[u])"
+        }
+        if n < 100 {
+            let t = n / 10, u = n % 10
+            return u == 0 ? "\(units[t]) mươi" : "\(units[t]) mươi \(units[u])"
+        }
+        return "\(n)"
+    }
+
+    // MARK: - Player cells
+
+    private var playerCells: some View {
+        VStack(spacing: Spacing.md) {
             ForEach(Array(draft.playerNames.enumerated()), id: \.offset) { idx, name in
-                row(idx: idx, name: name)
-                if idx != draft.playerNames.count - 1 {
-                    Divider().background(Color.hairline)
-                }
+                playerRow(idx: idx, name: name)
             }
         }
-        .padding(.horizontal, Spacing.lg)
     }
 
     @ViewBuilder
-    private func row(idx: Int, name: String) -> some View {
+    private func playerRow(idx: Int, name: String) -> some View {
         let isFocused = draft.focusedIndex == idx
         let isAuto = draft.autoFillIndex == idx
-        HStack {
+        HStack(spacing: Spacing.md) {
             Text(name)
-                .font(.phormTitleSm)
-                .foregroundStyle(Color.bodyText)
+                .font(.phormNameMd)
+                .foregroundStyle(
+                    isFocused ? Color.phormPrimary
+                    : isAuto ? Color.phormCreamDim
+                    : Color.phormCream
+                )
             Spacer()
-            valueText(idx: idx, isFocused: isFocused, isAuto: isAuto)
-        }
-        .padding(.horizontal, Spacing.xs)
-        .padding(.vertical, Spacing.sm)
-        .background(isFocused ? Color.focusRowTint : .clear)
-        .overlay(alignment: .bottom) {
-            if isFocused { Rectangle().fill(Color.phormPrimary).frame(height: 2) }
+            cellView(idx: idx, isFocused: isFocused, isAuto: isAuto)
         }
         .contentShape(Rectangle())
         .onTapGesture { draft.focusedIndex = idx }
     }
 
     @ViewBuilder
-    private func valueText(idx: Int, isFocused: Bool, isAuto: Bool) -> some View {
+    private func cellView(idx: Int, isFocused: Bool, isAuto: Bool) -> some View {
+        ZStack(alignment: .topTrailing) {
+            HStack(spacing: 2) {
+                cellValue(idx: idx, isFocused: isFocused, isAuto: isAuto)
+                if isFocused {
+                    BlinkingCaret()
+                }
+            }
+            .frame(width: 110, alignment: .trailing)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(cellBackground(isFocused: isFocused, isAuto: isAuto))
+
+            if isAuto {
+                Seal(glyph: "封", variant: .winner, size: 22)
+                    .offset(x: 8, y: -8)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
+        .frame(height: 44)
+    }
+
+    @ViewBuilder
+    private func cellValue(idx: Int, isFocused: Bool, isAuto: Bool) -> some View {
         if isAuto, let v = draft.autoFillValue {
-            Text("\(formatted(v)) auto")
-                .font(.phormNumberEntry)
-                .foregroundStyle(Color.phormMuted)
-                .italic()
+            Text(ScoreFormat.signed(v))
+                .font(.phormNumberScript)
+                .foregroundStyle(Color.phormPrimary)
         } else if let v = draft.entries[idx] {
-            Text(formatted(v))
+            Text(ScoreFormat.signed(v))
                 .font(.phormNumberEntry)
-                .foregroundStyle(isFocused ? Color.phormPrimary : Color.bodyText)
+                .foregroundStyle(isFocused ? Color.phormPrimary : Color.phormCream)
         } else {
             Text("0")
                 .font(.phormNumberEntry)
-                .foregroundStyle(Color.phormMuted)
+                .foregroundStyle(Color.phormCream.opacity(0.32))
         }
     }
 
-    private func formatted(_ v: Int) -> String {
-        v > 0 ? "+\(v)" : "\(v)"
+    @ViewBuilder
+    private func cellBackground(isFocused: Bool, isAuto: Bool) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 2, style: .continuous)
+        ZStack {
+            if isFocused {
+                shape.fill(Color.phormPrimary.opacity(0.14))
+                shape.strokeBorder(Color.phormPrimary, lineWidth: 1.5)
+            } else if isAuto {
+                shape.fill(Color.phormPrimary.opacity(0.06))
+                shape.strokeBorder(Color.phormPrimaryActive, lineWidth: 1)
+            } else {
+                shape.fill(Color.black.opacity(0.18))
+                shape.strokeBorder(Color.phormCream.opacity(0.30), lineWidth: 1)
+            }
+        }
+    }
+
+    // MARK: - Validation
+
+    private var validationRow: some View {
+        let sum = draft.liveSum
+        let ok = sum == 0
+        return HStack {
+            SectionLabel(text: "Tổng")
+            Spacer()
+            Text(ok ? "0 · cân" : "\(ScoreFormat.signed(sum)) ⚠")
+                .font(.phormNumberMd)
+                .foregroundStyle(ok ? Color.scorePositive : Color.warning)
+        }
+        .padding(.top, Spacing.sm)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(Color.phormCream.opacity(0.18))
+                .frame(height: 1)
+        }
+    }
+
+    // MARK: - Bottom dock (keypad + CTA)
+
+    private var bottomDock: some View {
+        VStack(spacing: Spacing.sm) {
+            Keypad(
+                onKey: { draft.keypad($0) },
+                onSave: save,
+                canSave: true,
+                sign: draft.signMode
+            )
+        }
+        .padding(.horizontal, Spacing.md)
+        .padding(.bottom, Spacing.sm)
+        .background(
+            LinearGradient(
+                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.6), .phormSurfaceCinnabarDeep],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 380)
+            .allowsHitTesting(false),
+            alignment: .bottom
+        )
     }
 
     private func save() {
@@ -158,5 +300,21 @@ struct RoundEntryView: View {
         } catch {
             print("save round failed: \(error)")
         }
+    }
+}
+
+/// Caret that blinks at 1Hz — keypad input cursor in the focused cell.
+private struct BlinkingCaret: View {
+    @State private var visible = true
+    var body: some View {
+        Rectangle()
+            .fill(Color.phormPrimary)
+            .frame(width: 2, height: 22)
+            .opacity(visible ? 1 : 0)
+            .onAppear {
+                withAnimation(.linear(duration: 0.6).repeatForever(autoreverses: true)) {
+                    visible.toggle()
+                }
+            }
     }
 }

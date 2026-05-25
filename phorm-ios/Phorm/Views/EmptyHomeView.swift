@@ -2,49 +2,58 @@ import SwiftUI
 
 struct EmptyHomeView: View {
     @State private var showNewSession = false
+    @State private var showHistory = false
 
     var body: some View {
-        VStack(spacing: Spacing.lg) {
-            Spacer()
-            Image(systemName: "rectangle.stack.badge.plus")
-                .font(.system(size: 64))
-                .foregroundStyle(Color.phormMuted)
-            Text("Chưa có ván nào")
-                .font(.phormTitleLg)
-                .foregroundStyle(Color.bodyText)
-            Text("Tạo session mới để bắt đầu ghi điểm")
-                .font(.phormBodyMd)
-                .foregroundStyle(Color.phormMuted)
-                .multilineTextAlignment(.center)
-            Spacer()
-            Button {
-                showNewSession = true
-            } label: {
-                Text("+ Tạo session mới")
-                    .font(.phormButton)
-                    .foregroundStyle(Color.onPrimary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .background(Color.phormPrimary)
-                    .continuousRounded(Radius.lg)
+        ZStack(alignment: .bottom) {
+            VStack(spacing: Spacing.xl) {
+                Spacer()
+
+                VStack(spacing: Spacing.lg) {
+                    Seal(glyph: "壹", variant: .winner, size: 80)
+                        .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+
+                    VStack(spacing: 6) {
+                        SectionLabel(text: "Sổ ghi điểm")
+                        Text("Bắt đầu phiên đầu")
+                            .font(.phormDisplayMd)
+                            .italic()
+                            .foregroundStyle(Color.phormCream)
+                            .multilineTextAlignment(.center)
+                        Text("phỏm, sâm lốc, hay bất cứ ván nào — app chỉ ghi điểm, không phân định luật.")
+                            .font(.phormBodyMd)
+                            .foregroundStyle(Color.phormCream.opacity(0.65))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, Spacing.lg)
+                            .padding(.top, Spacing.xs)
+                    }
+                }
+
+                Spacer()
             }
-            .padding(.horizontal, Spacing.lg)
-            .padding(.bottom, Spacing.xl)
-        }
-        .padding(.horizontal, Spacing.xl)
-        .background(Color.canvas)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    HistoryView()
-                } label: {
-                    Image(systemName: "clock.arrow.circlepath")
-                        .foregroundStyle(Color.phormPrimary)
+            .padding(.horizontal, Spacing.xl)
+
+            VStack(spacing: Spacing.sm) {
+                LacquerPrimaryButton(title: "Mở phiên mới") {
+                    showNewSession = true
+                }
+                LacquerOutlineButton(title: "Lịch sử") {
+                    showHistory = true
                 }
             }
+            .padding(.horizontal, Spacing.lg)
+            .padding(.bottom, Spacing.md)
         }
+        .lacquerBackground()
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .navigationTitle("")
         .sheet(isPresented: $showNewSession) {
             NewSessionView()
+                .preferredColorScheme(.dark)
+        }
+        .navigationDestination(isPresented: $showHistory) {
+            HistoryView()
         }
     }
 }
