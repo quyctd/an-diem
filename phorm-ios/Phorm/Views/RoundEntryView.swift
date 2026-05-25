@@ -43,7 +43,8 @@ struct RoundEntryView: View {
                 canSave: true
             )
         }
-        .background(.thickMaterial)
+        .background(Color.canvas)
+        .presentationBackground(Color.canvas)
         .confirmationDialog("Xóa ván này?", isPresented: $showDeleteConfirm) {
             if case .edit(let round) = mode {
                 Button("Xóa", role: .destructive) {

@@ -65,6 +65,11 @@ struct NewSessionView: View {
                 }
                 .padding(Spacing.lg)
             }
+            .background(Color.canvas)
+            .scrollContentBackground(.hidden)
+            .toolbarBackground(Color.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .navigationTitle("Session mới")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -90,6 +95,7 @@ struct NewSessionView: View {
                 .padding(.bottom, Spacing.sm)
             }
         }
+        .presentationBackground(Color.canvas)
     }
 
     @ViewBuilder private func sectionLabel(_ text: String) -> some View {
@@ -125,7 +131,7 @@ struct NewSessionView: View {
             }
         }
         .padding(Spacing.md)
-        .background(.regularMaterial)
+        .background(Color.surfaceCard)
         .continuousRounded(Radius.lg)
     }
 
@@ -186,7 +192,7 @@ struct NewSessionView: View {
                         if name != autosuggestMatches.last { Divider().background(Color.hairline) }
                     }
                 }
-                .background(.regularMaterial)
+                .background(Color.surfaceCard)
                 .continuousRounded(Radius.md)
             }
         }

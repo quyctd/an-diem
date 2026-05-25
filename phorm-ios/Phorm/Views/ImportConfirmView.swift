@@ -66,8 +66,9 @@ struct ImportConfirmView: View {
             }
         }
         .padding(Spacing.lg)
-        .background(.thickMaterial)
+        .background(Color.canvas)
         .presentationDetents([.medium, .large])
+        .presentationBackground(Color.canvas)
     }
 
     private func chip(_ s: String) -> some View {
