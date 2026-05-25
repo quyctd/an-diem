@@ -23,8 +23,7 @@ struct EmptyHomeView: View {
                         VStack(spacing: 6) {
                             SectionLabel(text: "Sổ ghi điểm")
                             Text("Khai sổ")
-                                .font(.phormDisplayMd)
-                                .italic()
+                                .font(.system(size: 36, weight: .bold, design: .serif).italic())
                                 .foregroundStyle(Color.phormCream)
                                 .multilineTextAlignment(.center)
                             Text("phỏm, sâm lốc — sổ thay trí nhớ, mỗi vòng một dấu vàng, không ai cãi được.")
