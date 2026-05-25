@@ -8,6 +8,7 @@ This is a **design/planning repo, not the iOS app codebase.** Per `PLAN.md`, the
 
 Contents:
 - `PLAN.md` — the source of truth for product scope, UX decisions (numbered 1–14, treat as locked), data model sketch, screens, and manual verification steps.
+- `PRODUCT.md` — the brand brief: who the user is, product purpose, voice, anti-references, design principles, accessibility commitments. Shorter than DESIGN.md/PLAN.md; read it whole when product framing matters.
 - `DESIGN.md` — design tokens as YAML-in-Markdown frontmatter: colors, Liquid Glass materials, typography (SF Pro Display/Text + SF Mono for all numerics), spacing, components. ~860 lines; read the frontmatter, don't paraphrase it.
 - `design-walkthrough.html` — single-file Tailwind (CDN) mockup of every screen. Open directly in a browser, or view via raw.githack: https://raw.githack.com/quyctd/saam-app/main/design-walkthrough.html
 - `README.md` — short pointer to the above.
@@ -17,7 +18,7 @@ There is no Swift code, no `package.json`, no build/lint/test pipeline in this r
 ## Working in this repo
 
 - Editing `design-walkthrough.html`: it's standalone — no build step. Open the file in a browser to preview changes. Tailwind is loaded from `cdn.jsdelivr.net/npm/@tailwindcss/browser@4`.
-- Editing `PLAN.md` / `DESIGN.md`: prose/spec changes only. The 14 numbered UX decisions in PLAN.md are intentional commitments — don't soften, expand, or "improve" them without explicit ask. Same for the "Out of scope (MVP)" list at the bottom.
+- Editing `PLAN.md` / `PRODUCT.md` / `DESIGN.md`: prose/spec changes only. The 14 numbered UX decisions in PLAN.md, the 5 design principles + anti-references in PRODUCT.md, and the token frontmatter in DESIGN.md are intentional commitments — don't soften, expand, or "improve" them without explicit ask. Same for the "Out of scope (MVP)" list at the bottom of PLAN.md.
 - `.expect/` is gitignored except for `.gitignore` itself — it's scratch for the `mcp__expect__*` browser tools and shouldn't be checked in.
 
 ## Non-negotiable product principles (from PLAN.md)
@@ -38,6 +39,15 @@ When discussing implementation (even though the code is elsewhere), assume:
 - SwiftData with CloudKit container for storage + sync
 - `ShareLink` + custom URL scheme `phorm://import?s=<base64>` for session handoff (JSON → gzip → base64url)
 - Players are `[String]` on `Session`, not a separate entity — keeps URL handoff trivial and autosuggest = distinct names across sessions.
+
+## Brand & voice anchors (from PRODUCT.md)
+
+- **User is the host at the table** — one Vietnamese-speaking adult holding the phone between rounds in a low-light social setting, attention split. Optimize for the scribe, not the strongest player.
+- **Confident, fast, deliberate.** Voice is terse Vietnamese with no marketing fluff and no game-show energy. Warnings are matter-of-fact ("Tổng: −3 ⚠"), never apologetic or alarming.
+- **Reference register: trading terminals + Apple data-dense apps (Stocks, Fitness, Health) + pro tools (Linear, Raycast, Things 3).** Numbers carry the personality; chrome stays restrained.
+- **Anti-references — reject on sight:** SaaS-dashboard sameness (Linear/Stripe/Notion pastel-gradient look), Apple Notes / Numbers blandness, cartoony game-tracker energy (confetti, mascots, "🎉 You won!"), gambling/casino chrome (felt green, playing cards, slot-machine red). The 🥇🥈🥉💀 on the leaderboard is the only decoration the app earns.
+- **Score up/down must pair color with a non-color cue** (sign, arrow, weight). Color-blind parsing of the leaderboard is a real requirement, not a nice-to-have.
+- **WCAG AA across both themes.** Yellow primary on its surface and green/red score text on every background it appears on must clear contrast. Dynamic Type scales Vietnamese body copy; SF Mono numerics stay fixed-size for column alignment — that trade-off is deliberate.
 
 ## Design system anchors (from DESIGN.md)
 
