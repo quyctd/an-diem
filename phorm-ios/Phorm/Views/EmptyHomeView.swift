@@ -22,7 +22,7 @@ struct EmptyHomeView: View {
 
                         VStack(spacing: 6) {
                             SectionLabel(text: "Sổ ghi điểm")
-                            Text("Bắt đầu phiên đầu")
+                            Text("Khai sổ")
                                 .font(.phormDisplayMd)
                                 .italic()
                                 .foregroundStyle(Color.phormCream)
