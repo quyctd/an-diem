@@ -136,7 +136,7 @@ typography:
   label-caps:
     fontFamily: "Spectral, serif"
     fontWeight: 500
-    fontSize: 9px
+    fontSize: 11px
     letterSpacing: 0.18em
     textTransform: uppercase
     use: "Section labels — 'PHIÊN ĐANG CHƠI', 'VÒNG', 'TỔNG', 'VÔ ĐỊCH VÁN'"

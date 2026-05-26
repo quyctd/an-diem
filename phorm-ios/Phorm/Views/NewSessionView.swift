@@ -175,10 +175,12 @@ struct NewSessionView: View {
 
     private var playersBlock: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            HStack {
+            HStack(alignment: .firstTextBaseline) {
                 SectionLabel(text: "Người chơi")
                 Spacer()
-                SectionLabel(text: "\(players.count)")
+                Text("\(players.count)")
+                    .font(.phormNumberSm)
+                    .foregroundStyle(Color.phormCream)
             }
 
             if !players.isEmpty {

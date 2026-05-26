@@ -33,8 +33,8 @@ extension Font {
     static let phormBodySm       = Font.system(size: 13, weight: .regular, design: .serif)
     /// Round-card "Ván N" label, time meta. 12pt / 500.
     static let phormCaption      = Font.system(size: 12, weight: .medium, design: .serif)
-    /// Section labels — "PHIÊN ĐANG CHƠI", "VÒNG", "TỔNG". 9pt uppercase, letter-spaced via .tracking.
-    static let phormCaptionSection = Font.scaledSerif(9, weight: .semibold, relativeTo: .caption2)
+    /// Section labels — "PHIÊN ĐANG CHƠI", "VÒNG", "TỔNG". 11pt uppercase, letter-spaced via .tracking.
+    static let phormCaptionSection = Font.scaledSerif(11, weight: .semibold, relativeTo: .caption2)
     /// Primary CTA label. 14pt / 600 uppercase — letter-spacing applied via .tracking at use site.
     static let phormButton       = Font.system(size: 14, weight: .semibold, design: .serif)
 
