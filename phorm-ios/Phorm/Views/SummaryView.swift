@@ -198,6 +198,9 @@ struct SummaryView: View {
                             RoundedRectangle(cornerRadius: 3, style: .continuous)
                                 .stroke(Color.phormPrimary, lineWidth: 1)
                         )
+                        // Match LacquerOutlineButton — stroke-only background
+                        // needs an explicit contentShape so the full frame is tappable.
+                        .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
                 }
                 .buttonStyle(.plain)
             }

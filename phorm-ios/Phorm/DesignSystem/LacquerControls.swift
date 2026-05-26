@@ -52,6 +52,9 @@ struct LacquerOutlineButton: View {
                     RoundedRectangle(cornerRadius: 3, style: .continuous)
                         .stroke(Color.phormPrimary, lineWidth: 1)
                 )
+                // Stroke-only background isn't opaque, so SwiftUI's hit area
+                // collapses to the text. Force the full frame to be tappable.
+                .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
         }
         .buttonStyle(.plain)
     }
