@@ -50,6 +50,9 @@ struct Keypad: View {
                             RoundedRectangle(cornerRadius: 3, style: .continuous)
                                 .stroke(Color.phormCream.opacity(0.30), lineWidth: 1)
                         )
+                        // Stroke-only background isn't opaque, so SwiftUI's hit area
+                        // collapses to the text. Force the full frame to be tappable.
+                        .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
                 }
                 .buttonStyle(.plain)
 

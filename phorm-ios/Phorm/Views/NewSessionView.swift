@@ -325,6 +325,9 @@ struct NewSessionView: View {
                     }
                     .padding(.horizontal, Spacing.md)
                     .padding(.vertical, Spacing.sm)
+                    // Spacer is transparent — without contentShape the dead
+                    // middle of the row swallows taps between name and plus.
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 if name != autosuggestMatches.last {

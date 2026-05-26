@@ -99,6 +99,9 @@ struct ImportConfirmView: View {
                     .foregroundStyle(Color.phormCreamDim)
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
+                    // No background fill — without contentShape the tap area
+                    // would collapse to the "Huỷ" text glyphs only.
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
