@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: phorm-design-hanoi-cu
+name: andiem-design-hanoi-cu
 description: A confident Vietnamese-vernacular score-tracker interface for iOS — a Phỏm/Sâm Lốc card-game scorekeeper where one player at a table holds the phone and records points after each round. Visual identity is drawn from Vietnamese print history (matchbox labels, Bia Hà Nội bottles, lacquerware seals, áo dài silk) read through a modern designer's eye, NOT pastiche. Each session lives on one drenched lacquer surface (cinnabar / ochre / jade / oxblood); chrome is sparse, halftone-textured, and serves the numbers. Display serifs (Noto Serif Display + Cormorant Garamond + IBM Plex Serif tabular figures) carry the personality — numerals have weight, italics, ink. The winner earns a gold seal (ấn vàng); the last place gets a tem chéo (×). The visual reference is themes-preview.html in this repo. Liquid Glass is REPLACED by halftone + paper grain texture.
 
 colors:

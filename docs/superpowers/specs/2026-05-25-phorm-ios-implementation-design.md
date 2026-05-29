@@ -18,7 +18,7 @@ This document only covers what those three docs leave open: code architecture, r
 
 | # | Decision | Notes |
 |---|---|---|
-| 1 | **iOS code lives in `./phorm-ios/` subfolder** of this repo | Overrides PLAN.md tech-stack line ("repo mới, riêng"). PLAN.md will be amended to match. One git history for spec + code. |
+| 1 | **iOS code lives in `./andiem-ios/` subfolder** of this repo | Overrides PLAN.md tech-stack line ("repo mới, riêng"). PLAN.md will be amended to match. One git history for spec + code. |
 | 2 | **CloudKit day 1** with `.automatic` SwiftData CloudKit database | Active Apple Developer account confirmed. iPhone↔iPad sync from v0. |
 | 3 | **Architecture: direct `@Observable` + `@Query`** | No MVVM, no repository pattern. Pure functions for logic. |
 | 4 | **Single mutation surface: `SessionActions`** enum | Views never call `modelContext.insert` directly. Keeps active-session invariant in one file. |
@@ -28,8 +28,8 @@ This document only covers what those three docs leave open: code architecture, r
 
 ### Location & Xcode project
 
-- New folder: `./phorm-ios/` (inside this `saam-app` repo).
-- Xcode project: `phorm-ios.xcodeproj` with two targets:
+- New folder: `./andiem-ios/` (inside this `an-diem` repo).
+- Xcode project: `andiem-ios.xcodeproj` with two targets:
   - **`Phorm`** — iOS app, deployment target **iOS 17.0**, SwiftUI app lifecycle.
   - **`PhormTests`** — Swift Testing framework (`import Testing`), pure-logic unit tests only.
 - Bundle ID: `com.quyctd.phorm`
@@ -42,7 +42,7 @@ This document only covers what those three docs leave open: code architecture, r
 - Background Modes → Remote notifications (silent push for CloudKit)
 - URL Types → scheme `phorm` (handles `phorm://import?s=<base64url>`)
 
-### Folder layout (`phorm-ios/Phorm/`)
+### Folder layout (`andiem-ios/Phorm/`)
 
 ```
 Phorm/
@@ -83,7 +83,7 @@ Phorm/
 
 - Extend root `.gitignore` with Xcode artifacts: `xcuserdata/`, `*.xcuserstate`, `.swiftpm/`, `DerivedData/`, `.DS_Store`, `build/`.
 - Amend PLAN.md tech-stack line ("**Repo**: mới, riêng …") to reflect subfolder decision.
-- Update root README.md with a pointer to `./phorm-ios/`.
+- Update root README.md with a pointer to `./andiem-ios/`.
 - No SwiftLint, no swift-format, no CI for MVP.
 - Tests run via ⌘U in Xcode.
 
@@ -450,7 +450,7 @@ Mirrors PLAN.md "Out of scope (MVP)" plus these implementation-level cuts:
 
 ## Open items (track during implementation)
 
-- **CloudKit container provisioning** — needs an Apple Developer portal step (create `iCloud.com.quyctd.phorm` container, link to Phorm app ID). Document the steps in `phorm-ios/README.md` once done.
+- **CloudKit container provisioning** — needs an Apple Developer portal step (create `iCloud.com.quyctd.phorm` container, link to Phorm app ID). Document the steps in `andiem-ios/README.md` once done.
 - **App icon** — placeholder `#fcd535` "P" tile for v0; commission or design proper icon post-MVP.
 - **DESIGN.md vs iOS version** — DESIGN.md mentions "iOS 26"; the implementation targets iOS 17.0+. SwiftUI material APIs are forward-compatible (regular/thick render natively, upgrade to Liquid Glass automatically on iOS 18+). No spec change needed.
-- **PLAN.md amendment** — change the "Repo: mới, riêng" line in PLAN.md §Tech-stack to reflect the `./phorm-ios/` subfolder decision (do this as part of the implementation plan's first step).
+- **PLAN.md amendment** — change the "Repo: mới, riêng" line in PLAN.md §Tech-stack to reflect the `./andiem-ios/` subfolder decision (do this as part of the implementation plan's first step).

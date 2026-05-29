@@ -2,7 +2,7 @@
 // Renders the Phorm app icon (1024×1024) from the same SwiftUI primitives the
 // EmptyHomeView "壹 seal on cinnabar" logo uses. Run from the repo root:
 //
-//     swift phorm-ios/tools/render-app-icon.swift
+//     swift andiem-ios/tools/render-app-icon.swift
 //
 // Writes Phorm/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png
 // and rewrites the appiconset's Contents.json to reference it.
@@ -165,10 +165,10 @@ func render() throws {
     let scriptURL = URL(fileURLWithPath: CommandLine.arguments[0]).resolvingSymlinksInPath()
     let projectRoot = scriptURL
         .deletingLastPathComponent()  // tools/
-        .deletingLastPathComponent()  // phorm-ios/
+        .deletingLastPathComponent()  // andiem-ios/
         .deletingLastPathComponent()  // repo root
     let outDir = projectRoot
-        .appendingPathComponent("phorm-ios/Phorm/Resources/Assets.xcassets/AppIcon.appiconset", isDirectory: true)
+        .appendingPathComponent("andiem-ios/Phorm/Resources/Assets.xcassets/AppIcon.appiconset", isDirectory: true)
     let outPng = outDir.appendingPathComponent("AppIcon-1024.png")
     let outJson = outDir.appendingPathComponent("Contents.json")
 

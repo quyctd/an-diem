@@ -6,7 +6,7 @@
 #   2. Drive the app by hand to each state you want to capture (see SHOTS list below).
 #   3. For each state, run:  ./capture-screenshots.sh shot <name>
 #      e.g.   ./capture-screenshots.sh shot 01-sessions-empty
-#   4. PNGs land in phorm-ios/tools/screenshots/.
+#   4. PNGs land in andiem-ios/tools/screenshots/.
 #
 # App Store requires either the 6.9" (1320×2868) OR 6.5" (1242×2688) class — one set covers
 # all smaller iPhones. iPhone 17 Pro Max is 6.9"; iPhone 15 Pro Max is 6.7" (1290×2796) and
@@ -18,7 +18,7 @@ set -euo pipefail
 SIM_NAME="${PHORM_SIM:-iPhone 17 Pro Max}"   # override: PHORM_SIM="iPhone 15 Pro Max" ./capture-screenshots.sh
 SCHEME="Phorm"
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-PROJECT="$PROJECT_DIR/phorm-ios.xcodeproj"
+PROJECT="$PROJECT_DIR/andiem-ios.xcodeproj"
 BUNDLE_ID="com.quyctd.phorm"
 OUT_DIR="$PROJECT_DIR/tools/screenshots"
 mkdir -p "$OUT_DIR"

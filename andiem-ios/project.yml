@@ -1,4 +1,4 @@
-name: phorm-ios
+name: andiem-ios
 options:
   bundleIdPrefix: com.quyctd
   deploymentTarget:

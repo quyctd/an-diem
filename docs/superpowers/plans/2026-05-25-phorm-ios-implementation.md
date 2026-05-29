@@ -2,14 +2,14 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the native iOS MVP of Phorm — an offline-first Vietnamese card-game score tracker — per the spec at `docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md`.
+**Goal:** Build the native iOS MVP of Phorm — an offline-first Vietnamese card-game score tracker — per the spec at `docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md`.
 
 **Architecture:** Direct `@Observable` + `@Query` SwiftUI on iOS 17+. SwiftData + CloudKit (`.automatic`) for storage and free iPhone↔iPad sync. Pure-function logic layer (`AutoFill`, `Totals`, `SessionShare`, `SessionActions`) keeps the active-session invariant and URL handoff testable. Sheet-local `@Observable` (`RoundDraft`) owns transient round-entry state.
 
-**Tech Stack:** Swift 5.9+, SwiftUI, SwiftData, CloudKit (`iCloud.com.quyctd.phorm`), Swift Testing (`import Testing`). Xcode 15+ required. URL scheme `phorm://import?s=<base64url(zlib(JSON))>`. **Project file generation:** [xcodegen](https://github.com/yonaskolb/XcodeGen) — `phorm-ios/project.yml` is the source of truth; `phorm-ios.xcodeproj/` is regenerated and gitignored.
+**Tech Stack:** Swift 5.9+, SwiftUI, SwiftData, CloudKit (`iCloud.com.quyctd.phorm`), Swift Testing (`import Testing`). Xcode 15+ required. URL scheme `phorm://import?s=<base64url(zlib(JSON))>`. **Project file generation:** [xcodegen](https://github.com/yonaskolb/XcodeGen) — `andiem-ios/project.yml` is the source of truth; `andiem-ios.xcodeproj/` is regenerated and gitignored.
 
 **Source docs (read first):**
-- `docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md` — implementation spec (this plan implements it)
+- `docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md` — implementation spec (this plan implements it)
 - `PLAN.md` — product/UX (14 locked decisions)
 - `DESIGN.md` — visual tokens (colors, type, materials, radius, spacing)
 - `PRODUCT.md` — brand voice, anti-references, accessibility
@@ -18,12 +18,12 @@
 **File-structure overview (gets built up across the plan):**
 
 ```
-saam-app/
+an-diem/
 ├── PLAN.md                                          # amended in Task A1
 ├── README.md                                        # pointer added in Task A1
 ├── .gitignore                                       # Xcode entries appended in Task A1
-└── phorm-ios/                                       # new — created in Task B1
-    ├── phorm-ios.xcodeproj                          # Task B1
+└── andiem-ios/                                       # new — created in Task B1
+    ├── andiem-ios.xcodeproj                          # Task B1
     ├── README.md                                    # Task B5 (CloudKit setup notes)
     ├── Phorm/
     │   ├── PhormApp.swift                           # Task C1, G1
@@ -92,13 +92,13 @@ Read `PLAN.md` § "Tech stack" (around line 34–43), `.gitignore`, and `README.
 In `PLAN.md`, replace the line that reads:
 
 ```
-- **Repo**: mới, riêng — `phorm-ios` (không nằm trong repo `phorm-app` này; repo hiện tại giữ làm reference cho UX history)
+- **Repo**: mới, riêng — `andiem-ios` (không nằm trong repo `phorm-app` này; repo hiện tại giữ làm reference cho UX history)
 ```
 
 with:
 
 ```
-- **Repo**: iOS code lives in `./phorm-ios/` subfolder of this repo (one git history for spec + code; decision logged in `docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md`)
+- **Repo**: iOS code lives in `./andiem-ios/` subfolder of this repo (one git history for spec + code; decision logged in `docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md`)
 ```
 
 - [ ] **Step 3: Extend `.gitignore`**
@@ -115,7 +115,7 @@ build/
 .DS_Store
 
 # xcodegen-generated project (regenerate with `xcodegen generate`)
-phorm-ios/phorm-ios.xcodeproj/
+andiem-ios/andiem-ios.xcodeproj/
 ```
 
 - [ ] **Step 4: Add README pointer**
@@ -125,14 +125,14 @@ In `README.md`, add a section right after the existing intro (keep existing cont
 ```markdown
 ## iOS app
 
-The native iOS implementation lives in [`./phorm-ios/`](./phorm-ios/). See the spec at [`docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md`](docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md) and the step-by-step plan at [`docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md`](docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md).
+The native iOS implementation lives in [`./andiem-ios/`](./andiem-ios/). See the spec at [`docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md`](docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md) and the step-by-step plan at [`docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md`](docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md).
 ```
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add PLAN.md .gitignore README.md
-git commit -m "Prep repo for ./phorm-ios subfolder"
+git commit -m "Prep repo for ./andiem-ios subfolder"
 ```
 
 ---
@@ -146,14 +146,14 @@ git commit -m "Prep repo for ./phorm-ios subfolder"
 ### Task B1: Install xcodegen + folder skeleton
 
 **Files:**
-- Create: `phorm-ios/Phorm/Models/.gitkeep`
-- Create: `phorm-ios/Phorm/Logic/.gitkeep`
-- Create: `phorm-ios/Phorm/State/.gitkeep`
-- Create: `phorm-ios/Phorm/DesignSystem/.gitkeep`
-- Create: `phorm-ios/Phorm/Views/Components/.gitkeep`
-- Create: `phorm-ios/Phorm/Resources/Assets.xcassets/Contents.json`
-- Create: `phorm-ios/Phorm/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json`
-- Create: `phorm-ios/PhormTests/.gitkeep`
+- Create: `andiem-ios/Phorm/Models/.gitkeep`
+- Create: `andiem-ios/Phorm/Logic/.gitkeep`
+- Create: `andiem-ios/Phorm/State/.gitkeep`
+- Create: `andiem-ios/Phorm/DesignSystem/.gitkeep`
+- Create: `andiem-ios/Phorm/Views/Components/.gitkeep`
+- Create: `andiem-ios/Phorm/Resources/Assets.xcassets/Contents.json`
+- Create: `andiem-ios/Phorm/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json`
+- Create: `andiem-ios/PhormTests/.gitkeep`
 
 - [ ] **Step 1: Install xcodegen (idempotent)**
 
@@ -167,16 +167,16 @@ Expected: prints a version like `2.41.0` or newer.
 - [ ] **Step 2: Create folder skeleton**
 
 ```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app
-mkdir -p phorm-ios/Phorm/{Models,Logic,State,DesignSystem,Views/Components,Resources/Assets.xcassets/AppIcon.appiconset}
-mkdir -p phorm-ios/PhormTests
+cd /Users/dinhquy/Documents/quyctd/an-diem
+mkdir -p andiem-ios/Phorm/{Models,Logic,State,DesignSystem,Views/Components,Resources/Assets.xcassets/AppIcon.appiconset}
+mkdir -p andiem-ios/PhormTests
 # .gitkeep files so empty dirs are tracked
-touch phorm-ios/Phorm/Models/.gitkeep \
-      phorm-ios/Phorm/Logic/.gitkeep \
-      phorm-ios/Phorm/State/.gitkeep \
-      phorm-ios/Phorm/DesignSystem/.gitkeep \
-      phorm-ios/Phorm/Views/Components/.gitkeep \
-      phorm-ios/PhormTests/.gitkeep
+touch andiem-ios/Phorm/Models/.gitkeep \
+      andiem-ios/Phorm/Logic/.gitkeep \
+      andiem-ios/Phorm/State/.gitkeep \
+      andiem-ios/Phorm/DesignSystem/.gitkeep \
+      andiem-ios/Phorm/Views/Components/.gitkeep \
+      andiem-ios/PhormTests/.gitkeep
 ```
 
 - [ ] **Step 3: Write `Assets.xcassets/Contents.json`**
@@ -213,22 +213,22 @@ touch phorm-ios/Phorm/Models/.gitkeep \
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/
-git commit -m "phorm-ios: folder skeleton + empty Assets.xcassets"
+git add andiem-ios/
+git commit -m "andiem-ios: folder skeleton + empty Assets.xcassets"
 ```
 
 ### Task B2: Write `project.yml`, entitlements, placeholder Swift
 
 **Files:**
-- Create: `phorm-ios/project.yml`
-- Create: `phorm-ios/Phorm/Phorm.entitlements`
-- Create: `phorm-ios/Phorm/PhormApp.swift`
-- Create: `phorm-ios/PhormTests/PhormTests.swift`
+- Create: `andiem-ios/project.yml`
+- Create: `andiem-ios/Phorm/Phorm.entitlements`
+- Create: `andiem-ios/Phorm/PhormApp.swift`
+- Create: `andiem-ios/PhormTests/PhormTests.swift`
 
-- [ ] **Step 1: Write `phorm-ios/project.yml`**
+- [ ] **Step 1: Write `andiem-ios/project.yml`**
 
 ```yaml
-name: phorm-ios
+name: andiem-ios
 options:
   bundleIdPrefix: com.quyctd
   deploymentTarget:
@@ -303,7 +303,7 @@ schemes:
 
 > `info.path` declares an Info.plist file but `GENERATE_INFOPLIST_FILE: YES` makes Xcode auto-generate one merged with the listed `properties`. This is xcodegen's idiomatic way to inject custom plist keys without hand-managing the whole file.
 
-- [ ] **Step 2: Write `phorm-ios/Phorm/Phorm.entitlements`**
+- [ ] **Step 2: Write `andiem-ios/Phorm/Phorm.entitlements`**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -326,7 +326,7 @@ schemes:
 
 - [ ] **Step 3: Write placeholder `PhormApp.swift`**
 
-`phorm-ios/Phorm/PhormApp.swift`:
+`andiem-ios/Phorm/PhormApp.swift`:
 
 ```swift
 import SwiftUI
@@ -345,7 +345,7 @@ This is a placeholder; Task C1 wires the real `ModelContainer`.
 
 - [ ] **Step 4: Write sanity test**
 
-`phorm-ios/PhormTests/PhormTests.swift`:
+`andiem-ios/PhormTests/PhormTests.swift`:
 
 ```swift
 import Testing
@@ -362,8 +362,8 @@ struct SanityTests {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/
-git commit -m "phorm-ios: project.yml + entitlements + placeholder app + sanity test"
+git add andiem-ios/
+git commit -m "andiem-ios: project.yml + entitlements + placeholder app + sanity test"
 ```
 
 ### Task B3: Generate project, verify build + tests
@@ -373,11 +373,11 @@ git commit -m "phorm-ios: project.yml + entitlements + placeholder app + sanity 
 - [ ] **Step 1: Generate the Xcode project**
 
 ```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+cd /Users/dinhquy/Documents/quyctd/an-diem/andiem-ios
 xcodegen generate
 ```
 
-Expected: `Created project at /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios/phorm-ios.xcodeproj`.
+Expected: `Created project at /Users/dinhquy/Documents/quyctd/an-diem/andiem-ios/andiem-ios.xcodeproj`.
 
 - [ ] **Step 2: Pick an available iOS 17 simulator**
 
@@ -390,9 +390,9 @@ Take note of one device name like `iPhone 15 Pro`. If none match, use any iOS 17
 - [ ] **Step 3: Verify build (simulator, no signing)**
 
 ```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+cd /Users/dinhquy/Documents/quyctd/an-diem/andiem-ios
 xcodebuild \
-  -project phorm-ios.xcodeproj \
+  -project andiem-ios.xcodeproj \
   -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   -configuration Debug \
@@ -405,9 +405,9 @@ Expected: `** BUILD SUCCEEDED **` near the end.
 - [ ] **Step 4: Verify tests**
 
 ```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+cd /Users/dinhquy/Documents/quyctd/an-diem/andiem-ios
 xcodebuild \
-  -project phorm-ios.xcodeproj \
+  -project andiem-ios.xcodeproj \
   -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO \
@@ -421,8 +421,8 @@ Expected: `** TEST SUCCEEDED **`. 1 test passes (`SanityTests.canImportAppModule
 - [ ] **Step 5: Confirm `.xcodeproj` is gitignored**
 
 ```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app
-git status --short phorm-ios/phorm-ios.xcodeproj
+cd /Users/dinhquy/Documents/quyctd/an-diem
+git status --short andiem-ios/andiem-ios.xcodeproj
 ```
 
 Expected: no output (file is ignored). If output appears, the .gitignore entry from Task A1 is missing — fix and re-stage.
@@ -430,14 +430,14 @@ Expected: no output (file is ignored). If output appears, the .gitignore entry f
 ### Task B4: CloudKit provisioning notes
 
 **Files:**
-- Create: `phorm-ios/README.md`
+- Create: `andiem-ios/README.md`
 
 - [ ] **Step 1: Write README**
 
 ```markdown
 # Phorm iOS
 
-Implementation of the Phorm score tracker. See `../docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md` for the architecture spec and `../docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md` for the implementation plan.
+Implementation of the Phorm score tracker. See `../docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md` for the architecture spec and `../docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md` for the implementation plan.
 
 ## Requirements
 - Xcode 15.0+
@@ -450,9 +450,9 @@ Implementation of the Phorm score tracker. See `../docs/superpowers/specs/2026-0
 The Xcode project file is generated from `project.yml`; it is **not** checked into git.
 
 ```sh
-cd phorm-ios
+cd andiem-ios
 xcodegen generate
-open phorm-ios.xcodeproj
+open andiem-ios.xcodeproj
 ```
 
 Regenerate whenever `project.yml` changes.
@@ -461,19 +461,19 @@ Regenerate whenever `project.yml` changes.
 
 ```sh
 # Build (simulator, no signing required)
-xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+xcodebuild -project andiem-ios.xcodeproj -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO build
 
 # Run unit tests
-xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+xcodebuild -project andiem-ios.xcodeproj -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO test
 ```
 
 ## One-time setup for device builds
 
-1. Open `phorm-ios.xcodeproj` in Xcode.
+1. Open `andiem-ios.xcodeproj` in Xcode.
 2. Select the Phorm target → Signing & Capabilities → set **Team** to your Apple Developer team.
 3. Xcode auto-provisions the bundle ID + CloudKit container on first build.
 
@@ -491,8 +491,8 @@ If you build on simulator only, CloudKit calls will fail silently (no container 
 - [ ] **Step 2: Commit**
 
 ```bash
-git add phorm-ios/README.md
-git commit -m "phorm-ios: README with xcodegen + CloudKit setup notes"
+git add andiem-ios/README.md
+git commit -m "andiem-ios: README with xcodegen + CloudKit setup notes"
 ```
 
 ---
@@ -502,7 +502,7 @@ git commit -m "phorm-ios: README with xcodegen + CloudKit setup notes"
 After **adding** any new Swift file or asset, regenerate the project before building/testing — xcodegen captures the file list at generate time and `xcodebuild` won't see new files otherwise:
 
 ```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+cd /Users/dinhquy/Documents/quyctd/an-diem/andiem-ios
 xcodegen generate
 ```
 
@@ -512,12 +512,12 @@ The canonical build + test commands (use whichever simulator name Task B3 confir
 
 ```bash
 # Build
-xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+xcodebuild -project andiem-ios.xcodeproj -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -30
 
 # Test
-xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+xcodebuild -project andiem-ios.xcodeproj -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO test 2>&1 | tail -40
 ```
@@ -531,10 +531,10 @@ Whenever a task says "Build (⌘B)" or "Run tests (⌘U)", run the CLI equivalen
 ### Task C1: Define `Session`, `Round`, `PlayerScore` + wire `ModelContainer`
 
 **Files:**
-- Create: `phorm-ios/Phorm/Models/Session.swift`
-- Create: `phorm-ios/Phorm/Models/Round.swift`
-- Create: `phorm-ios/Phorm/Models/PlayerScore.swift`
-- Modify: `phorm-ios/Phorm/PhormApp.swift`
+- Create: `andiem-ios/Phorm/Models/Session.swift`
+- Create: `andiem-ios/Phorm/Models/Round.swift`
+- Create: `andiem-ios/Phorm/Models/PlayerScore.swift`
+- Modify: `andiem-ios/Phorm/PhormApp.swift`
 
 - [ ] **Step 1: Create `Session.swift`**
 
@@ -619,7 +619,7 @@ final class PlayerScore {
 
 - [ ] **Step 4: Wire `ModelContainer` in `PhormApp.swift`**
 
-Replace the entire contents of `phorm-ios/Phorm/PhormApp.swift` with:
+Replace the entire contents of `andiem-ios/Phorm/PhormApp.swift` with:
 
 ```swift
 import SwiftUI
@@ -663,8 +663,8 @@ App should launch and display "Phorm — models loaded". Cmd+Q simulator.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Models/ phorm-ios/Phorm/PhormApp.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: Session/Round/PlayerScore models + CloudKit ModelContainer"
+git add andiem-ios/Phorm/Models/ andiem-ios/Phorm/PhormApp.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: Session/Round/PlayerScore models + CloudKit ModelContainer"
 ```
 
 ---
@@ -674,12 +674,12 @@ git commit -m "phorm-ios: Session/Round/PlayerScore models + CloudKit ModelConta
 ### Task D1: `AutoFill.suggestion(for:)` — test first, then impl
 
 **Files:**
-- Create: `phorm-ios/PhormTests/AutoFillTests.swift`
-- Create: `phorm-ios/Phorm/Logic/AutoFill.swift`
+- Create: `andiem-ios/PhormTests/AutoFillTests.swift`
+- Create: `andiem-ios/Phorm/Logic/AutoFill.swift`
 
 - [ ] **Step 1: Write failing tests**
 
-`phorm-ios/PhormTests/AutoFillTests.swift`:
+`andiem-ios/PhormTests/AutoFillTests.swift`:
 
 ```swift
 import Testing
@@ -719,7 +719,7 @@ struct AutoFillTests {
 
 - [ ] **Step 3: Implement `AutoFill`**
 
-`phorm-ios/Phorm/Logic/AutoFill.swift`:
+`andiem-ios/Phorm/Logic/AutoFill.swift`:
 
 ```swift
 import Foundation
@@ -744,19 +744,19 @@ enum AutoFill {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/AutoFill.swift phorm-ios/PhormTests/AutoFillTests.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: AutoFill.suggestion(for:) + tests"
+git add andiem-ios/Phorm/Logic/AutoFill.swift andiem-ios/PhormTests/AutoFillTests.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: AutoFill.suggestion(for:) + tests"
 ```
 
 ### Task D2: `Totals.cumulative` / `Totals.ranking` — test first
 
 **Files:**
-- Create: `phorm-ios/PhormTests/TotalsTests.swift`
-- Create: `phorm-ios/Phorm/Logic/Totals.swift`
+- Create: `andiem-ios/PhormTests/TotalsTests.swift`
+- Create: `andiem-ios/Phorm/Logic/Totals.swift`
 
 - [ ] **Step 1: Write failing tests**
 
-`phorm-ios/PhormTests/TotalsTests.swift`:
+`andiem-ios/PhormTests/TotalsTests.swift`:
 
 ```swift
 import Testing
@@ -838,7 +838,7 @@ struct TotalsTests {
 
 - [ ] **Step 3: Implement `Totals`**
 
-`phorm-ios/Phorm/Logic/Totals.swift`:
+`andiem-ios/Phorm/Logic/Totals.swift`:
 
 ```swift
 import Foundation
@@ -879,19 +879,19 @@ enum Totals {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/Totals.swift phorm-ios/PhormTests/TotalsTests.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: Totals.cumulative + Totals.ranking + tests"
+git add andiem-ios/Phorm/Logic/Totals.swift andiem-ios/PhormTests/TotalsTests.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: Totals.cumulative + Totals.ranking + tests"
 ```
 
 ### Task D3: `SessionDTO` + `SessionShare.url(for:)` — test first
 
 **Files:**
-- Create: `phorm-ios/PhormTests/SessionShareTests.swift`
-- Create: `phorm-ios/Phorm/Logic/SessionShare.swift`
+- Create: `andiem-ios/PhormTests/SessionShareTests.swift`
+- Create: `andiem-ios/Phorm/Logic/SessionShare.swift`
 
 - [ ] **Step 1: Write failing tests (encode only — decode in D4)**
 
-`phorm-ios/PhormTests/SessionShareTests.swift`:
+`andiem-ios/PhormTests/SessionShareTests.swift`:
 
 ```swift
 import Testing
@@ -959,7 +959,7 @@ struct SessionShareTests {
 
 - [ ] **Step 3: Implement `SessionDTO` + `SessionShare.url(for:)`**
 
-`phorm-ios/Phorm/Logic/SessionShare.swift`:
+`andiem-ios/Phorm/Logic/SessionShare.swift`:
 
 ```swift
 import Foundation
@@ -1034,19 +1034,19 @@ enum SessionShare {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/SessionShare.swift phorm-ios/PhormTests/SessionShareTests.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: SessionShare.url(for:) + SessionDTO + tests"
+git add andiem-ios/Phorm/Logic/SessionShare.swift andiem-ios/PhormTests/SessionShareTests.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: SessionShare.url(for:) + SessionDTO + tests"
 ```
 
 ### Task D4: `SessionShare.decode(_:)` — test first
 
 **Files:**
-- Modify: `phorm-ios/PhormTests/SessionShareTests.swift`
-- Modify: `phorm-ios/Phorm/Logic/SessionShare.swift`
+- Modify: `andiem-ios/PhormTests/SessionShareTests.swift`
+- Modify: `andiem-ios/Phorm/Logic/SessionShare.swift`
 
 - [ ] **Step 1: Add failing decode tests**
 
-Append to `phorm-ios/PhormTests/SessionShareTests.swift` (inside the `SessionShareTests` struct, before the closing brace):
+Append to `andiem-ios/PhormTests/SessionShareTests.swift` (inside the `SessionShareTests` struct, before the closing brace):
 
 ```swift
     @Test func encodeDecodeRoundtrip() throws {
@@ -1092,7 +1092,7 @@ Append to `phorm-ios/PhormTests/SessionShareTests.swift` (inside the `SessionSha
 
 - [ ] **Step 3: Implement `decode(_:)`**
 
-Append inside the `SessionShare` enum in `phorm-ios/Phorm/Logic/SessionShare.swift`:
+Append inside the `SessionShare` enum in `andiem-ios/Phorm/Logic/SessionShare.swift`:
 
 ```swift
     /// Reverse of `url(for:)`. Throws `ShareError.invalidURL` for bad scheme/host/query
@@ -1133,19 +1133,19 @@ Append inside the `SessionShare` enum in `phorm-ios/Phorm/Logic/SessionShare.swi
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/SessionShare.swift phorm-ios/PhormTests/SessionShareTests.swift
-git commit -m "phorm-ios: SessionShare.decode(_:) + roundtrip tests"
+git add andiem-ios/Phorm/Logic/SessionShare.swift andiem-ios/PhormTests/SessionShareTests.swift
+git commit -m "andiem-ios: SessionShare.decode(_:) + roundtrip tests"
 ```
 
 ### Task D5: `SessionActions` test fixture + `archiveActive`
 
 **Files:**
-- Create: `phorm-ios/PhormTests/SessionActionsTests.swift`
-- Create: `phorm-ios/Phorm/Logic/SessionActions.swift`
+- Create: `andiem-ios/PhormTests/SessionActionsTests.swift`
+- Create: `andiem-ios/Phorm/Logic/SessionActions.swift`
 
 - [ ] **Step 1: Write failing test**
 
-`phorm-ios/PhormTests/SessionActionsTests.swift`:
+`andiem-ios/PhormTests/SessionActionsTests.swift`:
 
 ```swift
 import Testing
@@ -1186,7 +1186,7 @@ struct SessionActionsTests {
 
 - [ ] **Step 3: Implement `archiveActive`**
 
-`phorm-ios/Phorm/Logic/SessionActions.swift`:
+`andiem-ios/Phorm/Logic/SessionActions.swift`:
 
 ```swift
 import Foundation
@@ -1218,15 +1218,15 @@ enum SessionActions {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/SessionActions.swift phorm-ios/PhormTests/SessionActionsTests.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: SessionActions.archiveActive + tests"
+git add andiem-ios/Phorm/Logic/SessionActions.swift andiem-ios/PhormTests/SessionActionsTests.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: SessionActions.archiveActive + tests"
 ```
 
 ### Task D6: `SessionActions.createSession` (archives previous)
 
 **Files:**
-- Modify: `phorm-ios/PhormTests/SessionActionsTests.swift`
-- Modify: `phorm-ios/Phorm/Logic/SessionActions.swift`
+- Modify: `andiem-ios/PhormTests/SessionActionsTests.swift`
+- Modify: `andiem-ios/Phorm/Logic/SessionActions.swift`
 
 - [ ] **Step 1: Add failing test**
 
@@ -1283,15 +1283,15 @@ Append inside `SessionActions`:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/SessionActions.swift phorm-ios/PhormTests/SessionActionsTests.swift
-git commit -m "phorm-ios: SessionActions.createSession + tests"
+git add andiem-ios/Phorm/Logic/SessionActions.swift andiem-ios/PhormTests/SessionActionsTests.swift
+git commit -m "andiem-ios: SessionActions.createSession + tests"
 ```
 
 ### Task D7: `appendRound`, `updateRound`, `deleteRound`
 
 **Files:**
-- Modify: `phorm-ios/PhormTests/SessionActionsTests.swift`
-- Modify: `phorm-ios/Phorm/Logic/SessionActions.swift`
+- Modify: `andiem-ios/PhormTests/SessionActionsTests.swift`
+- Modify: `andiem-ios/Phorm/Logic/SessionActions.swift`
 
 - [ ] **Step 1: Add failing tests**
 
@@ -1407,15 +1407,15 @@ Append inside `SessionActions`:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/SessionActions.swift phorm-ios/PhormTests/SessionActionsTests.swift
-git commit -m "phorm-ios: SessionActions append/update/deleteRound + tests"
+git add andiem-ios/Phorm/Logic/SessionActions.swift andiem-ios/PhormTests/SessionActionsTests.swift
+git commit -m "andiem-ios: SessionActions append/update/deleteRound + tests"
 ```
 
 ### Task D8: `importSession` + `endSession`
 
 **Files:**
-- Modify: `phorm-ios/PhormTests/SessionActionsTests.swift`
-- Modify: `phorm-ios/Phorm/Logic/SessionActions.swift`
+- Modify: `andiem-ios/PhormTests/SessionActionsTests.swift`
+- Modify: `andiem-ios/Phorm/Logic/SessionActions.swift`
 
 - [ ] **Step 1: Add failing tests**
 
@@ -1505,8 +1505,8 @@ Append inside `SessionActions`:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Logic/SessionActions.swift phorm-ios/PhormTests/SessionActionsTests.swift
-git commit -m "phorm-ios: SessionActions importSession + endSession + tests"
+git add andiem-ios/Phorm/Logic/SessionActions.swift andiem-ios/PhormTests/SessionActionsTests.swift
+git commit -m "andiem-ios: SessionActions importSession + endSession + tests"
 ```
 
 ---
@@ -1518,8 +1518,8 @@ git commit -m "phorm-ios: SessionActions importSession + endSession + tests"
 ### Task E1: Color tokens (asset catalog + extensions)
 
 **Files:**
-- Modify: `phorm-ios/Phorm/Resources/Assets.xcassets/` (add color sets)
-- Create: `phorm-ios/Phorm/DesignSystem/Color+Tokens.swift`
+- Modify: `andiem-ios/Phorm/Resources/Assets.xcassets/` (add color sets)
+- Create: `andiem-ios/Phorm/DesignSystem/Color+Tokens.swift`
 
 - [ ] **Step 1: Write 10 `.colorset/Contents.json` files**
 
@@ -1554,7 +1554,7 @@ Schema (single colorset Contents.json — light & dark pair, opaque):
 
 For tinted colors, replace the `alpha` value (e.g., `"alpha" : "0.16"` for 16%).
 
-Create one folder + Contents.json per color set under `phorm-ios/Phorm/Resources/Assets.xcassets/`:
+Create one folder + Contents.json per color set under `andiem-ios/Phorm/Resources/Assets.xcassets/`:
 
 | Folder | Light (Any) hex | Light alpha | Dark hex | Dark alpha |
 |---|---|---|---|---|
@@ -1575,7 +1575,7 @@ After writing all 10 colorsets, run `xcodegen generate` so the new files are pic
 
 - [ ] **Step 2: Create `Color+Tokens.swift`**
 
-`phorm-ios/Phorm/DesignSystem/Color+Tokens.swift`:
+`andiem-ios/Phorm/DesignSystem/Color+Tokens.swift`:
 
 ```swift
 import SwiftUI
@@ -1614,14 +1614,14 @@ extension Color {
 - [ ] **Step 4: Commit**
 
 ```bash
-git add phorm-ios/Phorm/DesignSystem/Color+Tokens.swift phorm-ios/Phorm/Resources/Assets.xcassets phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: DESIGN.md color tokens (brand + adaptive light/dark)"
+git add andiem-ios/Phorm/DesignSystem/Color+Tokens.swift andiem-ios/Phorm/Resources/Assets.xcassets andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: DESIGN.md color tokens (brand + adaptive light/dark)"
 ```
 
 ### Task E2: Font tokens
 
 **Files:**
-- Create: `phorm-ios/Phorm/DesignSystem/Font+Tokens.swift`
+- Create: `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`
 
 - [ ] **Step 1: Create `Font+Tokens.swift`**
 
@@ -1674,15 +1674,15 @@ extension Font {
 - [ ] **Step 3: Commit**
 
 ```bash
-git add phorm-ios/Phorm/DesignSystem/Font+Tokens.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: DESIGN.md font tokens (editorial Dynamic Type + fixed SF Mono numerics)"
+git add andiem-ios/Phorm/DesignSystem/Font+Tokens.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: DESIGN.md font tokens (editorial Dynamic Type + fixed SF Mono numerics)"
 ```
 
 ### Task E3: Material tokens + View helpers
 
 **Files:**
-- Create: `phorm-ios/Phorm/DesignSystem/Material+Tokens.swift`
-- Create: `phorm-ios/Phorm/DesignSystem/View+Helpers.swift`
+- Create: `andiem-ios/Phorm/DesignSystem/Material+Tokens.swift`
+- Create: `andiem-ios/Phorm/DesignSystem/View+Helpers.swift`
 
 - [ ] **Step 1: Create `Material+Tokens.swift`**
 
@@ -1735,15 +1735,15 @@ extension View {
 ⌘B → Build Succeeded.
 
 ```bash
-git add phorm-ios/Phorm/DesignSystem/Material+Tokens.swift phorm-ios/Phorm/DesignSystem/View+Helpers.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: glass materials + continuousRounded/glassSpecularTop helpers"
+git add andiem-ios/Phorm/DesignSystem/Material+Tokens.swift andiem-ios/Phorm/DesignSystem/View+Helpers.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: glass materials + continuousRounded/glassSpecularTop helpers"
 ```
 
 ### Task E4: Radius + Spacing tokens
 
 **Files:**
-- Create: `phorm-ios/Phorm/DesignSystem/Radius.swift`
-- Create: `phorm-ios/Phorm/DesignSystem/Spacing.swift`
+- Create: `andiem-ios/Phorm/DesignSystem/Radius.swift`
+- Create: `andiem-ios/Phorm/DesignSystem/Spacing.swift`
 
 - [ ] **Step 1: Create `Radius.swift`**
 
@@ -1782,8 +1782,8 @@ enum Spacing {
 ⌘B → Build Succeeded.
 
 ```bash
-git add phorm-ios/Phorm/DesignSystem/Radius.swift phorm-ios/Phorm/DesignSystem/Spacing.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: Radius + Spacing tokens"
+git add andiem-ios/Phorm/DesignSystem/Radius.swift andiem-ios/Phorm/DesignSystem/Spacing.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: Radius + Spacing tokens"
 ```
 
 ---
@@ -1793,7 +1793,7 @@ git commit -m "phorm-ios: Radius + Spacing tokens"
 ### Task F1: `RoundDraft` + `KeypadKey`
 
 **Files:**
-- Create: `phorm-ios/Phorm/State/RoundDraft.swift`
+- Create: `andiem-ios/Phorm/State/RoundDraft.swift`
 
 - [ ] **Step 1: Create file**
 
@@ -1910,8 +1910,8 @@ final class RoundDraft {
 - [ ] **Step 3: Commit**
 
 ```bash
-git add phorm-ios/Phorm/State/RoundDraft.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: RoundDraft @Observable + KeypadKey"
+git add andiem-ios/Phorm/State/RoundDraft.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: RoundDraft @Observable + KeypadKey"
 ```
 
 ---
@@ -1921,7 +1921,7 @@ git commit -m "phorm-ios: RoundDraft @Observable + KeypadKey"
 ### Task G1: PhormApp scene + `.onOpenURL` import wiring
 
 **Files:**
-- Modify: `phorm-ios/Phorm/PhormApp.swift`
+- Modify: `andiem-ios/Phorm/PhormApp.swift`
 
 - [ ] **Step 1: Update `PhormApp.swift`**
 
@@ -1976,11 +1976,11 @@ Don't build yet — `HomeView` / `ImportConfirmView` missing. Move to G2.
 ### Task G2: `HomeView` + `EmptyHomeView`
 
 **Files:**
-- Create: `phorm-ios/Phorm/Views/HomeView.swift`
-- Create: `phorm-ios/Phorm/Views/EmptyHomeView.swift`
-- Create: `phorm-ios/Phorm/Views/SessionView.swift` (stub — fleshed out in Phase I)
-- Create: `phorm-ios/Phorm/Views/ImportConfirmView.swift` (stub — fleshed out in Phase L)
-- Create: `phorm-ios/Phorm/Views/NewSessionView.swift` (stub — fleshed out in Phase H)
+- Create: `andiem-ios/Phorm/Views/HomeView.swift`
+- Create: `andiem-ios/Phorm/Views/EmptyHomeView.swift`
+- Create: `andiem-ios/Phorm/Views/SessionView.swift` (stub — fleshed out in Phase I)
+- Create: `andiem-ios/Phorm/Views/ImportConfirmView.swift` (stub — fleshed out in Phase L)
+- Create: `andiem-ios/Phorm/Views/NewSessionView.swift` (stub — fleshed out in Phase H)
 
 - [ ] **Step 1: Create `HomeView.swift`**
 
@@ -2062,7 +2062,7 @@ struct EmptyHomeView: View {
 
 - [ ] **Step 3: Create stubs for `SessionView`, `NewSessionView`, `ImportConfirmView`, `HistoryView`, `SummaryView`**
 
-`phorm-ios/Phorm/Views/SessionView.swift`:
+`andiem-ios/Phorm/Views/SessionView.swift`:
 
 ```swift
 import SwiftUI
@@ -2073,7 +2073,7 @@ struct SessionView: View {
 }
 ```
 
-`phorm-ios/Phorm/Views/NewSessionView.swift`:
+`andiem-ios/Phorm/Views/NewSessionView.swift`:
 
 ```swift
 import SwiftUI
@@ -2083,7 +2083,7 @@ struct NewSessionView: View {
 }
 ```
 
-`phorm-ios/Phorm/Views/ImportConfirmView.swift`:
+`andiem-ios/Phorm/Views/ImportConfirmView.swift`:
 
 ```swift
 import SwiftUI
@@ -2095,7 +2095,7 @@ struct ImportConfirmView: View {
 }
 ```
 
-`phorm-ios/Phorm/Views/HistoryView.swift`:
+`andiem-ios/Phorm/Views/HistoryView.swift`:
 
 ```swift
 import SwiftUI
@@ -2105,7 +2105,7 @@ struct HistoryView: View {
 }
 ```
 
-`phorm-ios/Phorm/Views/SummaryView.swift`:
+`andiem-ios/Phorm/Views/SummaryView.swift`:
 
 ```swift
 import SwiftUI
@@ -2123,8 +2123,8 @@ struct SummaryView: View {
 - [ ] **Step 5: Commit**
 
 ```bash
-git add phorm-ios/Phorm/PhormApp.swift phorm-ios/Phorm/Views/ phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: HomeView routing + EmptyHomeView + view stubs"
+git add andiem-ios/Phorm/PhormApp.swift andiem-ios/Phorm/Views/ andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: HomeView routing + EmptyHomeView + view stubs"
 ```
 
 ---
@@ -2134,7 +2134,7 @@ git commit -m "phorm-ios: HomeView routing + EmptyHomeView + view stubs"
 ### Task H1: `NewSessionView` — player chips, name editor, basic create
 
 **Files:**
-- Modify: `phorm-ios/Phorm/Views/NewSessionView.swift`
+- Modify: `andiem-ios/Phorm/Views/NewSessionView.swift`
 
 - [ ] **Step 1: Replace stub with full implementation**
 
@@ -2321,14 +2321,14 @@ Add 2 players → "Bắt đầu". Sheet dismisses. Home view should now route to
 - [ ] **Step 4: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/NewSessionView.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: NewSessionView with chips + create flow"
+git add andiem-ios/Phorm/Views/NewSessionView.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: NewSessionView with chips + create flow"
 ```
 
 ### Task H2: Reuse-group card + autosuggest from distinct names
 
 **Files:**
-- Modify: `phorm-ios/Phorm/Views/NewSessionView.swift`
+- Modify: `andiem-ios/Phorm/Views/NewSessionView.swift`
 
 - [ ] **Step 1: Add reuse-group card + autosuggest**
 
@@ -2460,8 +2460,8 @@ Replace `addPlayerField` body to show suggestions:
 - [ ] **Step 3: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/NewSessionView.swift
-git commit -m "phorm-ios: NewSessionView reuse-group card + autosuggest"
+git add andiem-ios/Phorm/Views/NewSessionView.swift
+git commit -m "andiem-ios: NewSessionView reuse-group card + autosuggest"
 ```
 
 ---
@@ -2471,8 +2471,8 @@ git commit -m "phorm-ios: NewSessionView reuse-group card + autosuggest"
 ### Task I1: `ScoreChip` + `TotalsChipRow`
 
 **Files:**
-- Create: `phorm-ios/Phorm/Views/Components/ScoreChip.swift`
-- Create: `phorm-ios/Phorm/Views/Components/TotalsChipRow.swift`
+- Create: `andiem-ios/Phorm/Views/Components/ScoreChip.swift`
+- Create: `andiem-ios/Phorm/Views/Components/TotalsChipRow.swift`
 
 - [ ] **Step 1: `ScoreChip.swift`**
 
@@ -2556,14 +2556,14 @@ struct TotalsChipRow: View {
 ⌘B → Build Succeeded.
 
 ```bash
-git add phorm-ios/Phorm/Views/Components/ScoreChip.swift phorm-ios/Phorm/Views/Components/TotalsChipRow.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: ScoreChip + TotalsChipRow"
+git add andiem-ios/Phorm/Views/Components/ScoreChip.swift andiem-ios/Phorm/Views/Components/TotalsChipRow.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: ScoreChip + TotalsChipRow"
 ```
 
 ### Task I2: `RoundCard`
 
 **Files:**
-- Create: `phorm-ios/Phorm/Views/Components/RoundCard.swift`
+- Create: `andiem-ios/Phorm/Views/Components/RoundCard.swift`
 
 - [ ] **Step 1: Create file**
 
@@ -2626,14 +2626,14 @@ struct RoundCard: View {
 - [ ] **Step 2: Build & commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/Components/RoundCard.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: RoundCard"
+git add andiem-ios/Phorm/Views/Components/RoundCard.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: RoundCard"
 ```
 
 ### Task I3: `SessionView` shell + FAB
 
 **Files:**
-- Modify: `phorm-ios/Phorm/Views/SessionView.swift`
+- Modify: `andiem-ios/Phorm/Views/SessionView.swift`
 
 - [ ] **Step 1: Replace stub with full SessionView**
 
@@ -2773,7 +2773,7 @@ private struct NavBarTitle: View {
 
 - [ ] **Step 2: Add `RoundEntryView` stub so build compiles**
 
-`phorm-ios/Phorm/Views/RoundEntryView.swift`:
+`andiem-ios/Phorm/Views/RoundEntryView.swift`:
 
 ```swift
 import SwiftUI
@@ -2796,8 +2796,8 @@ struct RoundEntryView: View {
 - [ ] **Step 4: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/SessionView.swift phorm-ios/Phorm/Views/RoundEntryView.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: SessionView shell + FAB + nav bar + RoundEntry stub"
+git add andiem-ios/Phorm/Views/SessionView.swift andiem-ios/Phorm/Views/RoundEntryView.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: SessionView shell + FAB + nav bar + RoundEntry stub"
 ```
 
 ---
@@ -2807,7 +2807,7 @@ git commit -m "phorm-ios: SessionView shell + FAB + nav bar + RoundEntry stub"
 ### Task J1: `Keypad` component
 
 **Files:**
-- Create: `phorm-ios/Phorm/Views/Components/Keypad.swift`
+- Create: `andiem-ios/Phorm/Views/Components/Keypad.swift`
 
 - [ ] **Step 1: Create file**
 
@@ -2896,14 +2896,14 @@ struct Keypad: View {
 - [ ] **Step 2: Build & commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/Components/Keypad.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: Keypad component (digits + ± + delete + Save)"
+git add andiem-ios/Phorm/Views/Components/Keypad.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: Keypad component (digits + ± + delete + Save)"
 ```
 
 ### Task J2: `SumIndicator`
 
 **Files:**
-- Create: `phorm-ios/Phorm/Views/Components/SumIndicator.swift`
+- Create: `andiem-ios/Phorm/Views/Components/SumIndicator.swift`
 
 - [ ] **Step 1: Create file**
 
@@ -2940,14 +2940,14 @@ struct SumIndicator: View {
 - [ ] **Step 2: Build & commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/Components/SumIndicator.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: SumIndicator (ok / warning)"
+git add andiem-ios/Phorm/Views/Components/SumIndicator.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: SumIndicator (ok / warning)"
 ```
 
 ### Task J3: `RoundEntryView` — full implementation
 
 **Files:**
-- Modify: `phorm-ios/Phorm/Views/RoundEntryView.swift`
+- Modify: `andiem-ios/Phorm/Views/RoundEntryView.swift`
 
 - [ ] **Step 1: Replace stub with full view**
 
@@ -3113,8 +3113,8 @@ Also test: tap an existing RoundCard → edit sheet opens with pre-filled values
 - [ ] **Step 3: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/RoundEntryView.swift
-git commit -m "phorm-ios: RoundEntryView with focus, auto-fill, sum indicator, save/edit"
+git add andiem-ios/Phorm/Views/RoundEntryView.swift
+git commit -m "andiem-ios: RoundEntryView with focus, auto-fill, sum indicator, save/edit"
 ```
 
 ---
@@ -3124,7 +3124,7 @@ git commit -m "phorm-ios: RoundEntryView with focus, auto-fill, sum indicator, s
 ### Task K1: `RankingCard` (first / default / last variants)
 
 **Files:**
-- Create: `phorm-ios/Phorm/Views/Components/RankingCard.swift`
+- Create: `andiem-ios/Phorm/Views/Components/RankingCard.swift`
 
 - [ ] **Step 1: Create file**
 
@@ -3200,14 +3200,14 @@ struct RankingCard: View {
 - [ ] **Step 2: Build & commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/Components/RankingCard.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: RankingCard variants (first / mid / last)"
+git add andiem-ios/Phorm/Views/Components/RankingCard.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: RankingCard variants (first / mid / last)"
 ```
 
 ### Task K2: `SummaryView`
 
 **Files:**
-- Modify: `phorm-ios/Phorm/Views/SummaryView.swift`
+- Modify: `andiem-ios/Phorm/Views/SummaryView.swift`
 
 - [ ] **Step 1: Replace stub**
 
@@ -3300,15 +3300,15 @@ struct SummaryView: View {
 - [ ] **Step 3: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/SummaryView.swift
-git commit -m "phorm-ios: SummaryView with ranking + share link"
+git add andiem-ios/Phorm/Views/SummaryView.swift
+git commit -m "andiem-ios: SummaryView with ranking + share link"
 ```
 
 ### Task K3: `HistoryView` + `HistoryRow`
 
 **Files:**
-- Create: `phorm-ios/Phorm/Views/Components/HistoryRow.swift`
-- Modify: `phorm-ios/Phorm/Views/HistoryView.swift`
+- Create: `andiem-ios/Phorm/Views/Components/HistoryRow.swift`
+- Modify: `andiem-ios/Phorm/Views/HistoryView.swift`
 
 - [ ] **Step 1: Create `HistoryRow.swift`**
 
@@ -3417,8 +3417,8 @@ struct HistoryView: View {
 - [ ] **Step 4: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/Components/HistoryRow.swift phorm-ios/Phorm/Views/HistoryView.swift phorm-ios/phorm-ios.xcodeproj
-git commit -m "phorm-ios: HistoryView + HistoryRow"
+git add andiem-ios/Phorm/Views/Components/HistoryRow.swift andiem-ios/Phorm/Views/HistoryView.swift andiem-ios/andiem-ios.xcodeproj
+git commit -m "andiem-ios: HistoryView + HistoryRow"
 ```
 
 ---
@@ -3428,7 +3428,7 @@ git commit -m "phorm-ios: HistoryView + HistoryRow"
 ### Task L1: `ImportConfirmView` full implementation
 
 **Files:**
-- Modify: `phorm-ios/Phorm/Views/ImportConfirmView.swift`
+- Modify: `andiem-ios/Phorm/Views/ImportConfirmView.swift`
 
 - [ ] **Step 1: Replace stub**
 
@@ -3541,8 +3541,8 @@ If the Safari → app handoff doesn't trigger, double-check Info.plist URL Types
 - [ ] **Step 3: Commit**
 
 ```bash
-git add phorm-ios/Phorm/Views/ImportConfirmView.swift
-git commit -m "phorm-ios: ImportConfirmView with preview + import action"
+git add andiem-ios/Phorm/Views/ImportConfirmView.swift
+git commit -m "andiem-ios: ImportConfirmView with preview + import action"
 ```
 
 ---
@@ -3556,9 +3556,9 @@ git commit -m "phorm-ios: ImportConfirmView with preview + import action"
 - [ ] **Step 1: Run all unit tests**
 
 ```bash
-cd /Users/dinhquy/Documents/quyctd/saam-app/phorm-ios
+cd /Users/dinhquy/Documents/quyctd/an-diem/andiem-ios
 xcodegen generate
-xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+xcodebuild -project andiem-ios.xcodeproj -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO test 2>&1 | tail -40
 ```
@@ -3567,7 +3567,7 @@ Expected: `** TEST SUCCEEDED **` with ~22 tests passing across AutoFill / Totals
 
 - [ ] **Step 2: Walk PLAN.md §Verification (13 steps) on simulator**
 
-PLAN.md has a numbered manual verification checklist (steps 1–13). Walk each one. Note any deviations from expected behavior in `phorm-ios/NOTES.md` (create if needed).
+PLAN.md has a numbered manual verification checklist (steps 1–13). Walk each one. Note any deviations from expected behavior in `andiem-ios/NOTES.md` (create if needed).
 
 Critical paths to verify:
 - Cold start with no session → empty state ✓
@@ -3586,11 +3586,11 @@ Critical paths to verify:
 
 - [ ] **Step 3: Commit any verification notes**
 
-If you created `phorm-ios/NOTES.md`:
+If you created `andiem-ios/NOTES.md`:
 
 ```bash
-git add phorm-ios/NOTES.md
-git commit -m "phorm-ios: manual verification notes"
+git add andiem-ios/NOTES.md
+git commit -m "andiem-ios: manual verification notes"
 ```
 
 - [ ] **Step 4: Final sanity build for archive**

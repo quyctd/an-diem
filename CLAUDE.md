@@ -4,22 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-This repo holds the spec, the design system, and the iOS app implementation (`phorm-ios/`).
+This repo holds the spec, the design system, and the iOS app implementation (`andiem-ios/`).
 
 Contents:
 - `PLAN.md` — the source of truth for product scope, UX decisions (numbered 1–14, treat as locked), data model sketch, screens, and manual verification steps.
 - `PRODUCT.md` — the brand brief: who the user is, product purpose, voice, anti-references, design principles, accessibility commitments. Shorter than DESIGN.md/PLAN.md; read it whole when product framing matters.
 - `DESIGN.md` — design tokens for the **Hà Nội cũ** visual language (Vietnamese vernacular print). YAML-in-Markdown frontmatter: lacquer surfaces (cinnabar/ochre/jade), cream ink, gold-leaf accent, Noto Serif Display + Cormorant Garamond + IBM Plex Serif typography, halftone/grain textures, components. Read the frontmatter, don't paraphrase it.
-- `themes-preview.html` — single-file Tailwind (CDN) mockup of the Hà Nội cũ direction across four key screens. This is the canonical visual reference. View via raw.githack: https://raw.githack.com/quyctd/saam-app/main/themes-preview.html
+- `themes-preview.html` — single-file Tailwind (CDN) mockup of the Hà Nội cũ direction across four key screens. This is the canonical visual reference. View via raw.githack: https://raw.githack.com/quyctd/an-diem/main/themes-preview.html
 - `design-walkthrough.html` — older mockup of the prior trading-terminal direction. **Superseded by `themes-preview.html`** but kept for diff reference.
-- `phorm-ios/` — the SwiftUI iOS implementation.
+- `andiem-ios/` — the SwiftUI iOS implementation.
 - `README.md` — short pointer to the above.
 
 ## Working in this repo
 
 - Editing `themes-preview.html`: it's standalone — no build step. Open the file in a browser to preview changes. Tailwind is loaded from `cdn.jsdelivr.net/npm/@tailwindcss/browser@4`. Google Fonts (Noto Serif Display, Cormorant Garamond, IBM Plex Serif, Spectral) load via CDN.
 - Editing `PLAN.md` / `PRODUCT.md` / `DESIGN.md`: prose/spec changes only. The 14 numbered UX decisions in PLAN.md, the 5 design principles + anti-references in PRODUCT.md, and the token frontmatter in DESIGN.md are intentional commitments — don't soften, expand, or "improve" them without explicit ask. Same for the "Out of scope (MVP)" list at the bottom of PLAN.md.
-- Editing `phorm-ios/`: SwiftUI codebase. Theme tokens (colors, fonts) should pull from a single source of truth that mirrors DESIGN.md's YAML frontmatter — don't scatter hex literals across views.
+- Editing `andiem-ios/`: SwiftUI codebase. Theme tokens (colors, fonts) should pull from a single source of truth that mirrors DESIGN.md's YAML frontmatter — don't scatter hex literals across views.
 - `.expect/` is gitignored except for `.gitignore` itself — it's scratch for the `mcp__expect__*` browser tools and shouldn't be checked in.
 
 ## Non-negotiable product principles (from PLAN.md)

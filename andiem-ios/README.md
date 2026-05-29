@@ -1,6 +1,6 @@
 # Phorm iOS
 
-Implementation of the Phorm score tracker. See `../docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md` for the architecture spec and `../docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md` for the implementation plan.
+Implementation of the Phorm score tracker. See `../docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md` for the architecture spec and `../docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md` for the implementation plan.
 
 ## Requirements
 - Xcode 15.0+
@@ -13,9 +13,9 @@ Implementation of the Phorm score tracker. See `../docs/superpowers/specs/2026-0
 The Xcode project file is generated from `project.yml`; it is **not** checked into git.
 
 ```sh
-cd phorm-ios
+cd andiem-ios
 xcodegen generate
-open phorm-ios.xcodeproj
+open andiem-ios.xcodeproj
 ```
 
 Regenerate whenever `project.yml` changes, or when files are added/removed.
@@ -24,12 +24,12 @@ Regenerate whenever `project.yml` changes, or when files are added/removed.
 
 ```sh
 # Build (simulator, no signing required)
-xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+xcodebuild -project andiem-ios.xcodeproj -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO build
 
 # Run unit tests
-xcodebuild -project phorm-ios.xcodeproj -scheme Phorm \
+xcodebuild -project andiem-ios.xcodeproj -scheme Phorm \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
   CODE_SIGNING_ALLOWED=NO test
 ```
@@ -38,7 +38,7 @@ Substitute a different simulator name if iPhone 15 Pro isn't installed (`xcrun s
 
 ## One-time setup for device builds
 
-1. Open `phorm-ios.xcodeproj` in Xcode.
+1. Open `andiem-ios.xcodeproj` in Xcode.
 2. Select the Phorm target → Signing & Capabilities → set **Team** to your Apple Developer team.
 3. Xcode auto-provisions the bundle ID + CloudKit container on first build.
 

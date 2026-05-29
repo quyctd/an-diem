@@ -1,17 +1,17 @@
-# saam-app
+# an-diem
 
 Personal-use iOS score tracker app cho Phỏm / Sâm Lốc / mọi card game zero-sum.
 
 ## iOS app
 
-The native iOS implementation lives in [`./phorm-ios/`](./phorm-ios/). See the spec at [`docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md`](docs/superpowers/specs/2026-05-25-phorm-ios-implementation-design.md) and the step-by-step plan at [`docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md`](docs/superpowers/plans/2026-05-25-phorm-ios-implementation.md).
+The native iOS implementation lives in [`./andiem-ios/`](./andiem-ios/). See the spec at [`docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md`](docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md) and the step-by-step plan at [`docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md`](docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md).
 
 ## Files
 
 - [`PLAN.md`](./PLAN.md) — design plan đầy đủ: UX decisions, tech stack (SwiftUI + SwiftData + CloudKit), data model, screens, verification steps
 - [`design-walkthrough.html`](./design-walkthrough.html) — interactive walkthrough mockup các màn hình chính. Mở trực tiếp trong browser hoặc xem online:
 
-  https://raw.githack.com/quyctd/saam-app/main/design-walkthrough.html
+  https://raw.githack.com/quyctd/an-diem/main/design-walkthrough.html
 
 ## Tech
 
