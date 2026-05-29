@@ -4,7 +4,7 @@ Sổ điểm cho bàn Phỏm, Sâm Lốc. Mở app là chơi.
 
 <img src="https://andiem.quyctd.dev/icon.png" width="120" alt="Ấn Điểm icon">
 
-[![App Store](https://img.shields.io/badge/App_Store-0D96F6?style=flat&logo=app-store&logoColor=white)](https://apps.apple.com/app/idREPLACE-ME)
+[![App Store](https://img.shields.io/badge/App_Store-0D96F6?style=flat&logo=app-store&logoColor=white)](https://apps.apple.com/vn/app/andiem-score-tracker/id6772962052)
 
 ---
 
