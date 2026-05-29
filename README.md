@@ -1,21 +1,41 @@
-# an-diem
+# Ấn Điểm
 
-Personal-use iOS score tracker app cho Phỏm / Sâm Lốc / mọi card game zero-sum.
+Sổ điểm cho bàn Phỏm, Sâm Lốc. Mở app là chơi.
 
-## iOS app
+<img src="https://andiem.quyctd.dev/icon.png" width="120" alt="Ấn Điểm icon">
 
-The native iOS implementation lives in [`./andiem-ios/`](./andiem-ios/). See the spec at [`docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md`](docs/superpowers/specs/2026-05-25-andiem-ios-implementation-design.md) and the step-by-step plan at [`docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md`](docs/superpowers/plans/2026-05-25-andiem-ios-implementation.md).
+[![App Store](https://img.shields.io/badge/App_Store-0D96F6?style=flat&logo=app-store&logoColor=white)](https://apps.apple.com/app/idREPLACE-ME)
 
-## Files
+---
 
-- [`PLAN.md`](./PLAN.md) — design plan đầy đủ: UX decisions, tech stack (SwiftUI + SwiftData + CloudKit), data model, screens, verification steps
-- [`design-walkthrough.html`](./design-walkthrough.html) — interactive walkthrough mockup các màn hình chính. Mở trực tiếp trong browser hoặc xem online:
+## Cái có
 
-  https://raw.githack.com/quyctd/an-diem/main/design-walkthrough.html
+- **Mở app là vào ngay** phiên đang chơi — không đăng ký, không đăng nhập
+- **Ô cuối tự cộng**, tổng luôn về 0 — chỉ cần nhập N−1 người
+- **Ấn vàng** cho người dẫn đầu, **tem chéo** cho người chót
+- **Đồng bộ iCloud** giữa các máy cùng Apple ID
+- **Chia sẻ phiên qua link** cho bạn bè import nhanh
+- **Offline-first** — chơi ở đâu cũng được, không cần mạng
 
-## Tech
+## Cái không
 
-- iOS 17+, SwiftUI, SwiftData + CloudKit
-- Offline-first, no backend, no auth
-- Sync giữa thiết bị cùng Apple ID qua iCloud
-- Share session với người ngoài qua URL handoff (encoded state)
+- Không đánh bài thật trong app
+- Không cá cược, tiền thật, phần thưởng
+- Không tính luật Phỏm / Sâm tự động — app chỉ ghi điểm, không phân định thắng thua
+- Không quảng cáo, không tracking
+
+## Yêu cầu
+
+- iOS 17+
+- iPhone
+
+---
+
+## Mã nguồn
+
+Toàn bộ code nằm trong [`./andiem-ios/`](./andiem-ios/). App được viết bằng SwiftUI + SwiftData, sync qua CloudKit.
+
+Xem chi tiết thiết kế và kế hoạch phát triển trong:
+- [`PLAN.md`](./PLAN.md) — UX, data model, screens
+- [`DESIGN.md`](./DESIGN.md) — design system Hà Nội cũ
+- [`themes-preview.html`](https://raw.githack.com/quyctd/an-diem/main/themes-preview.html) — mockup trực quan
