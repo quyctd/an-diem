@@ -20,8 +20,10 @@ struct SplashView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: Spacing.lg) {
-                Seal(glyph: "壹", variant: .winner, size: 96)
-                    .shadow(color: .black.opacity(0.38), radius: 12, y: 6)
+                Image("BrandMark")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 150, height: 150)
                     .opacity(sealVisible ? 1 : 0)
                     .scaleEffect(sealVisible ? 1 : 0.86)
 

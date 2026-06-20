@@ -17,8 +17,10 @@ struct EmptyHomeView: View {
                         .frame(height: geo.size.height * topOffsetRatio)
 
                     VStack(spacing: Spacing.lg) {
-                        Seal(glyph: "壹", variant: .winner, size: 80)
-                            .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+                        Image("BrandMark")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 132, height: 132)
 
                         VStack(spacing: 6) {
                             SectionLabel(text: "Sổ ghi điểm")
