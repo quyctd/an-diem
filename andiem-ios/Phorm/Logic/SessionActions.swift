@@ -85,6 +85,33 @@ enum SessionActions {
         try context.save()
     }
 
+    /// Đóng dấu — persist a stamped session.
+    /// Any of `photo` / `winner` / `loser` may be nil:
+    ///   - photo nil = no-photo path (E2) → share card renders the ornamental 印 block
+    ///   - winner/loser nil = "Không có trong ảnh" (E1) → seal stays in the ranking strip only
+    /// `clearStamp` (below) is the explicit reset; this method does not unset on nil.
+    static func stampSession(
+        photo: Data?,
+        winner: SealCoord?,
+        loser: SealCoord?,
+        on session: Session,
+        in context: ModelContext
+    ) throws {
+        session.coverPhoto = photo
+        session.winnerSealCoord = winner
+        session.loserCrossCoord = loser
+        try context.save()
+    }
+
+    /// Clear every Đóng dấu field on the session. Used by the re-edit path
+    /// when the user changes their mind ("Đổi ảnh" with no replacement).
+    static func clearStamp(on session: Session, in context: ModelContext) throws {
+        session.coverPhoto = nil
+        session.winnerSealCoord = nil
+        session.loserCrossCoord = nil
+        try context.save()
+    }
+
     /// Archive the current active session, then materialize an incoming DTO
     /// into a new active Session (with all rounds + scores rebuilt).
     /// Returns the inserted, saved Session.

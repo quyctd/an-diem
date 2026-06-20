@@ -1,10 +1,17 @@
 import SwiftUI
+import SwiftData
+import UIKit
 
 struct SummaryView: View {
     let session: Session
 
+    @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @State private var showNewSession = false
+    @State private var showStampFlow = false
+    @State private var hasSkippedStamp = false
+    @State private var shareCardImage: UIImage?
+    @State private var showShareSheet = false
 
     private var ranking: [(name: String, total: Int)] { Totals.ranking(for: session) }
 
@@ -25,6 +32,26 @@ struct SummaryView: View {
     private var metaLine: String {
         "\((session.rounds ?? []).count) vòng · \(durationStr) · \(dateStr)"
     }
+
+    /// Whether the session has a determined winner+loser (or just a single rank).
+    /// Per spec E5: tied first or last disables Đóng dấu with explanatory caption.
+    private var isRankTied: Bool {
+        guard ranking.count >= 2 else { return false }
+        // Tie at first or at last is the disqualifier.
+        let first = ranking[0].total
+        let second = ranking[1].total
+        if first == second { return true }
+        if ranking.count >= 3 {
+            let last = ranking[ranking.count - 1].total
+            let secondLast = ranking[ranking.count - 2].total
+            if last == secondLast { return true }
+        }
+        return false
+    }
+
+    private var isStamped: Bool { session.coverPhoto != nil || session.winnerSealCoord != nil || session.loserCrossCoord != nil }
+    private var showStampCallout: Bool { !hasSkippedStamp && !isStamped }
+    private var showStampedCallout: Bool { isStamped }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -48,7 +75,7 @@ struct SummaryView: View {
                     if ranking.count > 1 {
                         runnersBlock
                             .padding(.horizontal, Spacing.lg)
-                            .padding(.bottom, Spacing.xl)
+                            .padding(.bottom, Spacing.lg)
                     }
 
                     if let last = ranking.last,
@@ -56,10 +83,21 @@ struct SummaryView: View {
                        last.name != ranking.first?.name {
                         lastPlaceBlock(name: last.name)
                             .padding(.horizontal, Spacing.lg)
-                            .padding(.bottom, Spacing.xxl)
+                            .padding(.bottom, Spacing.lg)
                     }
 
-                    Spacer().frame(height: 120) // CTA clearance
+                    // Đóng dấu callout — between ranking and CTA.
+                    if showStampedCallout {
+                        stampedCallout
+                            .padding(.horizontal, Spacing.lg)
+                            .padding(.bottom, Spacing.lg)
+                    } else if showStampCallout {
+                        unstampedCallout
+                            .padding(.horizontal, Spacing.lg)
+                            .padding(.bottom, Spacing.lg)
+                    }
+
+                    Spacer().frame(height: 140) // CTA clearance
                 }
             }
             .scrollIndicators(.hidden)
@@ -73,6 +111,16 @@ struct SummaryView: View {
         .sheet(isPresented: $showNewSession) {
             NewSessionView()
                 .preferredColorScheme(.dark)
+        }
+        .fullScreenCover(isPresented: $showStampFlow) {
+            StampEditorView(session: session)
+                .preferredColorScheme(.dark)
+        }
+        .sheet(isPresented: $showShareSheet) {
+            if let shareCardImage {
+                ShareSheet(image: shareCardImage)
+                    .presentationBackground(Color.phormSurfaceCinnabarDeep)
+            }
         }
     }
 
@@ -112,8 +160,6 @@ struct SummaryView: View {
                     .foregroundStyle(Color.phormPrimary)
             }
 
-            // ấn vàng tablet — the ceremonial seal designation. The seal carries 壹,
-            // the italic serif label carries the name. Big enough to feel awarded.
             HStack(spacing: Spacing.md) {
                 Seal(glyph: "壹", variant: .winner, size: 34)
                 Text("Ấn vàng")
@@ -181,32 +227,117 @@ struct SummaryView: View {
         }
     }
 
-    // MARK: - CTA
+    // MARK: - Đóng dấu callouts
 
-    private var cta: some View {
-        HStack(spacing: Spacing.sm) {
-            if let url = try? SessionShare.url(for: session) {
-                ShareLink(item: url) {
-                    Text("Chia sẻ")
-                        .font(.phormButton)
-                        .tracking(2.0)
-                        .textCase(.uppercase)
-                        .foregroundStyle(Color.phormPrimary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 48)
-                        .background(
-                            RoundedRectangle(cornerRadius: 3, style: .continuous)
+    /// Dashed-gold callout shown when the session is unstamped and not skipped.
+    /// Tied-rank case: same shape but disabled with explanatory caption.
+    private var unstampedCallout: some View {
+        HStack(alignment: .center, spacing: Spacing.md) {
+            Seal(glyph: "壹", variant: isRankTied ? .default : .winner, size: 32)
+                .opacity(isRankTied ? 0.55 : 1)
+            VStack(alignment: .leading, spacing: 4) {
+                SectionLabel(text: isRankTied ? "Chưa đóng dấu được" : "Chưa đóng dấu", tone: .gold)
+                Text(isRankTied
+                     ? "Phiên có tổng bằng nhau, không xác định vô địch/cuối bàn"
+                     : "Chụp ảnh nhóm — hoặc chọn ảnh có sẵn.")
+                    .font(.system(size: 12, weight: .regular, design: .serif))
+                    .foregroundStyle(Color.phormCream.opacity(isRankTied ? 0.65 : 1))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(Color.phormPrimary.opacity(isRankTied ? 0.04 : 0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .stroke(
+                    isRankTied ? Color.phormPrimaryDisabled : Color.phormPrimary,
+                    style: StrokeStyle(lineWidth: 1, dash: [4, 3])
+                )
+        )
+    }
+
+    /// Đã đóng dấu — photo thumbnail + label, tap to re-edit.
+    private var stampedCallout: some View {
+        Button {
+            showStampFlow = true
+        } label: {
+            HStack(alignment: .center, spacing: Spacing.md) {
+                if let thumb = ImageHelpers.image(from: session.coverPhoto) {
+                    Image(uiImage: thumb)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 52, height: 52)
+                        .clipped()
+                        .overlay(
+                            Rectangle()
                                 .stroke(Color.phormPrimary, lineWidth: 1)
                         )
-                        // Match LacquerOutlineButton — stroke-only background
-                        // needs an explicit contentShape so the full frame is tappable.
-                        .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                } else {
+                    // No-photo path: 印 ornament in place of thumbnail.
+                    ZStack {
+                        Rectangle().fill(Color.phormPrimary.opacity(0.12))
+                        Text("印")
+                            .font(.system(size: 24, weight: .heavy, design: .serif))
+                            .foregroundStyle(Color.phormPrimary)
+                    }
+                    .frame(width: 52, height: 52)
+                    .overlay(Rectangle().stroke(Color.phormPrimary, lineWidth: 1))
                 }
-                .buttonStyle(.plain)
+                VStack(alignment: .leading, spacing: 4) {
+                    SectionLabel(text: "Đã đóng dấu", tone: .gold)
+                    Text("Chạm để sửa hoặc chia sẻ lại")
+                        .font(.system(size: 12, weight: .regular, design: .serif))
+                        .foregroundStyle(Color.phormCream)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.phormCreamDim)
             }
+            .padding(.horizontal, Spacing.md)
+            .padding(.vertical, Spacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .fill(Color.phormPrimary.opacity(0.08))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .stroke(Color.phormPrimary, lineWidth: 1)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
 
-            LacquerPrimaryButton(title: "Phiên mới") {
-                showNewSession = true
+    // MARK: - CTA
+
+    @ViewBuilder
+    private var cta: some View {
+        Group {
+            if showStampCallout && !isRankTied {
+                // F1: [Bỏ qua | Đóng dấu]
+                HStack(spacing: Spacing.sm) {
+                    LacquerOutlineButton(title: "Bỏ qua") {
+                        hasSkippedStamp = true
+                    }
+                    LacquerPrimaryButton(title: "Đóng dấu") {
+                        showStampFlow = true
+                    }
+                }
+            } else {
+                // Default / skipped / stamped / tied: [Chia sẻ | Phiên mới]
+                HStack(spacing: Spacing.sm) {
+                    LacquerOutlineButton(title: "Chia sẻ") {
+                        renderAndShare()
+                    }
+                    LacquerPrimaryButton(title: "Phiên mới") {
+                        showNewSession = true
+                    }
+                }
             }
         }
         .padding(.horizontal, Spacing.lg)
@@ -221,5 +352,12 @@ struct SummaryView: View {
             .allowsHitTesting(false),
             alignment: .bottom
         )
+    }
+
+    @MainActor
+    private func renderAndShare() {
+        guard let image = ShareCardView.render(session: session) else { return }
+        shareCardImage = image
+        showShareSheet = true
     }
 }
