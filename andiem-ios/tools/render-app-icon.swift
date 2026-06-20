@@ -1,14 +1,16 @@
 #!/usr/bin/env swift
-// Renders the Phorm app icon (1024×1024) from the same SwiftUI primitives the
-// EmptyHomeView "壹 seal on cinnabar" logo uses. Run from the repo root:
+// Renders the Ấn Điểm app icon (1024×1024): a cream three-card fan on cinnabar
+// lacquer with an inked gold "+42" total capsule (the "cards + điểm tổng"
+// direction). Run from the repo root:
 //
 //     swift andiem-ios/tools/render-app-icon.swift
 //
-// Writes Phorm/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png
+// Writes andiem-ios/Phorm/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png
 // and rewrites the appiconset's Contents.json to reference it.
 //
 // Requires macOS 13+ (SwiftUI ImageRenderer). Deterministic — re-running
-// produces a bit-identical PNG for the same source.
+// produces a bit-identical PNG for the same source. Fully opaque (no alpha),
+// as the App Store requires.
 
 import SwiftUI
 import AppKit
@@ -18,6 +20,7 @@ import CoreGraphics
 let cinnabar       = Color(red: 0x8C/255, green: 0x2A/255, blue: 0x22/255)
 let cinnabarDeep   = Color(red: 0x5A/255, green: 0x16/255, blue: 0x12/255)
 let gold           = Color(red: 0xD9/255, green: 0xB2/255, blue: 0x5A/255)
+let goldBright     = Color(red: 0xE8/255, green: 0xC5/255, blue: 0x70/255)
 let goldDim        = Color(red: 0xA8/255, green: 0x84/255, blue: 0x38/255)
 let cream          = Color(red: 0xF3/255, green: 0xE8/255, blue: 0xD2/255)
 
@@ -63,7 +66,90 @@ func grainTile(seed: UInt64 = 0xC0FFEE) -> NSImage {
     return img
 }
 
-// MARK: - Icon view
+// MARK: - Components
+
+/// Cinnabar lacquer ground — base + warm vignette + halftone + paper grain.
+struct LacquerGround: View {
+    let halftone: NSImage
+    let grain: NSImage
+    var body: some View {
+        ZStack {
+            cinnabar
+            LinearGradient(
+                colors: [
+                    Color(red: 1.0, green: 0.86, blue: 0.70).opacity(0.16),
+                    .clear,
+                    Color.black.opacity(0.30)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            Image(nsImage: halftone)
+                .resizable(resizingMode: .tile)
+                .blendMode(.screen)
+            Image(nsImage: grain)
+                .resizable(resizingMode: .tile)
+                .blendMode(.overlay)
+                .opacity(0.6)
+        }
+    }
+}
+
+/// Spade pip — the single card suit used throughout the fan.
+struct Pip: View {
+    var size: CGFloat
+    var color: Color
+    var body: some View {
+        Text("\u{2660}")
+            .font(.system(size: size, weight: .black))
+            .foregroundStyle(color)
+    }
+}
+
+/// A single playing card: cream face, gold hairline edge, cinnabar-deep ink,
+/// center pip + opposed corner indices.
+struct CardFace: View {
+    var w: CGFloat = 460
+    var h: CGFloat = 650
+    var index: String
+    private func corner() -> some View {
+        VStack(spacing: 0) {
+            Text(index)
+                .font(.system(size: 78, weight: .black, design: .serif))
+                .foregroundStyle(cinnabarDeep)
+            Pip(size: 48, color: cinnabarDeep)
+        }
+    }
+    var body: some View {
+        RoundedRectangle(cornerRadius: 42, style: .continuous)
+            .fill(LinearGradient(colors: [cream, cream.opacity(0.9)], startPoint: .topLeading, endPoint: .bottomTrailing))
+            .frame(width: w, height: h)
+            .overlay(RoundedRectangle(cornerRadius: 42, style: .continuous).stroke(goldDim.opacity(0.6), lineWidth: 5))
+            .overlay { Pip(size: w * 0.6, color: cinnabarDeep.opacity(0.95)) }
+            .overlay(alignment: .topLeading) { corner().padding(.leading, 28).padding(.top, 24) }
+            .overlay(alignment: .bottomTrailing) { corner().rotationEffect(.degrees(180)).padding(.trailing, 28).padding(.bottom, 24) }
+            .shadow(color: .black.opacity(0.30), radius: 16, y: 9)
+    }
+}
+
+/// Inked gold total — the "điểm tổng" capsule that anchors the fan.
+struct TotalCapsule: View {
+    var body: some View {
+        ZStack {
+            Capsule()
+                .fill(LinearGradient(colors: [goldBright, gold], startPoint: .top, endPoint: .bottom))
+                .frame(width: 360, height: 158)
+                .overlay(Capsule().stroke(goldDim, lineWidth: 6))
+                .shadow(color: .black.opacity(0.40), radius: 16, y: 9)
+            Text("+42")
+                .font(.system(size: 98, weight: .heavy, design: .serif))
+                .foregroundStyle(cinnabarDeep)
+        }
+        .rotationEffect(.degrees(-3))
+    }
+}
+
+// MARK: - Icon view (C5B — fan + bottom-right total capsule)
 
 struct AppIconView: View {
     let halftone: NSImage
@@ -71,68 +157,18 @@ struct AppIconView: View {
 
     var body: some View {
         ZStack {
-            // Base cinnabar
-            cinnabar
+            LacquerGround(halftone: halftone, grain: grain)
 
-            // Warm vignette — center brightens, corners deepen
-            LinearGradient(
-                colors: [
-                    Color(red: 1.0, green: 0.86, blue: 0.70).opacity(0.16),
-                    .clear,
-                    Color.black.opacity(0.28)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            // Halftone dots
-            Image(nsImage: halftone)
-                .resizable(resizingMode: .tile)
-                .blendMode(.screen)
-
-            // Paper grain
-            Image(nsImage: grain)
-                .resizable(resizingMode: .tile)
-                .blendMode(.overlay)
-                .opacity(0.62)
-
-            // The seal — gold-filled rounded square + cinnabar-deep 壹, rotated −3°
+            // Three-card fan
             ZStack {
-                // Glow halo
-                RoundedRectangle(cornerRadius: 72, style: .continuous)
-                    .fill(gold.opacity(0.32))
-                    .frame(width: 720, height: 720)
-                    .blur(radius: 48)
-
-                // Seal body
-                RoundedRectangle(cornerRadius: 56, style: .continuous)
-                    .fill(gold)
-                    .frame(width: 620, height: 620)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 56, style: .continuous)
-                            .stroke(goldDim, lineWidth: 6)
-                    )
-                    .shadow(color: .black.opacity(0.32), radius: 18, x: 0, y: 10)
-
-                // Inner gold gradient (subtle leaf shimmer)
-                RoundedRectangle(cornerRadius: 48, style: .continuous)
-                    .stroke(
-                        LinearGradient(
-                            colors: [cream.opacity(0.45), .clear, .black.opacity(0.18)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 4
-                    )
-                    .frame(width: 600, height: 600)
-
-                // The character
-                Text("壹")
-                    .font(.system(size: 420, weight: .heavy, design: .serif))
-                    .foregroundStyle(cinnabarDeep)
-                    .offset(y: -8)
+                CardFace(index: "A").rotationEffect(.degrees(-14)).offset(x: -165, y: -30)
+                CardFace(index: "Q").rotationEffect(.degrees(14)).offset(x: 165, y: -30)
+                CardFace(index: "K").offset(y: -70)
             }
-            .rotationEffect(.degrees(-3))
+            .offset(y: -70)
+
+            // Total capsule, anchored over the lower-right of the fan
+            TotalCapsule().offset(x: 150, y: 320)
         }
         .frame(width: 1024, height: 1024)
         .clipped()
