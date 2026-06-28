@@ -5,10 +5,9 @@ import SwiftUI
 /// Token NAMES are preserved from the prior trading-terminal palette so existing
 /// view callsites keep compiling; VALUES are swapped to the new lacquer system.
 extension Color {
-    // MARK: - Brand accent (gold-leaf, replaces signal yellow)
-    /// Gold leaf — primary CTA fill, focus borders, winner seal background.
-    /// Contrast on cinnabar: 4.27:1 — use for display sizes ≥18px only.
-    static let phormPrimary         = Color(red: 0xD9/255, green: 0xB2/255, blue: 0x5A/255)   // #D9B25A
+    // MARK: - Brand accent (Tết-red + gold — adaptive asset catalog)
+    /// Tết-red accent / focus ring / CTA (adaptive: same day+night).
+    static let phormPrimary    = Color("BrandAccent")
     /// Pressed-state variant of gold.
     static let phormPrimaryActive   = Color(red: 0xA8/255, green: 0x84/255, blue: 0x38/255)   // #A88438
     /// Disabled CTA — desaturated gold-dim.
@@ -16,22 +15,22 @@ extension Color {
     /// Cinnabar-deep ink for text on gold surfaces (6.76:1 on gold).
     static let onPrimary            = Color(red: 0x5A/255, green: 0x16/255, blue: 0x12/255)   // #5A1612
 
-    /// Brighter gold for small labels — 5.10:1 on cinnabar, passes AA Normal.
-    static let phormGoldBright      = Color(red: 0xE8/255, green: 0xC5/255, blue: 0x70/255)   // #E8C570
+    /// Winner coin, special keys (adaptive asset catalog).
+    static let phormGoldBright = Color("BrandGold")
 
-    // MARK: - Score semantics (mint up, ochre down — text color only)
-    /// Mint — positive scores. 5.81:1 on cinnabar.
-    static let scorePositive = Color(red: 0xB6/255, green: 0xE0/255, blue: 0xC2/255)   // #B6E0C2
-    /// Ochre — negative scores. 4.02:1 on cinnabar — Large only (≥18px display).
-    static let scoreNegative = Color(red: 0xE6/255, green: 0xA6/255, blue: 0x65/255)   // #E6A665
-    /// Soft warning (non-zero round total) — reuses ochre.
-    static let warning       = Color(red: 0xE6/255, green: 0xA6/255, blue: 0x65/255)   // #E6A665
-    /// Cream-dim used as neutral muted across surfaces. 4.94:1 on cinnabar.
-    static let phormMuted    = Color(red: 0xD6/255, green: 0xC4/255, blue: 0xA0/255)   // #D6C4A0
+    // MARK: - Score semantics (chip fills — adaptive asset catalog)
+    /// Green chip fill — positive scores.
+    static let scorePositive = Color("ChipUp")
+    /// Coral chip fill — negative scores / warning.
+    static let scoreNegative = Color("ChipDown")
+    /// Soft warning (non-zero round total) — reuses ChipDown.
+    static let warning       = Color("ChipDown")
+    /// Secondary ink (adaptive).
+    static let phormMuted    = Color("InkSecondary")
 
-    // MARK: - Lacquer surfaces (drenched — one per session, no neutral canvas)
-    /// Default lacquer surface — Tết cinnabar. The canonical surface.
-    static let phormSurfaceCinnabar     = Color(red: 0x8C/255, green: 0x2A/255, blue: 0x22/255)   // #8C2A22
+    // MARK: - Surfaces (adaptive asset catalog)
+    /// Root surface — warm cream (day) / deep warm (night).
+    static let phormSurfaceCinnabar     = Color("SurfaceRoot")
     /// Deepened cinnabar — dark-mode shift, button text ink, vignette.
     static let phormSurfaceCinnabarDeep = Color(red: 0x5A/255, green: 0x16/255, blue: 0x12/255)   // #5A1612
     /// Aged-wood ochre surface — alternate session color.
@@ -41,11 +40,18 @@ extension Color {
     /// Oxblood — night-mode deepening of cinnabar.
     static let phormSurfaceOxblood      = Color(red: 0x5D/255, green: 0x1A/255, blue: 0x18/255)   // #5D1A18
 
-    // MARK: - Cream ink (paper-on-lacquer text family)
-    /// Primary text on every lacquer surface. 6.96:1 on cinnabar.
-    static let phormCream      = Color(red: 0xF3/255, green: 0xE8/255, blue: 0xD2/255)   // #F3E8D2
-    /// Secondary text, labels, dates. 4.94:1 on cinnabar.
-    static let phormCreamDim   = Color(red: 0xD6/255, green: 0xC4/255, blue: 0xA0/255)   // #D6C4A0
+    /// Card / tile surface — chips, active-row card, panels.
+    static let surfaceTile     = Color("SurfaceTile")
+    /// Neutral/zero chip fill.
+    static let chipNeutral     = Color("ChipNeutral")
+    /// Text on a color-filled chip (white).
+    static let onChip          = Color("OnChip")
+
+    // MARK: - Ink (paper-on-surface text family — adaptive asset catalog)
+    /// Primary text on every surface (adaptive). 6.96:1 day, 4.5:1+ night.
+    static let phormCream      = Color("InkPrimary")
+    /// Secondary text, labels, dates (adaptive).
+    static let phormCreamDim   = Color("InkSecondary")
     /// Decorative section divider (not contrast-critical).
     static let phormCreamStroke = Color.white.opacity(0.18)
 
