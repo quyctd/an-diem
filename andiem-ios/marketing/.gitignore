@@ -1,0 +1,5 @@
+# Generated output — regenerate with compose_listing.py
+listing/
+contact-sheet.png
+# Raw captures are regenerated from the app; keep them out of git too
+raw/*.png
