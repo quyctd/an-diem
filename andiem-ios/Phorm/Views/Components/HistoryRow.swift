@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// History list entry on lacquer — 3pt gold left edge + dark tint.
+/// History list entry — tactile cream card with a Tết-red accent edge.
 /// Matches `.h-card` in themes-preview.html (1D).
 struct HistoryRow: View {
     let session: Session
@@ -21,8 +21,8 @@ struct HistoryRow: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            Rectangle()
+        HStack(alignment: .top, spacing: Spacing.sm) {
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
                 .fill(Color.phormPrimary)
                 .frame(width: 3)
 
@@ -35,7 +35,7 @@ struct HistoryRow: View {
                         .foregroundStyle(Color.phormCreamDim)
                     Text(session.name)
                         .font(.phormNameMd)
-                        .foregroundStyle(Color.phormCream)
+                        .foregroundStyle(Color.bodyText)
                         .lineLimit(1)
                     Text(playersLine)
                         .font(.phormNumberSm)
@@ -48,7 +48,7 @@ struct HistoryRow: View {
                     if let w = winner {
                         Text(ScoreFormat.signed(w.total))
                             .font(.phormNumberRanking)
-                            .foregroundStyle(w.total > 0 ? Color.phormPrimary : Color.phormCream)
+                            .foregroundStyle(w.total > 0 ? Color.phormPrimary : Color.bodyText)
                     } else {
                         Text("—")
                             .font(.phormNumberMd)
@@ -56,14 +56,10 @@ struct HistoryRow: View {
                     }
                 }
             }
-            .padding(.horizontal, Spacing.md)
             .padding(.vertical, Spacing.sm)
         }
-        .background(Color.black.opacity(0.18))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.xs)
+        .tactileCard(radius: 14)
     }
 }

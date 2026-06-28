@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Single-round detail card on the lacquer surface — gold left edge + dark tint.
+/// Single-round detail card — tactile cream card with a Tết-red accent edge.
 struct RoundCard: View {
     let round: Round
     let playerOrder: [String]
@@ -18,8 +18,8 @@ struct RoundCard: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            Rectangle()
+        HStack(alignment: .top, spacing: Spacing.sm) {
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
                 .fill(Color.phormPrimary)
                 .frame(width: 3)
 
@@ -42,7 +42,7 @@ struct RoundCard: View {
                         HStack {
                             Text(name)
                                 .font(.phormNameMd)
-                                .foregroundStyle(Color.phormCream.opacity(0.86))
+                                .foregroundStyle(Color.bodyText)
                             Spacer()
                             Text(ScoreFormat.signed(value))
                                 .font(.phormNumberMd)
@@ -51,14 +51,10 @@ struct RoundCard: View {
                     }
                 }
             }
-            .padding(.horizontal, Spacing.md)
             .padding(.vertical, Spacing.sm)
         }
-        .background(Color.black.opacity(0.18))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.xs)
+        .tactileCard(radius: 14)
     }
 }
