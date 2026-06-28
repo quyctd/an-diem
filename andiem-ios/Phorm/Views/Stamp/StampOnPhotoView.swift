@@ -26,7 +26,7 @@ struct LargeWinnerSeal: View {
                 )
             RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .stroke(Color.phormPrimary.opacity(0.5), lineWidth: 1.5)
-            Text("壹")
+            Text("1")
                 .font(.system(size: 24, weight: .heavy, design: .default))
                 .foregroundStyle(Color(red: 0.29, green: 0.08, blue: 0.06))
                 .baselineOffset(-1)

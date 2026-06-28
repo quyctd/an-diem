@@ -61,10 +61,10 @@ struct Keypad: View {
                 TactileKey(
                     fill: canSave ? Color.phormPrimary : Color.phormPrimaryDisabled,
                     haptic: { Haptics.success() },
-                    a11yLabel: "Đóng dấu — lưu vòng",
+                    a11yLabel: "Lưu vòng",
                     action: { if canSave { onSave() } }
                 ) {
-                    Text("Đóng dấu — lưu vòng")
+                    Text("Lưu vòng")
                         .font(.phormButton)
                         .tracking(2.0)
                         .textCase(.uppercase)

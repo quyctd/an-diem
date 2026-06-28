@@ -69,7 +69,7 @@ struct StampEditorView: View {
             .presentationDragIndicator(.visible)
         }
         .confirmationDialog(
-            "Xoá dấu này?",
+            "Xoá huy hiệu này?",
             isPresented: Binding(
                 get: { pendingClear != nil },
                 set: { if !$0 { pendingClear = nil } }
@@ -84,7 +84,7 @@ struct StampEditorView: View {
             }
             Button("Hủy", role: .cancel) {}
         } message: { _ in
-            Text("Bạn có thể đưa dấu trở lại bằng nút bên dưới.")
+            Text("Bạn có thể đưa huy hiệu trở lại bằng nút bên dưới.")
         }
         .sheet(isPresented: $showShareSheet, onDismiss: { dismiss() }) {
             if let shareImage {
@@ -176,7 +176,7 @@ struct StampEditorView: View {
 
             Spacer()
 
-            SectionLabel(text: "Đóng dấu — kéo dấu vào mặt", tone: .gold)
+            SectionLabel(text: "Kéo huy hiệu vào mặt người", tone: .gold)
         }
     }
 
@@ -196,9 +196,9 @@ struct StampEditorView: View {
     /// sticker is the way to hide it.
     private var stickerChips: some View {
         HStack(spacing: Spacing.sm) {
-            chip(target: .winner, glyph: "壹", name: winnerName, isPlaced: winnerCoord != nil)
+            chip(target: .winner, glyph: "1", name: winnerName, isPlaced: winnerCoord != nil)
             if let loserName {
-                chip(target: .loser, glyph: "×", name: loserName, isPlaced: loserCoord != nil)
+                chip(target: .loser, glyph: "Bét", name: loserName, isPlaced: loserCoord != nil)
             }
         }
     }

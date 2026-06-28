@@ -105,7 +105,7 @@ struct RoundEntryView: View {
 
     private var headerLabel: String {
         switch mode {
-        case .new:     return "Đóng dấu vòng"
+        case .new:     return "Ghi vòng"
         case .edit:    return "Sửa vòng"
         }
     }

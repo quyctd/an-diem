@@ -213,7 +213,7 @@ struct SummaryView: View {
             Coin(text: "1", variant: isRankTied ? .seat : .winner, size: 32)
                 .opacity(isRankTied ? 0.55 : 1)
             VStack(alignment: .leading, spacing: 4) {
-                SectionLabel(text: isRankTied ? "Chưa đóng dấu được" : "Chưa đóng dấu", tone: .gold)
+                SectionLabel(text: isRankTied ? "Chưa khoe được" : "Chưa khoe bàn", tone: .gold)
                 Text(isRankTied
                      ? "Hoà — chưa rõ ai nhất, ai bét"
                      : "Chụp ảnh nhóm — hoặc chọn ảnh có sẵn.")
@@ -254,10 +254,10 @@ struct SummaryView: View {
                                 .stroke(Color.phormPrimary, lineWidth: 1)
                         )
                 } else {
-                    // No-photo path: 印 ornament in place of thumbnail.
+                    // No-photo path: brand initial in place of thumbnail.
                     ZStack {
                         Rectangle().fill(Color.phormPrimary.opacity(0.12))
-                        Text("印")
+                        Text("Ấ")
                             .font(.system(size: 24, weight: .heavy, design: .default))
                             .foregroundStyle(Color.phormPrimary)
                     }
@@ -265,7 +265,7 @@ struct SummaryView: View {
                     .overlay(Rectangle().stroke(Color.phormPrimary, lineWidth: 1))
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    SectionLabel(text: "Đã đóng dấu", tone: .gold)
+                    SectionLabel(text: "Đã khoe bàn", tone: .gold)
                     Text("Chạm để sửa hoặc chia sẻ lại")
                         .font(.system(size: 12, weight: .regular, design: .default))
                         .foregroundStyle(Color.phormCream)
@@ -301,7 +301,7 @@ struct SummaryView: View {
                     LacquerOutlineButton(title: "Bỏ qua") {
                         hasSkippedStamp = true
                     }
-                    LacquerPrimaryButton(title: "Đóng dấu") {
+                    LacquerPrimaryButton(title: "Khoe bàn") {
                         showStampFlow = true
                     }
                 }

@@ -34,7 +34,7 @@ struct ImportConfirmView: View {
 
     private var headerStrip: some View {
         HStack(alignment: .top) {
-            Seal(glyph: "印", variant: .winner, size: 36)
+            Seal(glyph: "1", variant: .winner, size: 36)
             VStack(alignment: .leading, spacing: 4) {
                 SectionLabel(text: "Nhận phiên", tone: .gold)
                 Text("Có ai vừa gửi")

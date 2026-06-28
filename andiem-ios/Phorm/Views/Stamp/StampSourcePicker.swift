@@ -17,7 +17,7 @@ struct StampSourcePicker: View {
             Spacer().frame(height: Spacing.lg)
 
             SectionLabel(text: "Chọn ảnh nhóm", tone: .gold)
-            Text("— cho khoảnh khắc đóng ấn —")
+            Text("— cho khoảnh khắc khoe bàn —")
                 .font(.phormCaptionSection)
                 .tracking(1.4)
                 .textCase(.uppercase)

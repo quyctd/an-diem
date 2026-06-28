@@ -193,7 +193,7 @@ struct ShareCardView: View {
                 .fill(Color.phormPrimary.opacity(0.12))
             RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .stroke(Color.phormPrimary, lineWidth: 1.8)
-            Text("印")
+            Text("Ấ")
                 .font(.system(size: 32, weight: .heavy, design: .default))
                 .foregroundStyle(Color.phormPrimary)
         }
@@ -505,11 +505,10 @@ struct ShareCardView: View {
             RoundedRectangle(cornerRadius: 56, style: .continuous)
                 .strokeBorder(Color.phormPrimary.opacity(0.28), lineWidth: 1)
 
-            // Centered 印 — bigger, no decorative box around it; the rounded card
-            // is the container now.
-            Text("印")
+            // Brand initial — large decorative fill for the no-photo zone.
+            Text("Ấ")
                 .font(.system(size: 320, weight: .heavy, design: .default))
-                .foregroundStyle(Color.phormPrimary)
+                .foregroundStyle(Color.phormPrimary.opacity(0.25))
                 .shadow(color: .black.opacity(0.30), radius: 8, y: 4)
         }
         .aspectRatio(1.0, contentMode: .fit)
@@ -581,7 +580,7 @@ struct ShareCardView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 4, style: .continuous)
                 .fill(Color.phormPrimary)
-            Text("壹")
+            Text("1")
                 .font(.system(size: 18, weight: .heavy, design: .default))
                 .foregroundStyle(Color.onPrimary)
         }

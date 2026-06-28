@@ -74,7 +74,7 @@ enum SealGlyph {
             }
             HStack(spacing: 12) {
                 Seal(glyph: "封", variant: .winner, size: 22)
-                Seal(glyph: "×", variant: .last, size: 22)
+                Seal(glyph: "Bét", variant: .last, size: 22)
             }
         }
     }
