@@ -30,32 +30,41 @@ def hx(h):
 W, H = 1290, 2796  # App Store 6.9"
 
 FRAME_FILE = "Apple iPhone 16 Pro Black Titanium.png"
-SCREEN_BOX = (72, 70, 1276, 2690)   # left, top, right, bottom (frame-native px)
-SCREEN_R = 96
-INSET = 2
-_frame_cache = {}
+# Screen cutout measured by flood-filling the frame's transparent screen region
+# (see README). Exactly 1206×2622 — the iPhone 16 Pro / iPhone 17 screenshot size.
+SCREEN_BOX = (72, 69, 1278, 2691)   # left, top, right, bottom (frame-native px)
+_cache = {}
 
 def load_frame():
-    if FRAME_FILE not in _frame_cache:
-        _frame_cache[FRAME_FILE] = Image.open(os.path.join(FRAMES_DIR, FRAME_FILE)).convert("RGBA")
-    return _frame_cache[FRAME_FILE]
+    if "frame" not in _cache:
+        _cache["frame"] = Image.open(os.path.join(FRAMES_DIR, FRAME_FILE)).convert("RGBA")
+    return _cache["frame"]
 
-def round_corners(im, r):
-    mask = Image.new("L", im.size, 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, im.size[0], im.size[1]], radius=r, fill=255)
-    out = im.convert("RGBA")
-    out.putalpha(mask)
-    return out
+def screen_mask(frame):
+    """Exact screen-hole mask (L): the transparent region connected to the frame's
+    centre, dilated a few px so the shot tucks under the bezel. Clipping the shot to
+    this mask fills precisely the rounded screen shape — no exterior corner 'ears',
+    no cream gap on the straight edges — regardless of the frame's corner geometry."""
+    if "mask" not in _cache:
+        alpha = frame.split()[3].copy()                 # 0 = hole, 255 = body
+        fw, fh = frame.size
+        ImageDraw.floodfill(alpha, (fw // 2, fh // 2), 128, thresh=8)  # tag the screen hole
+        mask = alpha.point(lambda p: 255 if p == 128 else 0)
+        mask = mask.filter(ImageFilter.MaxFilter(7))     # dilate ~3px under the bezel
+        _cache["mask"] = mask
+    return _cache["mask"]
 
 def make_device(screen_path, target_w):
+    """Screenshot clipped to the exact screen-hole mask, behind the titanium body."""
     frame = load_frame()
     fw, fh = frame.size
     sx, sy, ex, ey = SCREEN_BOX
-    sw, sh = (ex - sx) - 2 * INSET, (ey - sy) - 2 * INSET
-    shot = Image.open(screen_path).convert("RGB").resize((sw, sh), Image.LANCZOS)
-    shot = round_corners(shot, SCREEN_R)
+    shot = Image.open(screen_path).convert("RGB").resize((ex - sx, ey - sy), Image.LANCZOS)
+    layer = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
+    layer.paste(shot, (sx, sy))
+    layer.putalpha(screen_mask(frame))                  # show shot only in the screen hole
     dev = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
-    dev.alpha_composite(shot, (sx + INSET, sy + INSET))
+    dev.alpha_composite(layer)
     dev.alpha_composite(frame)
     scale = target_w / fw
     return dev.resize((target_w, round(fh * scale)), Image.LANCZOS)
