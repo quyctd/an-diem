@@ -81,7 +81,8 @@ struct RoundEntryView: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(Color.phormCreamDim)
                     .frame(width: 32, height: 32)
-                    .background(Circle().fill(Color.black.opacity(0.18)))
+                    .background(Circle().fill(Color.surfaceTile))
+                    .overlay(Circle().strokeBorder(Color.hairline, lineWidth: 1))
             }
             Spacer()
             SectionLabel(text: headerLabel)
@@ -120,7 +121,7 @@ struct RoundEntryView: View {
                     .foregroundStyle(Color.phormPrimary)
                 Text("điểm ai bao nhiêu?")
                     .font(.system(size: 18, weight: .regular, design: .default))
-                    .foregroundStyle(Color.phormCream.opacity(0.82))
+                    .foregroundStyle(Color.phormCreamDim)
             }
             Spacer()
             Text(String(format: "%02d", roundIndex))
@@ -180,7 +181,7 @@ struct RoundEntryView: View {
         let isAuto       = draft.autoFillIndex == idx
         let chipValue:   Int?             = isAuto ? draft.autoFillValue : draft.entries[idx]
         let chipSize:    ScoreChip.Size   = isFocused ? .large : .small
-        let coinVariant: Coin.Variant     = (isFocused || isAuto) ? .winner : .seat
+        let coinVariant: Coin.Variant     = isFocused ? .active : (isAuto ? .winner : .seat)
         // Show pending sign hint when focused on an empty non-auto cell.
         let showSignHint = isFocused && !isAuto && draft.entries[idx] == nil
 
@@ -194,7 +195,7 @@ struct RoundEntryView: View {
                 .foregroundStyle(
                     isFocused ? Color.phormPrimary
                     : isAuto  ? Color.phormGoldBright
-                    : Color.phormCream
+                    : Color.bodyText
                 )
 
             Spacer()
@@ -217,13 +218,8 @@ struct RoundEntryView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        // Focused row: surfaceTile card with drop shadow.
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.surfaceTile)
-                .shadow(color: .black.opacity(0.28), radius: 8, y: 4)
-                .opacity(isFocused ? 1 : 0)
-        )
+        // Focused row: elevated tactile card.
+        .modifier(FocusCard(active: isFocused))
         .contentShape(Rectangle())
         .onTapGesture { draft.focusedIndex = idx }
         // Row opacity: focused = full, auto = 0.72 (single quieted row), inactive = 0.42.
@@ -242,17 +238,10 @@ struct RoundEntryView: View {
         let ok  = sum == 0
         return HStack {
             Spacer()
-            Text(ok ? "0 · cân" : "\(ScoreFormat.signed(sum)) ⚠")
-                .font(.phormNumberMd)
-                .foregroundStyle(ok ? Color.scorePositive : Color.scoreNegative)
-                .padding(.horizontal, 18)
-                .padding(.vertical, 8)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(ok
-                              ? Color.scorePositive.opacity(0.14)
-                              : Color.scoreNegative.opacity(0.14))
-                )
+            StatusPill(
+                text: ok ? "Tổng: 0 · cân ✓" : "Tổng: \(ScoreFormat.signed(sum)) ⚠",
+                style: ok ? .ok : .warn
+            )
             Spacer()
         }
     }
@@ -275,7 +264,7 @@ struct RoundEntryView: View {
             Color.phormSurfaceCinnabar
                 .overlay(alignment: .top) {
                     Rectangle()
-                        .fill(Color.phormCreamStroke)
+                        .fill(Color.hairline)
                         .frame(height: 1)
                 }
         )
@@ -293,6 +282,18 @@ struct RoundEntryView: View {
             dismiss()
         } catch {
             print("save round failed: \(error)")
+        }
+    }
+}
+
+/// Elevated tactile card behind the focused player row (no card when inactive).
+private struct FocusCard: ViewModifier {
+    let active: Bool
+    func body(content: Content) -> some View {
+        if active {
+            content.tactileCard(radius: 14, elevated: true)
+        } else {
+            content
         }
     }
 }
