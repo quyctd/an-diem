@@ -12,34 +12,18 @@ import UIKit
 /// so re-renders don't redraw thousands of paths.
 struct LacquerBackground: View {
     var surface: Color = .phormSurfaceCinnabar
+    @Environment(\.colorScheme) private var scheme
 
     var body: some View {
         ZStack {
             surface
-
-            // Warm vignette — center brightens, corners deepen
-            LinearGradient(
-                colors: [
-                    Color(red: 1.0, green: 0.86, blue: 0.70).opacity(0.10),
-                    .clear,
-                    Color.black.opacity(0.18)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            // Halftone dots, screen blend
-            Image(uiImage: .phormHalftone)
-                .resizable(resizingMode: .tile)
-                .blendMode(.screen)
-                .allowsHitTesting(false)
-
-            // Paper grain, overlay blend
-            Image(uiImage: .phormGrain)
-                .resizable(resizingMode: .tile)
-                .blendMode(.overlay)
-                .opacity(0.55)
-                .allowsHitTesting(false)
+            if scheme == .dark {
+                Image(uiImage: .phormGrain)
+                    .resizable(resizingMode: .tile)
+                    .blendMode(.overlay)
+                    .opacity(0.25)
+                    .allowsHitTesting(false)
+            }
         }
     }
 }
