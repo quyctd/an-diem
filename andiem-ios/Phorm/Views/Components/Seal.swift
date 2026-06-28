@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// Rank seal — the "ấn vàng" / "tem chéo" gold-leaf box from themes-preview.html.
+/// Rank seal — a small Tết-red stamp box. Largely superseded by `Coin`; kept for the
+/// import-confirm header and splash preview.
 /// Three variants:
-///   - `.winner`: solid gold fill, cinnabar-deep glyph, glow halo. Position 1 only.
+///   - `.winner`: solid red fill, light glyph, glow halo. Position 1 only.
 ///   - `.last`:   cream-dim border + cream-dim ×. Renders in 4+ player sessions.
-///   - `.default`: gold border + faint gold tint + gold Hán-Việt numeral. Mid ranks.
+///   - `.default`: red border + faint red tint + red numeral. Mid ranks.
 struct Seal: View {
     enum Variant { case `default`, winner, last }
 
@@ -14,12 +15,12 @@ struct Seal: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(fillColor)
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .strokeBorder(borderColor, lineWidth: 1.5)
             Text(glyph)
-                .font(.system(size: glyphSize, weight: .heavy, design: .serif))
+                .font(.system(size: glyphSize, weight: .heavy, design: .default))
                 .foregroundStyle(glyphColor)
                 .baselineOffset(-1)
         }
@@ -57,23 +58,14 @@ struct Seal: View {
     private var glyphSize: CGFloat { size * 0.58 }
 }
 
-/// Hán-Việt numerals used for rank seals — matches themes-preview.html.
+/// Rank numerals for tokens — plain Arabic so a Vietnamese player reads them instantly.
 enum SealGlyph {
-    private static let table: [String] = [
-        "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌"
-    ]
-
-    /// 1-based rank → 壹 / 贰 / 叁 / 肆 … (falls back to Arabic past 8).
-    static func forRank(_ rank: Int) -> String {
-        guard rank >= 1 else { return "" }
-        if rank <= table.count { return table[rank - 1] }
-        return "\(rank)"
-    }
+    static func forRank(_ rank: Int) -> String { rank >= 1 ? "\(rank)" : "" }
 }
 
 #Preview {
     ZStack {
-        LacquerBackground().ignoresSafeArea()
+        AppBackground().ignoresSafeArea()
         VStack(spacing: 24) {
             HStack(spacing: 18) {
                 Seal(glyph: SealGlyph.forRank(1), variant: .winner)
@@ -83,7 +75,7 @@ enum SealGlyph {
             }
             HStack(spacing: 12) {
                 Seal(glyph: "封", variant: .winner, size: 22)
-                Seal(glyph: "×", variant: .last, size: 22)
+                Seal(glyph: "Bét", variant: .last, size: 22)
             }
         }
     }

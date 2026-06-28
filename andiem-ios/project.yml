@@ -28,9 +28,9 @@ targets:
         # GENERATE_INFOPLIST_FILE=YES means Xcode synthesizes these into the
         # bundled Info.plist — they MUST be build settings, not plist keys, or
         # the App Store upload validator sees empty strings and rejects.
-        MARKETING_VERSION: "1.0.2"
-        CURRENT_PROJECT_VERSION: "8"
-        # iPhone-only — the lacquer surface assumes single-pane portrait (see
+        MARKETING_VERSION: "1.1.0"
+        CURRENT_PROJECT_VERSION: "10"
+        # iPhone-only — the tactile surface assumes single-pane portrait (see
         # DESIGN.md "Known Gaps"). Universal would force us to declare all four
         # iPad orientations, which the app isn't designed for. 1 = iPhone, 2 =
         # iPad, "1,2" = universal.

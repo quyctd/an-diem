@@ -15,7 +15,7 @@ struct HistoryView: View {
                     .padding(.top, Spacing.xs)
                     .padding(.bottom, Spacing.md)
 
-                LacquerHairline()
+                RuleHairline()
                     .padding(.horizontal, Spacing.lg)
 
                 if sessions.isEmpty {
@@ -52,7 +52,7 @@ struct HistoryView: View {
             }
         }
         .scrollIndicators(.hidden)
-        .lacquerBackground()
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationTitle("")
@@ -80,7 +80,6 @@ struct HistoryView: View {
                 SectionLabel(text: "Lưu trữ")
                 Text("Lịch sử phiên")
                     .font(.phormTitleLg)
-                    .italic()
                     .foregroundStyle(Color.phormCream)
             }
             Spacer()
@@ -98,12 +97,11 @@ struct HistoryView: View {
         VStack(alignment: .center, spacing: Spacing.sm) {
             Text("Chưa có phiên nào trong sổ.")
                 .font(.phormNameMd)
-                .italic()
                 .foregroundStyle(Color.phormCreamDim)
                 .multilineTextAlignment(.center)
             Text("Mở ván đầu để bắt đầu ghi.")
                 .font(.phormBodySm)
-                .foregroundStyle(Color.phormCream.opacity(0.5))
+                .foregroundStyle(Color.phormCreamDim)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)

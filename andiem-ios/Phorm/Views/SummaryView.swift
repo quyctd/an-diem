@@ -62,7 +62,7 @@ struct SummaryView: View {
                         .padding(.top, Spacing.xs)
                         .padding(.bottom, Spacing.md)
 
-                    LacquerThickRule()
+                    GoldRule()
                         .padding(.horizontal, Spacing.lg)
 
                     if let champ = ranking.first {
@@ -104,22 +104,20 @@ struct SummaryView: View {
 
             cta
         }
-        .lacquerBackground(.phormSurfaceOxblood)
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationTitle("")
         .sheet(isPresented: $showNewSession) {
             NewSessionView()
-                .preferredColorScheme(.dark)
         }
         .fullScreenCover(isPresented: $showStampFlow) {
             StampEditorView(session: session)
-                .preferredColorScheme(.dark)
         }
         .sheet(isPresented: $showShareSheet) {
             if let shareCardImage {
                 ShareSheet(image: shareCardImage)
-                    .presentationBackground(Color.phormSurfaceCinnabarDeep)
+                    .presentationBackground(Color.phormSurfaceCinnabar)
             }
         }
     }
@@ -131,8 +129,7 @@ struct SummaryView: View {
             SectionLabel(text: "Phiên kết thúc", tone: .gold)
             Text(session.name)
                 .font(.phormDisplayMd)
-                .italic()
-                .foregroundStyle(Color.phormCream)
+                .foregroundStyle(Color.bodyText)
                 .lineLimit(2)
             Text(metaLine)
                 .font(.phormCaptionSection)
@@ -146,36 +143,22 @@ struct SummaryView: View {
 
     @ViewBuilder
     private func championBlock(name: String, total: Int) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
-            SectionLabel(text: "Vô địch ván", tone: .gold)
-            HStack(alignment: .lastTextBaseline) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            SectionLabel(text: "Nhất bàn", tone: .gold)
+            HStack(alignment: .center, spacing: Spacing.md) {
+                Coin(text: "1", variant: .winner, size: 40)
                 Text(name)
-                    .font(.system(size: 40, weight: .bold, design: .serif).italic())
-                    .foregroundStyle(Color.phormCream)
+                    .font(.system(size: 34, weight: .heavy, design: .default))
+                    .foregroundStyle(Color.bodyText)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                 Spacer()
-                Text(ScoreFormat.signed(total))
-                    .font(.phormNumberHero)
-                    .foregroundStyle(Color.phormPrimary)
+                ScoreChip(value: total, size: .large)
             }
-
-            HStack(spacing: Spacing.md) {
-                Seal(glyph: "壹", variant: .winner, size: 34)
-                Text("Ấn vàng")
-                    .font(.system(size: 22, weight: .semibold, design: .serif).italic())
-                    .foregroundStyle(Color.phormGoldBright)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.md)
-            .background(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(Color.black.opacity(0.22))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .stroke(Color.phormPrimary.opacity(0.55), lineWidth: 1)
-            )
+            .padding(Spacing.md)
+            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.cardSurface))
+            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Color.phormGoldBright, lineWidth: 2))
+            .shadow(color: Color.phormGoldBright.opacity(0.22), radius: 20, y: 4)
         }
     }
 
@@ -184,22 +167,21 @@ struct SummaryView: View {
     private var runnersBlock: some View {
         let runners = Array(ranking.dropFirst())
         let lastQualifies = ranking.count >= 4
-        return VStack(spacing: Spacing.md) {
+        return VStack(spacing: Spacing.sm) {
             ForEach(Array(runners.enumerated()), id: \.element.name) { idx, entry in
                 let rank = idx + 2
                 let isLastSeat = lastQualifies && rank == ranking.count
-                HStack(alignment: .lastTextBaseline) {
-                    Text(String(format: "%02d", rank))
-                        .font(.phormNumberSm)
-                        .foregroundStyle(Color.phormCreamDim)
+                HStack(alignment: .center, spacing: Spacing.sm) {
+                    Coin(text: "\(rank)", variant: .seat, size: 26)
                     Text(entry.name)
                         .font(.phormNameDisplay)
-                        .foregroundStyle(Color.phormCream)
+                        .foregroundStyle(Color.bodyText)
                     Spacer()
-                    Text(ScoreFormat.signed(entry.total))
-                        .font(.phormNumberEntry)
-                        .foregroundStyle(ScoreFormat.color(for: entry.total))
+                    ScoreChip(value: entry.total, size: .small)
                 }
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, Spacing.sm)
+                .tactileCard(radius: 12)
                 .opacity(isLastSeat ? 0.78 : 1.0)
             }
         }
@@ -211,18 +193,18 @@ struct SummaryView: View {
     private func lastPlaceBlock(name: String) -> some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
-                SectionLabel(text: "Tem cuối bàn")
+                SectionLabel(text: "Bét bàn")
                 Text(name)
                     .font(.phormNameMd)
                     .foregroundStyle(Color.phormCreamDim)
             }
             Spacer()
-            Seal(glyph: "×", variant: .last, size: 28)
+            Coin(text: "×", variant: .last, size: 28)
         }
         .padding(.top, Spacing.lg)
         .overlay(alignment: .top) {
             Rectangle()
-                .fill(Color.phormCream.opacity(0.18))
+                .fill(Color.hairline)
                 .frame(height: 1)
         }
     }
@@ -233,26 +215,26 @@ struct SummaryView: View {
     /// Tied-rank case: same shape but disabled with explanatory caption.
     private var unstampedCallout: some View {
         HStack(alignment: .center, spacing: Spacing.md) {
-            Seal(glyph: "壹", variant: isRankTied ? .default : .winner, size: 32)
+            Coin(text: "1", variant: isRankTied ? .seat : .winner, size: 32)
                 .opacity(isRankTied ? 0.55 : 1)
             VStack(alignment: .leading, spacing: 4) {
-                SectionLabel(text: isRankTied ? "Chưa đóng dấu được" : "Chưa đóng dấu", tone: .gold)
+                SectionLabel(text: isRankTied ? "Chưa khoe được" : "Chưa khoe bàn", tone: .gold)
                 Text(isRankTied
-                     ? "Phiên có tổng bằng nhau, không xác định vô địch/cuối bàn"
+                     ? "Hoà — chưa rõ ai nhất, ai bét"
                      : "Chụp ảnh nhóm — hoặc chọn ảnh có sẵn.")
-                    .font(.system(size: 12, weight: .regular, design: .serif))
-                    .foregroundStyle(Color.phormCream.opacity(isRankTied ? 0.65 : 1))
+                    .font(.system(size: 12, weight: .regular, design: .default))
+                    .foregroundStyle(isRankTied ? Color.phormCreamDim : Color.bodyText)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: 3, style: .continuous)
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
                 .fill(Color.phormPrimary.opacity(isRankTied ? 0.04 : 0.08))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 3, style: .continuous)
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
                 .stroke(
                     isRankTied ? Color.phormPrimaryDisabled : Color.phormPrimary,
                     style: StrokeStyle(lineWidth: 1, dash: [4, 3])
@@ -271,27 +253,27 @@ struct SummaryView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: 52, height: 52)
-                        .clipped()
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                         .overlay(
-                            Rectangle()
-                                .stroke(Color.phormPrimary, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .strokeBorder(Color.phormPrimary, lineWidth: 1)
                         )
                 } else {
-                    // No-photo path: 印 ornament in place of thumbnail.
+                    // No-photo path: brand initial in place of thumbnail.
                     ZStack {
-                        Rectangle().fill(Color.phormPrimary.opacity(0.12))
-                        Text("印")
-                            .font(.system(size: 24, weight: .heavy, design: .serif))
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.phormPrimary.opacity(0.12))
+                        Text("Ấ")
+                            .font(.system(size: 24, weight: .heavy, design: .default))
                             .foregroundStyle(Color.phormPrimary)
                     }
                     .frame(width: 52, height: 52)
-                    .overlay(Rectangle().stroke(Color.phormPrimary, lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.phormPrimary, lineWidth: 1))
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    SectionLabel(text: "Đã đóng dấu", tone: .gold)
+                    SectionLabel(text: "Đã khoe bàn", tone: .gold)
                     Text("Chạm để sửa hoặc chia sẻ lại")
-                        .font(.system(size: 12, weight: .regular, design: .serif))
-                        .foregroundStyle(Color.phormCream)
+                        .font(.system(size: 12, weight: .regular, design: .default))
+                        .foregroundStyle(Color.bodyText)
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -301,14 +283,14 @@ struct SummaryView: View {
             .padding(.horizontal, Spacing.md)
             .padding(.vertical, Spacing.sm)
             .background(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                RoundedRectangle(cornerRadius: 13, style: .continuous)
                     .fill(Color.phormPrimary.opacity(0.08))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                RoundedRectangle(cornerRadius: 13, style: .continuous)
                     .stroke(Color.phormPrimary, lineWidth: 1)
             )
-            .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
         }
         .buttonStyle(.plain)
     }
@@ -321,20 +303,20 @@ struct SummaryView: View {
             if showStampCallout && !isRankTied {
                 // F1: [Bỏ qua | Đóng dấu]
                 HStack(spacing: Spacing.sm) {
-                    LacquerOutlineButton(title: "Bỏ qua") {
+                    TactileOutlineButton(title: "Bỏ qua") {
                         hasSkippedStamp = true
                     }
-                    LacquerPrimaryButton(title: "Đóng dấu") {
+                    TactilePrimaryButton(title: "Khoe bàn") {
                         showStampFlow = true
                     }
                 }
             } else {
                 // Default / skipped / stamped / tied: [Chia sẻ | Phiên mới]
                 HStack(spacing: Spacing.sm) {
-                    LacquerOutlineButton(title: "Chia sẻ") {
+                    TactileOutlineButton(title: "Chia sẻ") {
                         renderAndShare()
                     }
-                    LacquerPrimaryButton(title: "Phiên mới") {
+                    TactilePrimaryButton(title: "Phiên mới") {
                         showNewSession = true
                     }
                 }
@@ -344,7 +326,7 @@ struct SummaryView: View {
         .padding(.bottom, Spacing.sm)
         .background(
             LinearGradient(
-                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.55), .phormSurfaceCinnabarDeep.opacity(0.9)],
+                colors: [Color.phormSurfaceCinnabar.opacity(0), Color.phormSurfaceCinnabar.opacity(0.85), Color.phormSurfaceCinnabar],
                 startPoint: .top,
                 endPoint: .bottom
             )

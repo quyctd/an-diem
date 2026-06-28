@@ -1,61 +1,45 @@
 import SwiftUI
 import UIKit
 
-/// Hà Nội cũ lacquer surface — replaces Liquid Glass entirely.
-/// Mirrors `.hanoi` in `themes-preview.html`:
-///   1. drenched cinnabar (or alternate surface) base
-///   2. warm vignette (radial gradients)
-///   3. halftone dots (4pt grid, screen blend)
-///   4. paper grain (fractal noise, overlay blend)
+/// Adaptive tactile surface background — flat on day (light appearance), with subtle grain on night (dark appearance).
+/// Replaces Liquid Glass and the prior halftone/vignette layers entirely.
 ///
-/// The halftone + grain textures are precomputed once into tileable UIImages
-/// so re-renders don't redraw thousands of paths.
-struct LacquerBackground: View {
+/// Dark mode only: overlays a 25% grain tile (`.overlay` blend) on top of the deep warm night surface.
+/// Day/light mode: the surface color is rendered flat — no halftone, no grain.
+///
+/// The grain tile is precomputed once into a tileable UIImage so re-renders don't redraw thousands of paths.
+struct AppBackground: View {
     var surface: Color = .phormSurfaceCinnabar
+    @Environment(\.colorScheme) private var scheme
 
     var body: some View {
         ZStack {
             surface
-
-            // Warm vignette — center brightens, corners deepen
-            LinearGradient(
-                colors: [
-                    Color(red: 1.0, green: 0.86, blue: 0.70).opacity(0.10),
-                    .clear,
-                    Color.black.opacity(0.18)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            // Halftone dots, screen blend
-            Image(uiImage: .phormHalftone)
-                .resizable(resizingMode: .tile)
-                .blendMode(.screen)
-                .allowsHitTesting(false)
-
-            // Paper grain, overlay blend
-            Image(uiImage: .phormGrain)
-                .resizable(resizingMode: .tile)
-                .blendMode(.overlay)
-                .opacity(0.55)
-                .allowsHitTesting(false)
+            if scheme == .dark {
+                Image(uiImage: .phormGrain)
+                    .resizable(resizingMode: .tile)
+                    .blendMode(.overlay)
+                    .opacity(0.25)
+                    .allowsHitTesting(false)
+            }
         }
     }
 }
 
 extension View {
-    /// Drench the view's background in one lacquer surface with halftone + grain.
-    /// Use this on the *root* of every screen — content sits directly on top.
-    func lacquerBackground(_ surface: Color = .phormSurfaceCinnabar) -> some View {
-        background(LacquerBackground(surface: surface).ignoresSafeArea())
+    /// Apply the adaptive surface background to the view's background.
+    /// Use this on the *root* of every screen — day surfaces are flat; night surfaces add a subtle grain overlay.
+    func appBackground(_ surface: Color = .phormSurfaceCinnabar) -> some View {
+        background(AppBackground(surface: surface).ignoresSafeArea())
     }
 }
 
 // MARK: - Precomputed texture tiles
 
 private extension UIImage {
-    /// 4×4 tile with one cream pinprick — composites into the halftone dot grid.
+    /// 4×4 tile with one cream pinprick — currently unused / retired from the surface system.
+    /// Halftone-dot compositing was removed when the design moved to flat day surfaces + night-only grain.
+    /// This tile is kept for reference but is not applied by any active view.
     static let phormHalftone: UIImage = {
         let size = CGSize(width: 4, height: 4)
         let renderer = UIGraphicsImageRenderer(size: size)

@@ -25,12 +25,12 @@ struct EmptyHomeView: View {
                         VStack(spacing: 6) {
                             SectionLabel(text: "Sổ ghi điểm")
                             Text("Ấn Điểm")
-                                .font(.system(size: 36, weight: .bold, design: .serif).italic())
+                                .font(.system(size: 36, weight: .bold, design: .default))
                                 .foregroundStyle(Color.phormCream)
                                 .multilineTextAlignment(.center)
                             Text("Ghi điểm cho bàn phỏm, tá lả, sâm lốc. Mở là chơi — cuối bàn rõ ai ăn ai thua, không cần nhẩm, không ai cãi.")
                                 .font(.phormBodyMd)
-                                .foregroundStyle(Color.phormCream.opacity(0.65))
+                                .foregroundStyle(Color.phormCreamDim)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, Spacing.lg)
                                 .padding(.top, Spacing.xs)
@@ -42,10 +42,10 @@ struct EmptyHomeView: View {
                 .padding(.horizontal, Spacing.xl)
 
                 VStack(spacing: Spacing.sm) {
-                    LacquerPrimaryButton(title: "Mở phiên mới") {
+                    TactilePrimaryButton(title: "Mở phiên mới") {
                         showNewSession = true
                     }
-                    LacquerOutlineButton(title: "Lịch sử") {
+                    TactileOutlineButton(title: "Lịch sử") {
                         showHistory = true
                     }
                 }
@@ -53,13 +53,12 @@ struct EmptyHomeView: View {
                 .padding(.bottom, Spacing.md)
             }
         }
-        .lacquerBackground()
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationTitle("")
         .sheet(isPresented: $showNewSession) {
             NewSessionView()
-                .preferredColorScheme(.dark)
         }
         .navigationDestination(isPresented: $showHistory) {
             HistoryView()

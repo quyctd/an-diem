@@ -13,11 +13,11 @@ struct ImportConfirmView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
                     headerStrip
-                    LacquerHairline()
+                    RuleHairline()
                     detailBlock
                     Text("Phiên đang chơi của bạn sẽ tự đóng vào lịch sử trước khi mở phiên này.")
                         .font(.phormBodySm)
-                        .foregroundStyle(Color.phormCream.opacity(0.6))
+                        .foregroundStyle(Color.phormCreamDim)
                 }
                 .padding(.horizontal, Spacing.lg)
                 .padding(.top, Spacing.xl)
@@ -26,22 +26,20 @@ struct ImportConfirmView: View {
 
             cta
         }
-        .lacquerBackground(.phormSurfaceOchre)
-        .presentationBackground(Color.phormSurfaceOchre)
+        .appBackground()
+        .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .preferredColorScheme(.dark)
     }
 
     private var headerStrip: some View {
         HStack(alignment: .top) {
-            Seal(glyph: "印", variant: .winner, size: 36)
+            Seal(glyph: "1", variant: .winner, size: 36)
             VStack(alignment: .leading, spacing: 4) {
                 SectionLabel(text: "Nhận phiên", tone: .gold)
                 Text("Có ai vừa gửi")
                     .font(.phormTitleLg)
-                    .italic()
-                    .foregroundStyle(Color.phormCream)
+                    .foregroundStyle(Color.bodyText)
             }
             Spacer()
         }
@@ -51,7 +49,7 @@ struct ImportConfirmView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             Text(dto.name)
                 .font(.phormNameDisplay)
-                .foregroundStyle(Color.phormCream)
+                .foregroundStyle(Color.bodyText)
                 .lineLimit(2)
             Text(dto.players.joined(separator: " · "))
                 .font(.phormNumberSm)
@@ -64,12 +62,7 @@ struct ImportConfirmView: View {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.md)
-        .background(Color.black.opacity(0.20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .tactileCard(radius: 14)
     }
 
     private func detailChip(_ s: String) -> some View {
@@ -81,14 +74,14 @@ struct ImportConfirmView: View {
             .padding(.horizontal, Spacing.sm)
             .padding(.vertical, 4)
             .background(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                    .stroke(Color.phormGoldBright.opacity(0.55), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(Color.phormGoldBright.opacity(0.55), lineWidth: 1)
             )
     }
 
     private var cta: some View {
         VStack(spacing: Spacing.sm) {
-            LacquerPrimaryButton(title: "Mở phiên này", action: confirm)
+            TactilePrimaryButton(title: "Mở phiên này", action: confirm)
             Button {
                 onDismiss(); dismiss()
             } label: {

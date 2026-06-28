@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// Brief launch flourish — gold seal + Ấn Điểm wordmark on cinnabar lacquer.
+/// Brief launch flourish — gold brand mark + Ấn Điểm wordmark on the warm tactile surface.
 /// Lives between the static iOS launch screen and HomeView on cold start.
 /// Total visible time ~0.9s; tap anywhere to skip.
 ///
-/// Static `UILaunchScreen` is already flat cinnabar (`LaunchBackground.colorset`),
+/// Static `UILaunchScreen` is already the flat warm surface (`LaunchBackground.colorset`),
 /// so the system→splash→home transition reads as one continuous surface deepening
-/// then revealing the seal.
+/// then revealing the mark.
 struct SplashView: View {
     @Binding var isVisible: Bool
 
@@ -16,7 +16,7 @@ struct SplashView: View {
 
     var body: some View {
         ZStack {
-            LacquerBackground()
+            AppBackground()
                 .ignoresSafeArea()
 
             VStack(spacing: Spacing.lg) {
@@ -29,7 +29,7 @@ struct SplashView: View {
 
                 VStack(spacing: 6) {
                     Text("Ấn Điểm")
-                        .font(.system(size: 52, weight: .bold, design: .serif).italic())
+                        .font(.system(size: 52, weight: .bold, design: .default))
                         .foregroundStyle(Color.phormCream)
                         .opacity(wordmarkVisible ? 1 : 0)
                         .offset(y: wordmarkVisible ? 0 : 6)

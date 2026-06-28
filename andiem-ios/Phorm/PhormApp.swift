@@ -13,6 +13,10 @@ struct PhormApp: App {
     #endif
 
     init() {
+        if ScreenshotMode.isActive {
+            container = ScreenshotMode.makeContainer()
+            return
+        }
         let schema = Schema([Session.self, Round.self, PlayerScore.self])
         #if DEBUG
         if ScreenshotSupport.seedRequested {
@@ -41,25 +45,31 @@ struct PhormApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                HomeView()
-                    .preferredColorScheme(.dark)
-                    .tint(.phormPrimary)
-                    .onOpenURL { url in
-                        pendingImport = try? SessionShare.decode(url)
-                    }
-                    .sheet(item: $pendingImport) { dto in
-                        ImportConfirmView(dto: dto, onDismiss: { pendingImport = nil })
-                            .interactiveDismissDisabled()
-                            .preferredColorScheme(.dark)
-                    }
+            if ScreenshotMode.isActive {
+                ScreenshotRoot()
+                    .modelContainer(container)
+            } else {
+                normalRoot
+            }
+        }
+    }
 
-                if showSplash {
-                    SplashView(isVisible: $showSplash)
-                        .preferredColorScheme(.dark)
-                        .transition(.opacity)
-                        .zIndex(1)
+    private var normalRoot: some View {
+        ZStack {
+            HomeView()
+                .tint(.phormPrimary)
+                .onOpenURL { url in
+                    pendingImport = try? SessionShare.decode(url)
                 }
+                .sheet(item: $pendingImport) { dto in
+                    ImportConfirmView(dto: dto, onDismiss: { pendingImport = nil })
+                        .interactiveDismissDisabled()
+                }
+
+            if showSplash {
+                SplashView(isVisible: $showSplash)
+                    .transition(.opacity)
+                    .zIndex(1)
             }
         }
         .modelContainer(container)

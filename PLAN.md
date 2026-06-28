@@ -136,6 +136,10 @@ Cách test end-to-end (manual + simulator):
 
 Không có unit test bắt buộc cho MVP — personal app, dependency thấp. Có thể thêm sau cho Round score calc + URL encoder/decoder nếu thấy cần.
 
+## Post-MVP roadmap
+
+- **Khoe bàn (share card)** — end-of-session photo feature (formerly "đóng dấu"; UI wording is now plain "Khoe bàn", markers are "huy hiệu"). Spec in [`docs/superpowers/specs/2026-05-26-dong-dau-share-card-design.md`](docs/superpowers/specs/2026-05-26-dong-dau-share-card-design.md). Visual contract in `themes-preview.html` (frames F1–F5). One photo + two taps at session end → 9:16 share card → AirDrop/Zalo/Locket/IG/Reels/TikTok.
+
 ## Out of scope (MVP)
 
 - Money / giá điểm / settlement
@@ -146,6 +150,5 @@ Không có unit test bắt buộc cho MVP — personal app, dependency thấp. C
 - History search/filter
 - iPad-optimized layout (chạy được nhưng không tối ưu)
 - macOS / Mac Catalyst
-- Image export bảng điểm
 - Light/dark theme customization (theo system)
 - Localization tiếng Anh (chỉ tiếng Việt cho MVP)

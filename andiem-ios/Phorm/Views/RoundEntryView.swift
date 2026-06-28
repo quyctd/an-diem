@@ -15,12 +15,12 @@ struct RoundEntryView: View {
     @State private var draft: RoundDraft
     @State private var showDeleteConfirm = false
 
-    init(session: Session, mode: Mode) {
+    init(session: Session, mode: Mode, prefill: [String: Int]? = nil) {
         self.session = session
         self.mode = mode
         switch mode {
         case .new:
-            _draft = State(initialValue: RoundDraft(playerNames: session.playerNames))
+            _draft = State(initialValue: RoundDraft(playerNames: session.playerNames, existing: prefill))
         case .edit(let round):
             let map = Dictionary(
                 uniqueKeysWithValues: (round.scores ?? []).map { ($0.playerName, $0.value) }
@@ -56,10 +56,9 @@ struct RoundEntryView: View {
 
             bottomDock
         }
-        .lacquerBackground(.phormSurfaceCinnabarDeep)
-        .presentationBackground(Color.phormSurfaceCinnabarDeep)
+        .appBackground(.phormSurfaceCinnabar)
+        .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDragIndicator(.visible)
-        .preferredColorScheme(.dark)
         .confirmationDialog("Xóa vòng này?", isPresented: $showDeleteConfirm) {
             if case .edit(let round) = mode {
                 Button("Xóa", role: .destructive) {
@@ -82,7 +81,8 @@ struct RoundEntryView: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(Color.phormCreamDim)
                     .frame(width: 32, height: 32)
-                    .background(Circle().fill(Color.black.opacity(0.18)))
+                    .background(Circle().fill(Color.surfaceTile))
+                    .overlay(Circle().strokeBorder(Color.hairline, lineWidth: 1))
             }
             Spacer()
             SectionLabel(text: headerLabel)
@@ -106,7 +106,7 @@ struct RoundEntryView: View {
 
     private var headerLabel: String {
         switch mode {
-        case .new:     return "Đóng dấu vòng"
+        case .new:     return "Ghi vòng"
         case .edit:    return "Sửa vòng"
         }
     }
@@ -120,9 +120,8 @@ struct RoundEntryView: View {
                     .font(.phormDisplayMd)
                     .foregroundStyle(Color.phormPrimary)
                 Text("điểm ai bao nhiêu?")
-                    .font(.system(size: 18, weight: .regular, design: .serif))
-                    .italic()
-                    .foregroundStyle(Color.phormCream.opacity(0.82))
+                    .font(.system(size: 18, weight: .regular, design: .default))
+                    .foregroundStyle(Color.phormCreamDim)
             }
             Spacer()
             Text(String(format: "%02d", roundIndex))
@@ -166,126 +165,90 @@ struct RoundEntryView: View {
         }
     }
 
+    /// One player row: Coin seat token + name + ScoreChip.
+    ///
+    /// Visual hierarchy:
+    ///   • Focused row  — surfaceTile card + shadow + .large chip (isFocused border) + .winner coin.
+    ///   • Auto-fill row — gold tint throughout; whole row at 0.72 opacity (single quieted treatment).
+    ///   • Inactive rows — .seat coin + .small chip; whole row dimmed to 42%.
+    ///
+    /// The chip value fed to ScoreChip:
+    ///   • Auto-fill row  → draft.autoFillValue  (app-computed, not host-typed)
+    ///   • All other rows → draft.entries[idx]   (nil = empty = chip shows "0")
     @ViewBuilder
     private func playerRow(idx: Int, name: String) -> some View {
-        let isFocused = draft.focusedIndex == idx
-        let isAuto = draft.autoFillIndex == idx
+        let isFocused    = draft.focusedIndex == idx
+        let isAuto       = draft.autoFillIndex == idx
+        let chipValue:   Int?             = isAuto ? draft.autoFillValue : draft.entries[idx]
+        let chipSize:    ScoreChip.Size   = isFocused ? .large : .small
+        let coinVariant: Coin.Variant     = isFocused ? .active : (isAuto ? .winner : .seat)
+        // Show pending sign hint when focused on an empty non-auto cell.
+        let showSignHint = isFocused && !isAuto && draft.entries[idx] == nil
+
         HStack(spacing: Spacing.md) {
-            // Seat seal — Hán numeral per player position. Gives a fixed glyph anchor
-            // the host can verify before typing ("I'm entering for 叁, that's Linh").
-            // Bright winner-gold when focused; muted default otherwise.
-            Seal(
-                glyph: SealGlyph.forRank(idx + 1),
-                variant: isFocused ? .winner : .default,
-                size: 30
-            )
+            // Seat coin — gold winner token for focused/auto rows; neutral for inactive.
+            Coin(text: SealGlyph.forRank(idx + 1), variant: coinVariant, size: 30)
+
+            // Player name — primary tint for focused, gold for auto-fill, cream otherwise.
             Text(name)
                 .font(.phormNameMd)
                 .foregroundStyle(
                     isFocused ? Color.phormPrimary
-                    : isAuto ? Color.phormCreamDim
-                    : Color.phormCream
+                    : isAuto  ? Color.phormGoldBright
+                    : Color.bodyText
                 )
-            Spacer()
-            cellView(idx: idx, isFocused: isFocused, isAuto: isAuto)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture { draft.focusedIndex = idx }
-    }
 
-    @ViewBuilder
-    private func cellView(idx: Int, isFocused: Bool, isAuto: Bool) -> some View {
-        ZStack(alignment: .topTrailing) {
-            HStack(spacing: 2) {
-                cellValue(idx: idx, isFocused: isFocused, isAuto: isAuto)
+            Spacer()
+
+            // Score chip + sign placeholder hint + blinking caret (caret only when focused).
+            HStack(spacing: 6) {
+                ScoreChip(value: chipValue, size: chipSize, isFocused: isFocused)
+                    .overlay(alignment: .center) {
+                        if showSignHint {
+                            Text(draft.signMode < 0 ? "\u{2212}" : "+")
+                                .font(.phormNumberMd)
+                                .foregroundStyle(draft.signMode < 0 ? Color.scoreNegative : Color.scorePositive)
+                                .opacity(0.5)
+                        }
+                    }
                 if isFocused {
                     BlinkingCaret()
                 }
             }
-            .frame(width: 110, alignment: .trailing)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(cellBackground(isFocused: isFocused, isAuto: isAuto))
-
-            if isAuto {
-                Seal(glyph: "封", variant: .winner, size: 22)
-                    .offset(x: 8, y: -8)
-                    .transition(.scale.combined(with: .opacity))
-            }
         }
-        .frame(height: 44)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        // Focused row: elevated tactile card.
+        .modifier(FocusCard(active: isFocused))
+        .contentShape(Rectangle())
+        .onTapGesture { draft.focusedIndex = idx }
+        // Row opacity: focused = full, auto = 0.72 (single quieted row), inactive = 0.42.
+        .opacity(isFocused ? 1.0 : isAuto ? 0.72 : 0.42)
+        .animation(.easeInOut(duration: 0.18), value: isFocused)
+        .animation(.easeInOut(duration: 0.18), value: isAuto)
     }
 
-    @ViewBuilder
-    private func cellValue(idx: Int, isFocused: Bool, isAuto: Bool) -> some View {
-        if isAuto, let v = draft.autoFillValue {
-            Text(ScoreFormat.signed(v))
-                .font(.phormNumberScript)
-                .foregroundStyle(ScoreFormat.color(for: v))
-        } else if let v = draft.entries[idx] {
-            // Typed value: sign-aware color (mint +, ochre −, cream 0). The same
-            // color appears in the keypad's sign key — closing the loop between
-            // mode you're in and what you see in the cell.
-            Text(ScoreFormat.signed(v))
-                .font(.phormNumberEntry)
-                .foregroundStyle(ScoreFormat.color(for: v))
-        } else if isFocused {
-            // Empty placeholder on the focused row hints at the active sign mode.
-            Text(draft.signMode < 0 ? "\u{2212}" : "+")
-                .font(.phormNumberEntry)
-                .foregroundStyle(modeColor.opacity(0.50))
-        } else {
-            Text("0")
-                .font(.phormNumberEntry)
-                .foregroundStyle(Color.phormCream.opacity(0.32))
-        }
-    }
+    // MARK: - Validation pill (Tổng)
 
-    /// Current sign-mode accent color — mint for add, ochre for subtract. Drives
-    /// the focused cell border, value text, placeholder hint, and keypad sign key.
-    private var modeColor: Color {
-        draft.signMode < 0 ? .scoreNegative : .scorePositive
-    }
-
-    @ViewBuilder
-    private func cellBackground(isFocused: Bool, isAuto: Bool) -> some View {
-        let shape = RoundedRectangle(cornerRadius: 2, style: .continuous)
-        ZStack {
-            if isFocused {
-                shape.fill(modeColor.opacity(0.14))
-                shape.strokeBorder(modeColor, lineWidth: 1.5)
-            } else if isAuto {
-                shape.fill(Color.phormPrimary.opacity(0.06))
-                shape.strokeBorder(Color.phormPrimaryActive, lineWidth: 1)
-            } else {
-                shape.fill(Color.black.opacity(0.18))
-                shape.strokeBorder(Color.phormCream.opacity(0.30), lineWidth: 1)
-            }
-        }
-    }
-
-    // MARK: - Validation
-
+    /// Rounded Capsule pill summarising the round total.
+    /// Balanced (sum = 0): chipUp-tinted "0 · cân".
+    /// Unbalanced: chipDown-tinted "<signed> ⚠".
     private var validationRow: some View {
         let sum = draft.liveSum
-        let ok = sum == 0
+        let ok  = sum == 0
         return HStack {
-            SectionLabel(text: "Tổng")
             Spacer()
-            Text(ok ? "0 · cân" : "\(ScoreFormat.signed(sum)) ⚠")
-                .font(.phormNumberMd)
-                .foregroundStyle(ok ? Color.scorePositive : Color.warning)
-        }
-        .padding(.top, Spacing.sm)
-        .overlay(alignment: .top) {
-            Rectangle()
-                .fill(Color.phormCream.opacity(0.18))
-                .frame(height: 1)
+            StatusPill(
+                text: ok ? "Tổng: 0 · cân ✓" : "Tổng: \(ScoreFormat.signed(sum)) ⚠",
+                style: ok ? .ok : .warn
+            )
+            Spacer()
         }
     }
 
     // MARK: - Bottom dock (keypad + CTA)
 
+    /// Flat surface with a light cream hairline at the top — no heavy gradient.
     private var bottomDock: some View {
         VStack(spacing: Spacing.sm) {
             Keypad(
@@ -298,14 +261,12 @@ struct RoundEntryView: View {
         .padding(.horizontal, Spacing.md)
         .padding(.bottom, Spacing.sm)
         .background(
-            LinearGradient(
-                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.6), .phormSurfaceCinnabarDeep],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 380)
-            .allowsHitTesting(false),
-            alignment: .bottom
+            Color.phormSurfaceCinnabar
+                .overlay(alignment: .top) {
+                    Rectangle()
+                        .fill(Color.hairline)
+                        .frame(height: 1)
+                }
         )
     }
 
@@ -321,6 +282,18 @@ struct RoundEntryView: View {
             dismiss()
         } catch {
             print("save round failed: \(error)")
+        }
+    }
+}
+
+/// Elevated tactile card behind the focused player row (no card when inactive).
+private struct FocusCard: ViewModifier {
+    let active: Bool
+    func body(content: Content) -> some View {
+        if active {
+            content.tactileCard(radius: 14, elevated: true)
+        } else {
+            content
         }
     }
 }

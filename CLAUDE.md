@@ -9,15 +9,15 @@ This repo holds the spec, the design system, and the iOS app implementation (`an
 Contents:
 - `PLAN.md` — the source of truth for product scope, UX decisions (numbered 1–14, treat as locked), data model sketch, screens, and manual verification steps.
 - `PRODUCT.md` — the brand brief: who the user is, product purpose, voice, anti-references, design principles, accessibility commitments. Shorter than DESIGN.md/PLAN.md; read it whole when product framing matters.
-- `DESIGN.md` — design tokens for the **Hà Nội cũ** visual language (Vietnamese vernacular print). YAML-in-Markdown frontmatter: lacquer surfaces (cinnabar/ochre/jade), cream ink, gold-leaf accent, Noto Serif Display + Cormorant Garamond + IBM Plex Serif typography, halftone/grain textures, components. Read the frontmatter, don't paraphrase it.
-- `themes-preview.html` — single-file Tailwind (CDN) mockup of the Hà Nội cũ direction across four key screens. This is the canonical visual reference. View via raw.githack: https://raw.githack.com/quyctd/an-diem/main/themes-preview.html
+- `DESIGN.md` — design tokens for the **tactile/playful** visual language (Tết-red + gold + coin/chip tactility). YAML-in-Markdown frontmatter: bright day/night surfaces, color-filled score chips, coin tokens, 3D keypad keys, clean sans typography. Read the frontmatter, don't paraphrase it.
+- `themes-preview.html` — single-file Tailwind (CDN) mockup. The canonical visual reference is the **`TACTILE / PLAYFUL DIRECTION` (`tc-`)** section of this file. View via raw.githack: https://raw.githack.com/quyctd/an-diem/main/themes-preview.html
 - `design-walkthrough.html` — older mockup of the prior trading-terminal direction. **Superseded by `themes-preview.html`** but kept for diff reference.
 - `andiem-ios/` — the SwiftUI iOS implementation.
 - `README.md` — short pointer to the above.
 
 ## Working in this repo
 
-- Editing `themes-preview.html`: it's standalone — no build step. Open the file in a browser to preview changes. Tailwind is loaded from `cdn.jsdelivr.net/npm/@tailwindcss/browser@4`. Google Fonts (Noto Serif Display, Cormorant Garamond, IBM Plex Serif, Spectral) load via CDN.
+- Editing `themes-preview.html`: it's standalone — no build step. Open the file in a browser to preview changes. Tailwind is loaded from `cdn.jsdelivr.net/npm/@tailwindcss/browser@4`. Google Fonts (Inter) load via CDN.
 - Editing `PLAN.md` / `PRODUCT.md` / `DESIGN.md`: prose/spec changes only. The 14 numbered UX decisions in PLAN.md, the 5 design principles + anti-references in PRODUCT.md, and the token frontmatter in DESIGN.md are intentional commitments — don't soften, expand, or "improve" them without explicit ask. Same for the "Out of scope (MVP)" list at the bottom of PLAN.md.
 - Editing `andiem-ios/`: SwiftUI codebase. Theme tokens (colors, fonts) should pull from a single source of truth that mirrors DESIGN.md's YAML frontmatter — don't scatter hex literals across views.
 - `.expect/` is gitignored except for `.gitignore` itself — it's scratch for the `mcp__expect__*` browser tools and shouldn't be checked in.
@@ -45,16 +45,16 @@ When discussing implementation (even though the code is elsewhere), assume:
 
 - **User is the host at the table** — one Vietnamese-speaking adult holding the phone between rounds in a low-light social setting, attention split. Optimize for the scribe, not the strongest player.
 - **Confident, fast, deliberate.** Voice is terse Vietnamese with no marketing fluff and no game-show energy. Warnings are matter-of-fact ("Tổng: −3 ⚠"), never apologetic or alarming.
-- **Reference register: Vietnamese vernacular print** — Diêm Thống Nhất matchbox labels, vỏ chai Bia Hà Nội, lacquerware seals, áo dài silk patterns — read through a contemporary designer's eye, not pastiche. The app should feel like a lacquered scorebook a friend group keeps.
-- **Anti-references — reject on sight:** SaaS-dashboard sameness, Notes-app blandness, **trading-terminal nihilism** (Bloomberg-on-black, Binance-yellow, SF Mono LED — the category reflex; reject it), cartoony game-tracker energy (confetti, mascots, "🎉 You won!"), gambling/casino chrome, nostalgia kitsch (literal aged-paper textures). The winner's **ấn vàng** (gold seal) and last-place **tem chéo** (×) are the only decoration the app earns.
-- **Score up/down must pair color with a non-color cue** — mint (+) up, ochre (−) down, always with explicit sign prefix. Color-blind parsing is a hard requirement, not a nice-to-have.
-- **WCAG AA, measured per surface.** Cinnabar lacquer is the contrast-critical layer; tokens declare their ratio explicitly. Cream on cinnabar 6.96:1, gold-bright on cinnabar 5.10:1 (small labels), gold on cinnabar 4.27:1 (display ≥18px only).
+- **Reference register: card-table tactility + Vietnamese vernacular accents.** Brand rests on Tết-red `#E5483A` + gold `#F2B829` coin/chip tactility — not the serif/lacquer print register. The app should feel like placing physical pieces on a card table, with a warm Vietnamese frame.
+- **Anti-references — reject on sight:** SaaS-dashboard sameness, Notes-app blandness, **trading-terminal nihilism** (Bloomberg-on-black, Binance-yellow, SF Mono LED — the category reflex; reject it), cartoony game-tracker energy (confetti, mascots, emoji, "🎉 You won!"), gambling/casino chrome, nostalgia kitsch (literal aged-paper textures). Playful comes from material depth + color pops, not cartoon energy. The gold winner coin ("Nhất bàn") is the only celebratory moment the app earns.
+- **Score up/down must pair color with a non-color cue** — chips are color-filled (green `#21BD73` up, coral `#FF6B3D` down) AND always carry an explicit `+`/`−` sign prefix. The sign is the color-blind contract; the chip color is additive. Color-blind parsing is a hard requirement, not a nice-to-have.
+- **WCAG AA, measured per surface.** Chip numbers (primary legibility path): dark ink `#2A211C` on up-chip `#21BD73` ≈ 6.5:1 AA Normal ✓, on down-chip `#FF6B3D` ≈ 5.6:1 AA Normal ✓. Day surface (`#FBF4E6`): ink ~12:1, up-score jade ~5.5:1, down-score rust ~5.7:1 (non-chip / dense leaderboard contexts). Night surface (`#241715`): cream ~12:1, up-score mint 5.81:1, down-score peach ~5.2:1 (non-chip / dense leaderboard contexts). Tokens declare their ratio explicitly.
 
 ## Design system anchors (from DESIGN.md)
 
-- Single accent color: **gold-leaf** `#d9b25a` (large) + `#e8c570` (small labels). Carries every primary CTA, focus border, and the winner's seal. Don't introduce a second accent.
-- Score semantics: **mint** `#b6e0c2` = up (5.81:1), **ochre-warm** `#e6a665` = down (4.02:1, large only). Text color, never card fill. Always paired with `+`/`−` sign.
-- **No Liquid Glass.** Surfaces are lacquer (cinnabar `#8c2a22` default + ochre/jade/oxblood variants), overlaid with halftone dots + paper grain. The texture system replaces glassmorphism entirely.
-- **No SF Mono.** Forbidden — its presence is a category-reflex failure. Numerals use **Noto Serif Display** (hero/display ≥20px) and **IBM Plex Serif** with `tabular-nums` (body/small). Italic Cormorant Garamond for player names and auto-fill computed values.
-- App does NOT have binary light/dark equal peers. One drenched lacquer surface per session; iOS appearance subtly deepens/lightens, but chromatic identity persists.
-- Canonical visual reference is `themes-preview.html`. When the doc disagrees with the preview, the preview wins; update the doc.
+- Brand accents: **Tết-red** `#E5483A` (primary CTA, sign-toggle key, headers) + **gold** `#F2B829` (winner coin, special tokens). Don't introduce a third accent.
+- Score semantics: **color-filled chips** — up `#21BD73` green fill, down `#FF6B3D` coral fill, neutral `#ECE4D6` (day). White bold number inside. The "text color only, never card fill" rule is intentionally overridden. Always paired with `+`/`−` sign prefix (color-blind requirement).
+- **No Liquid Glass.** Surfaces follow system appearance: day warm cream `#FBF4E6`, night deep warm `#241715`. Halftone-dot pattern retired on all screens. Night surface retains subtle grain (25% opacity). Depth from chip and key shadows.
+- **No SF Mono.** Forbidden — its presence is a category-reflex failure. Typography is clean system sans: **SF Pro** (iOS native, zero bundling) with `.monospacedDigit()` on all numerics. The serif register (Noto Serif Display, Cormorant Garamond, IBM Plex Serif, Spectral) is retired. Auto-fill uses lighter weight (300) to signal "app wrote this."
+- App **follows system appearance** with two equal surfaces. Day: warm cream `#FBF4E6`. Night: deep warm `#241715`. Chromatic identity persists through Tết-red + gold accents, not a single drenched surface color.
+- Canonical visual reference is the **`TACTILE / PLAYFUL DIRECTION` (`tc-`) section of `themes-preview.html`**. When the doc disagrees with the `tc-` mockup, the mockup wins; update the doc.

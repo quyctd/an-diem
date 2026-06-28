@@ -39,7 +39,7 @@ struct StampEditorView: View {
 
     var body: some View {
         ZStack {
-            LacquerBackground(surface: .phormSurfaceOxblood).ignoresSafeArea()
+            AppBackground(surface: .phormSurfaceOxblood).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 topChrome
@@ -69,7 +69,7 @@ struct StampEditorView: View {
             .presentationDragIndicator(.visible)
         }
         .confirmationDialog(
-            "Xoá dấu này?",
+            "Xoá huy hiệu này?",
             isPresented: Binding(
                 get: { pendingClear != nil },
                 set: { if !$0 { pendingClear = nil } }
@@ -84,7 +84,7 @@ struct StampEditorView: View {
             }
             Button("Hủy", role: .cancel) {}
         } message: { _ in
-            Text("Bạn có thể đưa dấu trở lại bằng nút bên dưới.")
+            Text("Bạn có thể đưa huy hiệu trở lại bằng nút bên dưới.")
         }
         .sheet(isPresented: $showShareSheet, onDismiss: { dismiss() }) {
             if let shareImage {
@@ -176,7 +176,7 @@ struct StampEditorView: View {
 
             Spacer()
 
-            SectionLabel(text: "Đóng dấu — kéo dấu vào mặt", tone: .gold)
+            SectionLabel(text: "Kéo huy hiệu vào mặt người", tone: .gold)
         }
     }
 
@@ -196,9 +196,9 @@ struct StampEditorView: View {
     /// sticker is the way to hide it.
     private var stickerChips: some View {
         HStack(spacing: Spacing.sm) {
-            chip(target: .winner, glyph: "壹", name: winnerName, isPlaced: winnerCoord != nil)
+            chip(target: .winner, glyph: "1", name: winnerName, isPlaced: winnerCoord != nil)
             if let loserName {
-                chip(target: .loser, glyph: "×", name: loserName, isPlaced: loserCoord != nil)
+                chip(target: .loser, glyph: "Bét", name: loserName, isPlaced: loserCoord != nil)
             }
         }
     }
@@ -214,19 +214,19 @@ struct StampEditorView: View {
         } label: {
             HStack(spacing: 8) {
                 Text(glyph)
-                    .font(.system(size: 14, weight: .heavy, design: .serif))
+                    .font(.system(size: 14, weight: .heavy, design: .default))
                     .foregroundStyle(isPlaced ? Color.onPrimary : Color.phormPrimary)
                     .frame(width: 20, height: 20)
                     .background(
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
                             .fill(isPlaced ? Color.phormPrimary : Color.phormPrimary.opacity(0.10))
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
-                            .stroke(Color.phormPrimary, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .strokeBorder(Color.phormPrimary, lineWidth: 1)
                     )
                 Text(name)
-                    .font(.system(size: 14, weight: .semibold, design: .serif).italic())
+                    .font(.system(size: 14, weight: .semibold, design: .default))
                     .foregroundStyle(Color.phormCream)
                     .lineLimit(1)
                 if !isPlaced {
@@ -239,13 +239,14 @@ struct StampEditorView: View {
             }
             .padding(.horizontal, Spacing.sm)
             .padding(.vertical, 6)
+            // Dark editor ground: subtle raised tile keeps the artifact aesthetic.
             .background(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(Color.black.opacity(0.18))
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.surfaceElevated)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .stroke(Color.phormCream.opacity(isPlaced ? 0.18 : 0.32), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(Color.phormCream.opacity(isPlaced ? 0.18 : 0.32), lineWidth: 1)
             )
             .opacity(isPlaced ? 1.0 : 0.85)
         }
@@ -264,14 +265,14 @@ struct StampEditorView: View {
                     .foregroundStyle(Color.phormPrimary)
                     .frame(width: 116, height: 52)
                     .background(
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        RoundedRectangle(cornerRadius: 13, style: .continuous)
                             .stroke(Color.phormPrimary, lineWidth: 1)
                     )
-                    .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                    .contentShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
             }
             .buttonStyle(.plain)
 
-            LacquerPrimaryButton(title: photo == nil ? "Chia sẻ" : "Lưu & chia sẻ") {
+            TactilePrimaryButton(title: photo == nil ? "Chia sẻ" : "Lưu & chia sẻ") {
                 commitAndShare()
             }
         }

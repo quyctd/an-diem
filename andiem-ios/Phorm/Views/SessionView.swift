@@ -42,7 +42,7 @@ struct SessionView: View {
                         .padding(.top, Spacing.xs)
                         .padding(.bottom, Spacing.md)
 
-                    LacquerHairline()
+                    RuleHairline()
                         .padding(.horizontal, Spacing.lg)
 
                     leaderboardRows
@@ -69,7 +69,7 @@ struct SessionView: View {
 
             cta
         }
-        .lacquerBackground()
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbar {
@@ -171,13 +171,7 @@ struct SessionView: View {
                 }
             }
             Spacer(minLength: Spacing.md)
-            VStack(alignment: .trailing, spacing: 6) {
-                SectionLabel(text: "Vòng")
-                Text(String(format: "%02d", (session.rounds ?? []).count))
-                    .font(.phormTitleLg)
-                    .foregroundStyle(Color.phormCream)
-                    .monospacedDigit()
-            }
+            RoundBadge(count: (session.rounds ?? []).count)
         }
     }
 
@@ -200,9 +194,9 @@ struct SessionView: View {
     @ViewBuilder
     private func leaderboardRow(rank: Int, entry: (name: String, total: Int), totalPlayers: Int) -> some View {
         HStack(spacing: Spacing.md) {
-            Seal(
-                glyph: SealGlyph.forRank(rank),
-                variant: sealVariant(rank: rank, total: entry.total, totalPlayers: totalPlayers)
+            Coin(
+                text: SealGlyph.forRank(rank),
+                variant: coinVariant(rank: rank, total: entry.total, totalPlayers: totalPlayers)
             )
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.name)
@@ -215,12 +209,14 @@ struct SessionView: View {
                 .font(.phormNumberRanking)
                 .foregroundStyle(ScoreFormat.color(for: entry.total))
         }
+        .padding(rank == 1 ? Spacing.sm : 0)
+        .modifier(ConditionalCard(active: rank == 1))
     }
 
-    private func sealVariant(rank: Int, total: Int, totalPlayers: Int) -> Seal.Variant {
+    private func coinVariant(rank: Int, total: Int, totalPlayers: Int) -> Coin.Variant {
         if rank == 1 && total > 0 { return .winner }
         if rank == totalPlayers && totalPlayers >= 4 && total <= 0 { return .last }
-        return .default
+        return .seat
     }
 
     private func subtitle(rank: Int, total: Int, totalPlayers: Int) -> String {
@@ -241,17 +237,12 @@ struct SessionView: View {
                 spacing: 8
             ) {
                 ForEach(Array(recentLeaderStrip.enumerated()), id: \.offset) { _, value in
-                    Text(ScoreFormat.signed(value))
-                        .font(.phormNumberSm)
-                        .foregroundStyle(ScoreFormat.color(for: value))
+                    ScoreChip(value: value, size: .small)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                .fill(Color.black.opacity(0.18))
-                        )
                 }
             }
+            .padding(Spacing.sm)
+            .tactileCard(radius: 14)
         }
     }
 
@@ -280,10 +271,10 @@ struct SessionView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text("Từng vòng")
                     .font(.phormNameMd)
-                    .foregroundStyle(Color.phormCream)
+                    .foregroundStyle(Color.bodyText)
                 Spacer()
                 Text("chạm để sửa")
-                    .font(.system(size: 12, weight: .regular, design: .serif).italic())
+                    .font(.system(size: 12, weight: .regular, design: .default))
                     .foregroundStyle(Color.phormCreamDim)
             }
             VStack(spacing: Spacing.sm) {
@@ -306,7 +297,7 @@ struct SessionView: View {
     // MARK: - CTA
 
     private var cta: some View {
-        LacquerPrimaryButton(
+        TactilePrimaryButton(
             title: "+ Vòng \((session.rounds ?? []).count + 1)"
         ) {
             showRoundEntry = true
@@ -315,7 +306,7 @@ struct SessionView: View {
         .padding(.bottom, Spacing.sm)
         .background(
             LinearGradient(
-                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.55), .phormSurfaceCinnabarDeep.opacity(0.85)],
+                colors: [Color.phormSurfaceCinnabar.opacity(0), Color.phormSurfaceCinnabar.opacity(0.85), Color.phormSurfaceCinnabar],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -323,5 +314,17 @@ struct SessionView: View {
             .allowsHitTesting(false),
             alignment: .bottom
         )
+    }
+}
+
+/// Wraps the rank-1 leaderboard row in an elevated tactile card; leaves runners as plain rows.
+private struct ConditionalCard: ViewModifier {
+    let active: Bool
+    func body(content: Content) -> some View {
+        if active {
+            content.tactileCard(radius: 16, elevated: true)
+        } else {
+            content
+        }
     }
 }

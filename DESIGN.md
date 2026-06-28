@@ -1,160 +1,151 @@
 ---
-version: alpha
-name: andiem-design-hanoi-cu
-description: A confident Vietnamese-vernacular score-tracker interface for iOS — a Phỏm/Sâm Lốc card-game scorekeeper where one player at a table holds the phone and records points after each round. Visual identity is drawn from Vietnamese print history (matchbox labels, Bia Hà Nội bottles, lacquerware seals, áo dài silk) read through a modern designer's eye, NOT pastiche. Each session lives on one drenched lacquer surface (cinnabar / ochre / jade / oxblood); chrome is sparse, halftone-textured, and serves the numbers. Display serifs (Noto Serif Display + Cormorant Garamond + IBM Plex Serif tabular figures) carry the personality — numerals have weight, italics, ink. The winner earns a gold seal (ấn vàng); the last place gets a tem chéo (×). The visual reference is themes-preview.html in this repo. Liquid Glass is REPLACED by halftone + paper grain texture.
+version: beta
+name: andiem-design-tactile
+description: A tactile, brightened card-table score-tracker for iOS. Brand accents are Tết-red #E5483A + gold #F2B829. Score values are COLOR-FILLED tactile chips (up green #21BD73, down coral #FF6B3D, neutral #ECE4D6 day) with white bold tabular numbers and always-present +/− sign prefix. Seat/winner/last-place markers are round coin tokens with Arabic numbers. Keypad keys are 3D-bevel buttons that depress with haptics. Day/night surfaces follow system appearance: day warm cream #FBF4E6, night deep warm #241715. Halftone/grain textures retired on core screens — depth from chip and key shadows. Typography is clean system sans (SF Pro native; Inter in mockup) with tabular figures. Canonical visual reference is the TACTILE/PLAYFUL DIRECTION (tc-) section of themes-preview.html. SF Mono remains forbidden.
 
 colors:
-  # Lacquer surfaces — each session drenched in one
-  surface-cinnabar: "#8c2a22"           # default — Tết-red lacquer
-  surface-cinnabar-deep: "#5a1612"      # vignette / button text on gold
-  surface-cinnabar-light: "#a8362d"     # specular highlight
-  surface-ochre: "#a8754a"              # alternate session color — aged wood
-  surface-ochre-deep: "#6e4527"
-  surface-jade: "#3d6b5c"               # alternate — old jade
-  surface-jade-deep: "#22443a"
-  surface-oxblood: "#5d1a18"            # late-night variant of cinnabar
-  surface-oxblood-deep: "#3a0e0c"
+  # Day surfaces (light appearance)
+  surface-day: "#FBF4E6"              # warm oat — day background
+  surface-day-tile: "#FFFBF3"         # card / elevated surface (day)
+  surface-day-panel: "#ECE4D6"        # deeper panel / neutral chip (day)
 
-  # Ink — cream paper that the lacquer "writes" with
-  cream: "#f3e8d2"                      # 6.96:1 on cinnabar — primary text
-  cream-dim: "#d6c4a0"                  # 4.94:1 — secondary text, labels
-  cream-faint: "rgba(243, 232, 210, 0.34)"  # UI hairline ~3:1
-  cream-stroke: "rgba(243, 232, 210, 0.18)"  # decorative dividers
+  # Night surfaces (dark appearance)
+  surface-night: "#241715"            # deep warm dark — night background
+  surface-night-elevated: "#2E1E1A"   # card / elevated surface (night)
 
-  # Gold — accent / seal / primary action
-  gold: "#d9b25a"                       # 4.27:1 on cinnabar — display sizes only (≥18px)
-  gold-bright: "#e8c570"                # 5.10:1 — small labels, AA Normal
-  gold-dim: "#a88438"                   # disabled / pressed
-  gold-leaf-tint: "rgba(217, 178, 90, 0.12)"  # gold tablet bg (used with cream text)
+  # Ink
+  ink: "#2A211C"                      # ~12:1 on day — primary text (day)
+  ink-muted: "#6B5A4A"                # ~4.8:1 on day — secondary labels, dates
+  cream: "#F6ECDA"                    # primary text on night surface
 
-  # Score semantics — mint up, ochre down (both with explicit +/− sign)
-  mint: "#b6e0c2"                       # 5.81:1 on cinnabar — positive scores
-  mint-dim: "#86b69a"                   # positive on lighter surfaces
-  ochre-warm: "#e6a665"                 # 4.02:1 — negative, ≥18px only
-  ochre-deep: "#a86524"                 # negative on cream surfaces
+  # Brand accents
+  brand-red: "#E5483A"                # Tết-red — primary CTA, sign-toggle key, headers
+  brand-red-deep: "#C03020"           # pressed / deep variant
+  gold: "#F2B829"                     # winner coin, gold special token
+  gold-dim: "#C49010"                 # disabled / pressed gold
 
-  # Warning / informational
-  warning: "#e6a665"                    # reuses ochre — non-zero round total
-  warning-tint: "rgba(230, 166, 101, 0.16)"
+  # Score chip fills (COLOR-FILLED tiles — chip fill is intentional, overrides prior text-only rule)
+  chip-up: "#21BD73"                  # up / positive score — green chip fill
+  chip-down: "#FF6B3D"                # down / negative score — coral chip fill
+  chip-neutral: "#ECE4D6"             # zero / neutral score — muted chip (day)
+  chip-text: "#FFFFFF"                # white bold number inside up/down chips
+  chip-text-neutral: "#2A211C"        # dark number inside neutral chip
+
+  # Score text (for non-chip contexts)
+  score-up-day: "#1B6B47"             # deep jade — up on day surface (~5.5:1)
+  score-down-day: "#A63A1E"           # burnt rust — down on day surface (~5.7:1)
+  score-up-night: "#B6E0C2"           # mint — up on night surface (5.81:1)
+  score-down-night: "#F2B488"         # peach — down on night surface (~5.2:1)
+
+  # Warning / state
+  warning: "#FF6B3D"                  # coral — unbalanced round total
+  balanced: "#21BD73"                 # green — balanced round total
 
 textures:
-  halftone-dots:
-    cssBackground: "radial-gradient(rgba(243, 232, 210, 0.06) 1px, transparent 1px)"
-    size: "4px 4px"
-    blendMode: screen
-    use: "Background dot pattern on every lacquer surface — adds depth without competing"
-  paper-grain:
-    source: "SVG fractalNoise baseFrequency=0.85 numOctaves=2"
-    opacity: 0.55
+  grain-night-only:
+    opacity: 0.25
     blendMode: overlay
-    use: "Subtle warm grain overlay so surfaces don't look flat-digital"
-  vignette-warm:
-    cssBackground: "radial-gradient(circle at 30% 20%, rgba(255,220,180,0.10), transparent 55%), radial-gradient(circle at 70% 80%, rgba(0,0,0,0.18), transparent 60%)"
-    use: "Center-weights attention on hero screens (leaderboard, end-of-session)"
+    use: "Dark/night surfaces only — subtle warm grain. Day surfaces are flat (no halftone, no grain). Halftone-dot pattern retired entirely."
+  chip-shadow:
+    description: "inset 0 -3px 0 bottom-bevel + soft drop shadow on score chips"
+    use: "Every score chip. Depth from shadow, not surface noise."
+  key-shadow:
+    description: "0 4px 0 bottom ridge on keypad keys; press = translateY(3px) + ridge shrink"
+    use: "All keypad keys and confirm CTA. Paired with UIImpactFeedbackGenerator haptic."
 
 typography:
+  # All fonts: clean system sans — SF Pro (iOS native) / Inter (mockup target in themes-preview.html)
+  # All numerics: .monospacedDigit() / font-variant-numeric: tabular-nums
+  # SF Mono is FORBIDDEN. Serif register (Noto Serif Display, Cormorant Garamond, IBM Plex Serif, Spectral) is retired.
+
   display-hero:
-    fontFamily: "Noto Serif Display, Cormorant Garamond, serif"
-    fontWeight: 800
+    fontFamily: "SF Pro Display, Inter, system-ui"
+    fontWeight: 700
     fontSize: 32px
     lineHeight: 1.08
     letterSpacing: -0.012em
     use: "End-of-session champion name, empty state hero"
   display-md:
-    fontFamily: "Noto Serif Display, serif"
+    fontFamily: "SF Pro Display, Inter, system-ui"
     fontWeight: 700
     fontSize: 24px
     lineHeight: 1.12
     letterSpacing: -0.01em
-    italic: optional
     use: "Session title in nav header, end-of-session subtitle"
   display-sm:
-    fontFamily: "Noto Serif Display, serif"
-    fontWeight: 700
+    fontFamily: "SF Pro Text, Inter, system-ui"
+    fontWeight: 600
     fontSize: 20px
     lineHeight: 1.2
     use: "Sheet headers (round entry 'Vòng N'), section dividers"
   name-display:
-    fontFamily: "Cormorant Garamond, serif"
-    fontWeight: 600
-    fontStyle: italic
-    fontSize: 22px
-    lineHeight: 1.1
-    letterSpacing: -0.005em
-    use: "Player names on leaderboard, end screen, history rows — italic gives signature feel"
-  name-md:
-    fontFamily: "Cormorant Garamond, serif"
-    fontWeight: 600
+    fontFamily: "SF Pro Text, Inter, system-ui"
+    fontWeight: 500
     fontSize: 18px
-    use: "Player names in round-entry rows, history meta"
+    lineHeight: 1.1
+    use: "Player names on leaderboard, end screen, round-entry rows — clean medium-weight sans"
   num-hero:
-    fontFamily: "Noto Serif Display, serif"
-    fontWeight: 800
+    fontFamily: "SF Pro Display, Inter, system-ui"
+    fontWeight: 700
     fontSize: 44px
     lineHeight: 1
     letterSpacing: -0.02em
     fontVariantNumeric: "tabular-nums"
-    use: "Champion +24 on end-of-session — biggest number on screen"
+    use: "Champion score on end-of-session — biggest number on screen"
   num-display-lg:
-    fontFamily: "Noto Serif Display, serif"
-    fontWeight: 800
+    fontFamily: "SF Pro Display, Inter, system-ui"
+    fontWeight: 700
     fontSize: 26px
     lineHeight: 1
     fontVariantNumeric: "tabular-nums"
     use: "Leaderboard totals, ranking values"
   num-display-md:
-    fontFamily: "Noto Serif Display, serif"
-    fontWeight: 800
+    fontFamily: "SF Pro Text, Inter, system-ui"
+    fontWeight: 700
     fontSize: 22px
     lineHeight: 1
     fontVariantNumeric: "tabular-nums"
-    use: "Round-entry value inputs"
+    use: "Round-entry value inputs (focused row grows to ~34pt bold)"
   num-body:
-    fontFamily: "IBM Plex Serif, serif"
-    fontWeight: 500
+    fontFamily: "SF Pro Text, Inter, system-ui"
+    fontWeight: 400
     fontSize: 15px
     fontVariantNumeric: "tabular-nums"
     use: "Round history strip, validation totals, history index dates"
-  num-body-sm:
-    fontFamily: "IBM Plex Serif, serif"
-    fontWeight: 500
-    fontSize: 11px
+  num-autofill:
+    fontFamily: "SF Pro Text, Inter, system-ui"
+    fontWeight: 300
+    fontSize: 22px
     fontVariantNumeric: "tabular-nums"
-    use: "Round history chips, dense meta"
-  num-script:
-    fontFamily: "Cormorant Garamond, serif"
-    fontWeight: 500
-    fontStyle: italic
-    fontVariantNumeric: "tabular-nums"
-    use: "Auto-fill computed values — distinguishes 'machine wrote this' from 'host wrote this'"
+    use: "Auto-fill computed values — lighter weight (300) signals 'the app wrote this'"
   body:
-    fontFamily: "Spectral, Georgia, serif"
+    fontFamily: "SF Pro Text, Inter, system-ui"
     fontWeight: 400
     fontSize: 15px
     lineHeight: 1.5
     use: "Body copy, descriptions, footer notes"
   label-caps:
-    fontFamily: "Spectral, serif"
+    fontFamily: "SF Pro Text, Inter, system-ui"
     fontWeight: 500
     fontSize: 11px
-    letterSpacing: 0.18em
+    letterSpacing: 0.06em
     textTransform: uppercase
-    use: "Section labels — 'PHIÊN ĐANG CHƠI', 'VÒNG', 'TỔNG', 'VÔ ĐỊCH VÁN'"
+    use: "Section labels — 'PHIÊN ĐANG CHƠI', 'VÒNG', 'TỔNG'"
   button:
-    fontFamily: "Spectral, serif"
+    fontFamily: "SF Pro Text, Inter, system-ui"
     fontWeight: 600
-    fontSize: 14px
-    letterSpacing: 0.04em
-    textTransform: uppercase
-    use: "Primary CTAs — 'VÒNG MỚI', 'ĐÓNG DẤU — LƯU VÒNG'"
+    fontSize: 15px
+    use: "Primary CTAs — 'VÒNG MỚI', 'LƯU VÒNG'"
 
 rounded:
   none: 0
-  xs: 2px            # inputs, score cells — tighter than iOS default to match print register
-  sm: 3px            # buttons, history cards
-  md: 4px            # seals (squares with slight rounding)
-  pill: 999px
-  full: 999px        # rare — avatar circles only if added
+  xs: 4px
+  sm: 8px
+  md: 12px
+  chip: 14px       # score chips
+  coin: 999px      # coin tokens (circular)
+  pill: 999px      # total pill badge
+  key: 12px        # keypad keys
 
 spacing:
   base: 4px
@@ -169,236 +160,213 @@ spacing:
 
 components:
   button-primary:
-    backgroundColor: "{colors.gold}"
-    textColor: "{colors.surface-cinnabar-deep}"          # 6.76:1 — ink on gold
+    backgroundColor: "{colors.brand-red}"
+    textColor: "#FFFFFF"
     typography: "{typography.button}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.md}"
     padding: 14px 24px
-    boxShadow: "0 1px 0 rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.18)"
-    note: "Used on 'VÒNG MỚI', 'ĐÓNG DẤU — LƯU VÒNG', 'PHIÊN MỚI', 'Mở session này'"
+    boxShadow: "0 4px 0 {colors.brand-red-deep}"
+    note: "3D bevel — press = translateY(3px) + shadow collapse + haptic. Used on 'VÒNG MỚI', 'LƯU VÒNG'."
   button-secondary-outline:
     backgroundColor: transparent
-    textColor: "{colors.gold}"
-    border: "1px solid {colors.gold}"
+    textColor: "{colors.brand-red}"
+    border: "1.5px solid {colors.brand-red}"
     typography: "{typography.button}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.md}"
     padding: 12px 24px
-    note: "Used for 'CHIA SẺ' and other paired secondary CTAs"
-  seal-default:
-    width: 32px
-    height: 32px
-    border: "1.5px solid {colors.gold}"
-    backgroundColor: "{colors.gold-leaf-tint}"
-    textColor: "{colors.gold}"
-    rounded: "{rounded.md}"
-    transform: "rotate(-3deg)"
-    use: "Rank box (壹/贰/叁/肆) on leaderboard — non-winning slots"
-    contrast: "3.38:1 (Large only — text is ≥18px display 700)"
-  seal-winner:
-    width: 32px
-    height: 32px
+    note: "Used for 'CHIA SẺ' and other secondary CTAs"
+  coin-winner:
+    size: 32px
+    shape: circle
     backgroundColor: "{colors.gold}"
-    textColor: "{colors.surface-cinnabar-deep}"
-    border: "1.5px solid {colors.gold}"
-    boxShadow: "0 0 0 2px rgba(217, 178, 90, 0.32)"
-    rounded: "{rounded.md}"
-    transform: "rotate(-3deg)"
-    use: "First-place rank box — 'ấn vàng' (gold seal)"
-    contrast: "6.76:1 ✓ AA Normal"
-  seal-last:
-    width: 32px
-    height: 32px
-    border: "1.5px solid {colors.cream-dim}"
-    textColor: "{colors.cream-dim}"
-    rounded: "{rounded.md}"
-    transform: "rotate(2deg)"
-    glyph: "× (tem chéo)"
-    use: "Last-place rank box — pairs with 4+ players only"
-    contrast: "4.94:1 ✓"
-  seal-stamp-mini:
-    width: 22px
-    height: 22px
-    fontSize: 11px
-    backgroundColor: "{colors.gold}"
-    textColor: "{colors.surface-cinnabar-deep}"
-    border: "1px solid {colors.gold}"
-    rounded: "{rounded.md}"
-    glyph: "封 (sealed) on auto-fill cell; positioned absolute -top-2 -right-2"
-    animation: "h-stamp 700ms cubic-bezier(0.22, 1, 0.36, 1) — scale-and-rotate in"
-    contrast: "6.76:1 ✓"
-  cell-input:
-    backgroundColor: "rgba(0,0,0,0.12)"
-    border: "1px solid {colors.cream-faint}"
-    textColor: "{colors.cream}"
-    typography: "{typography.num-display-md}"
-    rounded: "{rounded.xs}"
-    padding: 8px 12px
-    width: 100px
+    textColor: "#2A211C"
+    content: "Arabic seat number (1, 2, 3, 4)"
+    boxShadow: "0 2px 6px rgba(242,184,41,0.4)"
+    use: "Winner 'Nhất bàn' — gold coin."
+    contrast: "Ink on gold ~8:1 ✓"
+  coin-default:
+    size: 32px
+    shape: circle
+    backgroundColor: "{colors.surface-day-panel}"
+    border: "1.5px solid rgba(42,33,28,0.15)"
+    textColor: "{colors.ink}"
+    content: "Arabic seat number"
+    use: "Seat marker — non-winning slots (day). Night: elevated surface variant."
+  coin-last:
+    size: 32px
+    shape: circle
+    backgroundColor: "rgba(255,107,61,0.15)"
+    border: "1.5px solid {colors.chip-down}"
+    textColor: "{colors.chip-down}"
+    content: "Arabic seat number"
+    use: "Last place 'Bét bàn' — muted coral coin. Not an aggressive ×."
+  chip-score-up:
+    rounded: "{rounded.chip}"
+    backgroundColor: "{colors.chip-up}"
+    textColor: "{colors.chip-text}"
+    sign: "+ (explicit prefix — always present)"
+    boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18), 0 2px 4px rgba(33,189,115,0.25)"
+    use: "Positive score chip — color-filled. Sign is required for color-blind safety."
+  chip-score-down:
+    rounded: "{rounded.chip}"
+    backgroundColor: "{colors.chip-down}"
+    textColor: "{colors.chip-text}"
+    sign: "− (explicit prefix — always present)"
+    boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18), 0 2px 4px rgba(255,107,61,0.25)"
+    use: "Negative score chip — color-filled. Sign is required for color-blind safety."
+  chip-score-neutral:
+    rounded: "{rounded.chip}"
+    backgroundColor: "{colors.chip-neutral}"
+    textColor: "{colors.chip-text-neutral}"
+    use: "Zero / neutral score chip (day). Night variant: darker muted tone."
+  keypad-key:
+    rounded: "{rounded.key}"
+    backgroundColor: "white (day) / #3A2820 (night)"
+    boxShadow: "0 4px 0 rgba(0,0,0,0.18)"
+    typography: "SF Pro Display 700 20px"
+    press: "translateY(3px) + shadow collapses + UIImpactFeedbackGenerator(.light)"
+    use: "All digit and operator keys"
+  keypad-sign-toggle:
+    backgroundColor: "{colors.brand-red}"
+    textColor: "#FFFFFF"
+    boxShadow: "0 4px 0 {colors.brand-red-deep}"
+    note: "Sign-toggle key uses brand-red accent"
   cell-input-active:
-    backgroundColor: "rgba(217, 178, 90, 0.14)"
-    border: "1px solid {colors.gold}"
-    boxShadow: "inset 0 0 0 1px {colors.gold}"
-    textColor: "{colors.gold}"
-    caret: "{colors.gold}"
-    note: "Active focus on the row currently receiving keypad input"
-  cell-input-sealed:
-    backgroundColor: "rgba(217, 178, 90, 0.06)"
-    border: "1px solid {colors.gold-dim}"
-    textColor: "{colors.gold}"
-    note: "Auto-fill cell — paired with {components.seal-stamp-mini}"
+    backgroundColor: "white (day) — elevated card"
+    border: "2px solid {colors.brand-red}"
+    textColor: "{colors.ink}"
+    typography: "SF Pro Display 700 ~34pt"
+    note: "Focused row: chip grows ~1.4× (tc-chip-lg), name full opacity, elevated white card, bright focus ring"
+  cell-input:
+    opacity: "~0.4 on name + value"
+    note: "Inactive rows recede: smaller chip, dimmed — no layout collapse"
+  cell-input-autofill:
+    textColor: "{colors.ink}"
+    typography: "{typography.num-autofill}"
+    note: "Auto-fill computed value — lighter weight (300) distinguishes 'app wrote this'"
+  total-pill:
+    rounded: "{rounded.pill}"
+    backgroundColor: "{colors.balanced} (= 0) / {colors.warning} (≠ 0)"
+    textColor: "#FFFFFF"
+    use: "'Tổng' pill badge — balanced green 'cân' / unbalanced coral ⚠. State-aware."
   card-history:
-    backgroundColor: "rgba(0,0,0,0.18)"
-    border: "1px solid {colors.cream-faint}"
-    leftAccent: "3px solid {colors.gold}"
-    rounded: "{rounded.sm}"
+    backgroundColor: "white (day) / {colors.surface-night-elevated} (night)"
+    rounded: "{rounded.md}"
     padding: 12px 16px
-    use: "History list entries on cinnabar surface"
+    use: "History list entries"
   validation-balanced:
-    textColor: "{colors.mint}"
-    typography: "{typography.num-body}"
+    textColor: "{colors.balanced}"
     glyph: "= 0 · cân"
-    contrast: "5.81:1 ✓"
   validation-unbalanced:
     textColor: "{colors.warning}"
-    typography: "{typography.num-body}"
     glyph: "Tổng: −3 ⚠"
     note: "Soft warning — non-blocking. Save remains tappable."
-  score-positive:
-    textColor: "{colors.mint}"
-    typography: "{typography.num-display-lg}"
-    sign: "+ (explicit prefix)"
-    contrast: "5.81:1 ✓"
-  score-negative:
-    textColor: "{colors.ochre-warm}"
-    typography: "{typography.num-display-lg}"
-    sign: "− (explicit prefix)"
-    contrast: "4.02:1 — Large only (≥18px)"
-    note: "At small sizes (<18px), use {colors.cream} instead and rely on the − sign"
 ---
 
 ## Overview
 
-Phorm is a Vietnamese-vernacular score-tracker for Phỏm / Sâm Lốc / any zero-sum card game. The host at the table holds the phone between rounds and records points; the app totals them and produces a leaderboard. This document describes the visual language — see `themes-preview.html` in this repo for the canonical visual reference; this doc captures the tokens and component specs so the iOS implementation can pull from a single source.
+Phorm is a Vietnamese-vernacular score-tracker for Phỏm / Sâm Lốc / any zero-sum card game. The host at the table holds the phone between rounds and records points; the app totals them and produces a leaderboard. This document describes the visual language — see the **`TACTILE / PLAYFUL DIRECTION` (`tc-`) section of `themes-preview.html`** for the canonical visual reference; this doc captures the tokens and component specs so the iOS implementation can pull from a single source.
 
-The visual identity is **Vietnamese vernacular print, read through modern design discipline**: lacquer surfaces (cinnabar, ochre, jade), gold-leaf seals (ấn vàng) for the winner, halftone-dot texture, paper grain, display serifs with character. Numerals are not LED — they are inked Cormorant and Noto Serif Display, with IBM Plex Serif tabular figures for column alignment in dense surfaces. The app reads like a lacquered scorebook a friend group keeps, not a trading terminal.
+The visual identity rests on **Tết-red + gold brand accents, color-filled tactile score chips, and round coin tokens** — score entry should feel like placing physical pieces on a card table. Surfaces are bright warm cream by day and deep warm dark by night, following the system appearance setting.
 
-## Surfaces — one drenched color per session
+## Surfaces — bright day / deep night, following system
 
-Every session lives on **one lacquer surface**. The default is `{colors.surface-cinnabar}` (#8c2a22) — Tết-red. Alternate session colors (`-ochre`, `-jade`, `-oxblood`) can rotate per session, either auto-assigned or pickable at session create.
+Surfaces follow system appearance:
+- **Day (light):** `{colors.surface-day}` (`#FBF4E6`) warm oat — everyday canvas. Cards/elevated tiles are `{colors.surface-day-tile}` (`#FFFBF3`).
+- **Night (dark):** `{colors.surface-night}` (`#241715`) deep warm dark. Cards use `{colors.surface-night-elevated}`.
 
-There is **no neutral grey, no system canvas** anywhere in the app. The surface is always drenched. This is the principle that separates Phorm from category competitors — the app's screen is the lacquer; everything else is ink, gold, and texture on top.
+The app **follows system appearance** with two equal surface peers. No single drenched lacquer surface per session; chromatic identity persists through the Tết-red + gold brand accents, not a single surface hue.
 
-Every lacquer surface carries three overlays in this order (z-index 1 → 3):
-
-1. `{textures.halftone-dots}` — radial-gradient dot pattern, screen blend, very low opacity
-2. `{textures.paper-grain}` — SVG fractal-noise overlay, overlay blend, ~55% opacity
-3. Content (z-index 3)
-
-Result: depth and warmth that flat OLED can't produce on its own. This is the visual identity layer; the iOS implementation must reproduce both overlays.
+Halftone-dot pattern and paper-grain texture are **retired on day surfaces**. On night surfaces, a subtle grain overlay (25% opacity, overlay blend) adds warmth. All depth cues on day surfaces come from chip shadows and key shadows.
 
 ### System appearance
 
-The app does NOT have binary light/dark equal peers. Surface chromatic identity persists across system settings; iOS appearance only subtly deepens or lightens the surface (e.g., cinnabar → cinnabar-deep at night).
+Surfaces flip between the warm-cream day canvas and the deep-warm night canvas as the user toggles system appearance. No configuration required — the app follows system default.
 
 ## Colors
 
-### Lacquer surfaces (`{colors.surface-*}`)
+### Day palette
 
-Pick ONE per session. The surface is the screen, edge-to-edge, with overlays applied. No multi-surface layering, no card-on-canvas pattern with contrasting fills — the surface is the ground, content sits directly on it.
+- **Surface day** (`{colors.surface-day}` — `#FBF4E6`): Warm oat background.
+- **Tile / elevated** (`{colors.surface-day-tile}` — `#FFFBF3`): Card backgrounds, focused row.
+- **Panel** (`{colors.surface-day-panel}` — `#ECE4D6`): Deeper surfaces, neutral chip background.
+- **Ink** (`{colors.ink}` — `#2A211C`): ~12:1 on day. Primary text, numerals.
+- **Ink muted** (`{colors.ink-muted}` — `#6B5A4A`): ~4.8:1. Secondary labels, dates, meta.
 
-- **Cinnabar** (`{colors.surface-cinnabar}` — `#8c2a22`): Default. Tết red. The reference image in `themes-preview.html` is rendered on this.
-- **Ochre** (`{colors.surface-ochre}` — `#a8754a`): Aged wood, late-afternoon warmth. Alternate session color.
-- **Jade** (`{colors.surface-jade}` — `#3d6b5c`): Old jade green, cooler register. Alternate.
-- **Oxblood** (`{colors.surface-oxblood}` — `#5d1a18`): Deeper cinnabar for night sessions; what the system shifts cinnabar toward in dark mode.
+### Night palette
 
-### Ink (`{colors.cream-*}`)
+- **Surface night** (`{colors.surface-night}` — `#241715`): Deep warm dark background.
+- **Cream** (`{colors.cream}` — `#F6ECDA`): Primary text on night surface.
+- Night surface carries the Tết-lacquer lineage — warm and deep, tuned for comfortable AA contrast.
 
-Cream is the "paper" the lacquer is "printed on". Use it for every body-text and label tier.
+### Brand accents (`{colors.brand-red}`, `{colors.gold}`)
 
-- **Cream** (`{colors.cream}` — `#f3e8d2`): 6.96:1 on cinnabar. Primary text on every lacquer surface.
-- **Cream Dim** (`{colors.cream-dim}` — `#d6c4a0`): 4.94:1. Secondary text, labels, dates, meta.
-- **Cream Faint** (`{colors.cream-faint}` — `rgba(243,232,210,0.34)`): UI hairlines (3.02:1, passes 3:1 minimum).
-- **Cream Stroke** (`{colors.cream-stroke}` — `rgba(243,232,210,0.18)`): Decorative section dividers (not contrast-critical).
+- **Tết-red** (`{colors.brand-red}` — `#E5483A`): Primary CTA fill, sign-toggle keypad key, section headers. The brand's identity anchor.
+- **Gold** (`{colors.gold}` — `#F2B829`): Winner coin, gold special tokens. Carries the "Nhất bàn" celebration moment.
 
-### Gold (`{colors.gold*}`)
+### Score chips (`{colors.chip-*}`)
 
-Gold is the *single* accent — primary CTAs, the winner's seal, focus borders on active cells, the left-edge rule on history cards. There is no second accent color.
+Score chips are **color-filled tactile tiles** — this intentionally overrides the prior "score color is text only, never card fill" rule. Both up and down chips always include an explicit `+`/`−` sign prefix for color-blind safety.
 
-- **Gold** (`{colors.gold}` — `#d9b25a`): 4.27:1 on cinnabar. Use for **display-tier text only** (≥18px) and UI element backgrounds.
-- **Gold Bright** (`{colors.gold-bright}` — `#e8c570`): 5.10:1. Required variant for **small-text labels** (9–12px) on cinnabar — passes AA Normal at any size.
-- **Gold Dim** (`{colors.gold-dim}` — `#a88438`): Pressed state, disabled affordance.
-- **Gold Leaf Tint** (`{colors.gold-leaf-tint}` — `rgba(217,178,90,0.12)`): The faint tablet background used inside the winner's seal box.
+- **Up chip** (`{colors.chip-up}` — `#21BD73`): Green fill + white bold number.
+- **Down chip** (`{colors.chip-down}` — `#FF6B3D`): Coral fill + white bold number.
+- **Neutral/zero chip** (`{colors.chip-neutral}` — `#ECE4D6` day): Muted fill + dark number.
+- **Sign prefix** is always present regardless of chip color — the sign is the primary color-blind cue; the chip color is additive.
 
-### Score semantics (`{colors.mint}` / `{colors.ochre-warm}`)
+### Score text (non-chip contexts)
 
-- **Mint** (`{colors.mint}` — `#b6e0c2`): 5.81:1 on cinnabar. Positive scores at ALL sizes.
-- **Ochre Warm** (`{colors.ochre-warm}` — `#e6a665`): 4.02:1 on cinnabar. Negative scores **at ≥18px display weight only**. At small sizes, use `{colors.cream}` and rely on the `−` sign for direction.
-
-Both pair with an explicit `+`/`−` prefix — color-blind users see direction from the sign, not the hue.
+For leaderboard rows or dense contexts where a full chip is not used:
+- **Up (day):** `{colors.score-up-day}` (`#1B6B47`) deep jade — ~5.5:1 on day.
+- **Down (day):** `{colors.score-down-day}` (`#A63A1E`) burnt rust — ~5.7:1 on day.
+- **Up (night):** `{colors.score-up-night}` (`#B6E0C2`) mint — 5.81:1 on night.
+- **Down (night):** `{colors.score-down-night}` (`#F2B488`) peach — ~5.2:1 on night.
 
 ## Textures
 
-The halftone-dot + paper-grain combination is the visual identity at the surface level. Both must be present on every lacquer surface:
+Halftone-dot pattern and paper-grain are **retired on day (bright) surfaces**. On night surfaces, the grain overlay (25% opacity, overlay blend) is retained for warmth. Depth and tactility on day surfaces come entirely from:
 
-```css
-.lacquer::before {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(243, 232, 210, 0.06) 1px, transparent 1px);
-  background-size: 4px 4px;
-  mix-blend-mode: screen;
-}
-.lacquer::after {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg ...>");  /* fractalNoise */
-  mix-blend-mode: overlay;
-  opacity: 0.55;
-}
-```
+1. `{textures.chip-shadow}` — bevel band + drop shadow on every score chip
+2. `{textures.key-shadow}` — 4px bottom ridge on keypad keys, collapses on press
 
-In SwiftUI, reproduce halftone via a tiled `Canvas` or a repeating `PatternImage`; reproduce grain via a precomputed PNG/SVG noise texture overlaid with `.blendMode(.overlay)`. Both should adapt opacity to Reduce Motion / Reduce Transparency (lower opacity or remove entirely if the user has enabled these).
+The iOS implementation must NOT apply grain to light/day surfaces.
 
 ## Typography
 
 ### Font Family
 
-Three families, each with one job:
+The app uses **clean system sans** throughout:
 
-- **Noto Serif Display** — large display sizes (≥20px), session titles, numerals at hero scales. Full Vietnamese diacritic coverage.
-- **Cormorant Garamond** — italic player names (gives a signature feel), auto-fill computed numerals (italic signals "machine wrote this"), display tags. Vietnamese-ready.
-- **IBM Plex Serif** — small-size numerals with tabular figures for column alignment (round history strips, dense meta, validation totals).
-- **Spectral** — body copy, UI labels, descriptions. Vietnamese-ready, pairs cleanly with the other serifs.
+- **SF Pro** (iOS native) — zero font bundling, full Vietnamese diacritic coverage, Dynamic Type support. This is the iOS build target.
+- **Inter** is the mockup target in `themes-preview.html` (CDN). The iOS build uses SF Pro.
 
-There is **no sans-serif** in the app. The entire interface runs on serif type. Numbers are inked, not displayed.
+There is **no serif** in the app. The serif print register (Noto Serif Display, Cormorant Garamond, IBM Plex Serif, Spectral) is retired. Brand character comes from Tết-red + gold + coin/chip tactility, not the typeface.
 
-All four families are available via Google Fonts; for iOS, bundle them as in-app fonts and register via Info.plist. SF Mono is **forbidden** — its presence anywhere in the app is a category-reflex failure.
+All numerics use `.monospacedDigit()` / `font-variant-numeric: tabular-nums` for column alignment. This is proportional sans with tabular figures — not SF Mono. **SF Mono is forbidden** everywhere in the app.
 
-### Vietnamese diacritic verification
+Player names drop italic-serif "signature" styling → clean medium-weight sans. Auto-fill computed values use a lighter weight (`{typography.num-autofill}` — weight 300) to signal "the app wrote this" vs. host-entered values.
 
-The picked typefaces all support Vietnamese diacritics, but verify against representative names in design review:
+### Vietnamese diacritic coverage
 
+SF Pro covers the full Vietnamese diacritic set. Verify representative names at small sizes:
 - Quý (ý), Nam, Linh, Hoàng (à)
-- Diacritic stack: ặ, ằ, ẵ, ẳ, ậ, ầ, ẫ, ẩ, ấ, ố, ồ, ỗ, ổ, ố, ợ, ờ, ỡ, ở, ớ, ự, ừ, ữ, ử, ứ, ỵ, ỳ, ỹ, ỷ, ý
-- Đ / đ rendering at small sizes (label-caps tier — 9px uppercase letter-spaced)
-
-If any font fails on small-size Đ rendering, override to Noto Sans (with Đ verified) for labels only; keep the serifs everywhere else.
+- Diacritic stack: ặ, ằ, ẵ, ẳ, ậ, ầ, ẫ, ẩ, ấ, ố, ợ, ự, ỵ, ỳ
+- Đ / đ rendering at label-caps tier (~11px uppercase letter-spaced)
 
 ## Layout
 
 ### Spacing
 
-Same scale as before (`{spacing.xxs}` 4px → `{spacing.section}` 56px). Screen margins 20px on iPhone. The app stays dense — most surfaces use 12–20px between elements, not 32–56px.
+Same scale (`{spacing.xxs}` 4px → `{spacing.section}` 56px). Screen margins 20px on iPhone. The app stays dense — most surfaces use 12–20px between elements, not 32–56px.
 
 ### Container philosophy
 
-**No cards on neutral canvas.** Content sits directly on the lacquer surface. Where separation is needed, use:
+**Cards on a bright canvas.** Separation uses:
 
-1. A horizontal cream-faint hairline (1px at 34% opacity) — section dividers
-2. A horizontal cream-stroke decorative line (1px at 18% opacity) — visual breathing
-3. The `{components.card-history}` darker-tint card — *only* for history rows where the meta density warrants a visual frame
+1. Card tiles (`{components.card-history}`) — white day / elevated night
+2. Subtle hairline (`rgba(0,0,0,0.08)`) — section dividers on day
+3. Focused-row elevation — active input row on white card, inactive rows recede
 
-Never wrap content in nested cards. The lacquer + halftone + paper grain is the visual framing.
+The focused-row dominance (active chip ~1.4× size, elevated white card; inactive chips ~0.4 opacity) is the core visual hierarchy in round entry.
 
 ## Components
 
@@ -406,112 +374,133 @@ The component table in the YAML frontmatter is the source of truth. Highlights:
 
 ### Buttons
 
-`{components.button-primary}` — Gold-filled, cinnabar-deep text, uppercase Spectral label, sharp 3px radius (tighter than iOS default to match the print register). One CTA per screen — never two equal-weight primary buttons.
+`{components.button-primary}` — Tết-red fill, white text, 3D bottom ridge shadow. Press = translateY(3px) + ridge collapse + light haptic. One CTA per screen — never two equal-weight primary buttons.
 
-`{components.button-secondary-outline}` — Transparent fill, gold border, gold text. Paired with primary for cases like "Chia sẻ + Phiên mới" on the end-of-session screen.
+`{components.button-secondary-outline}` — Transparent fill, red border, red text.
 
-### Seals (rank boxes)
+### Coin tokens (rank markers)
 
-The leaderboard rank seals are the heart of the visual identity. Three variants:
+Coins replace the prior square seals. Three variants:
 
-- `{components.seal-default}` — gold-border + faint gold tint + gold character (壹/贰/叁/肆 for positions 1-4 by default; can use Latin 1/2/3/4 if users prefer)
-- `{components.seal-winner}` — solid gold fill + cinnabar-deep character + glow shadow. The "ấn vàng" — the only true celebration the app earns.
-- `{components.seal-last}` — cream-dim border + cream-dim ×. Only renders on 4+-player sessions.
+- `{components.coin-winner}` — solid gold disc, Arabic seat number, gold glow shadow. The "Nhất bàn" celebration moment. No Hán glyphs.
+- `{components.coin-default}` — muted panel fill, Arabic seat number. Non-winning slots.
+- `{components.coin-last}` — muted coral ring, Arabic seat number. Last place "Bét bàn". Not an aggressive ×.
+
+### Score chips
+
+`{components.chip-score-up}` / `{components.chip-score-down}` / `{components.chip-score-neutral}` are the core display unit for every score value. Always rendered with explicit `+`/`−` sign prefix. Bottom-bevel shadow + drop shadow read as physical pieces.
 
 ### Round-entry cells
 
-`{components.cell-input}` → `{components.cell-input-active}` → `{components.cell-input-sealed}` shows the progression: idle → focused (gold border + cursor) → auto-filled (gold-dim border + computed value in `{typography.num-script}` italic + `{components.seal-stamp-mini}` 封 stamp).
+Active row: chip grows to ~tc-chip-lg (≈1.4×), elevated white card, 2px brand-red focus ring. Inactive rows: ~0.4 opacity. Auto-fill row: lighter-weight sans number. No layout collapse between states.
 
-The 封 stamp animates in with `h-stamp 700ms` when the last cell auto-fills — the single most "fun" moment in the app.
+### Keypad
 
-### History card
+`{components.keypad-key}` — 3D bevel keys (gradient face + 4px bottom ridge). Press = translateY(3px) + haptic. Sign-toggle key in brand-red. Confirm CTA gets same 3D treatment.
 
-`{components.card-history}` — darker-tint card on the lacquer, with a 3px gold left-edge rule. Newest sessions at full opacity; older sessions fade to 70%, then 50%, then drop to a flat row treatment (no card frame at all) for archive depth.
+### Total pill
+
+`{components.total-pill}` — rounded pill badge, state-aware: green "cân" (balanced = 0) / coral ⚠ (unbalanced). Non-blocking — save remains tappable at all states.
 
 ## Motion
 
-Motion is sparse and physical, not bouncy. Three vocabulary elements:
+Motion is physical and immediate:
 
-- **h-stamp** (700ms, cubic-bezier(0.22, 1, 0.36, 1)): Scale 0.7 → 1.08 → 1, rotate −8° → −3°. Used for any seal stamp landing (winner ấn vàng on end-of-session, 封 on auto-fill).
-- **float-in** (600ms): Translate Y +8px → 0 with opacity fade. Used for leaderboard rows on initial load, staggered 80ms apart.
-- **caret blink** (1s steps(1)): The text-entry cursor in active cells.
+- **Chip resize** (~200ms, spring): Active row chip grows; inactive chips shrink. Happens on every row-focus change.
+- **Key press** (~80ms): translateY(3px) + shadow collapse. Instant feel.
+- **Coin reveal** (~400ms, spring): Coin scales in on summary screen appearance.
 
 Don't introduce bounce, elastic, or confetti motion. The app is matter-of-fact.
 
 ## Accessibility
 
-### Contrast — measured on cinnabar (`#8c2a22`)
+### Contrast — measured per surface
 
-All small-text + UI combinations have been measured. The audit lives at the top of each token in the YAML frontmatter (`contrast:` field). Summary:
+Score chips (primary score-legibility path):
 
 | Combination | Ratio | WCAG | Use |
 |---|---|---|---|
-| Cream on cinnabar | 6.96:1 | AA+ Normal | Body text |
-| Cream-dim on cinnabar | 4.94:1 | AA Normal | Labels, meta |
-| Gold-bright on cinnabar | 5.10:1 | AA Normal | Small gold labels |
-| Gold on cinnabar | 4.27:1 | AA Large only | Display sizes ≥18px |
-| Mint on cinnabar | 5.81:1 | AA Normal | Positive scores |
-| Ochre-warm on cinnabar | 4.02:1 | AA Large only | Negative scores ≥18px |
-| Cinnabar-deep on gold | 6.76:1 | AA Normal+ | Button text, seal characters |
-| Cream-faint on cinnabar (UI line) | 3.02:1 | 3:1 minimum | Hairlines |
+| Dark ink on up-chip | ≈ 6.5:1 | AA Normal | Chip number — `#2A211C` on `#21BD73` |
+| Dark ink on down-chip | ≈ 5.6:1 | AA Normal | Chip number — `#2A211C` on `#FF6B3D` |
 
-When extending to other surfaces (ochre, jade, oxblood), the same audit must be re-run; token contrast ratios are **surface-specific**, not absolute.
+Day surface (`#FBF4E6`):
+
+| Combination | Ratio | WCAG | Use |
+|---|---|---|---|
+| Ink on day | ~12:1 | AA+ | Body text |
+| Ink-muted on day | ~4.8:1 | AA Normal | Labels, meta |
+| Brand-red on day | ~6.5:1 | AA+ | Headers, CTAs |
+| Score-up jade on day | ~5.5:1 | AA Normal | Up score text (non-chip / dense leaderboard contexts) |
+| Score-down rust on day | ~5.7:1 | AA Normal | Down score text (non-chip / dense leaderboard contexts) |
+| Gold on day | ~3.5:1 | Large only | Winner coin (large bold) |
+
+Night surface (`#241715`):
+
+| Combination | Ratio | WCAG | Use |
+|---|---|---|---|
+| Cream on night | ~12:1 | AA+ | Body text |
+| Score-up mint on night | 5.81:1 | AA Normal | Up score text (non-chip / dense leaderboard contexts) |
+| Score-down peach on night | ~5.2:1 | AA Normal | Down score text (non-chip / dense leaderboard contexts) |
+
+When extending tokens, re-run the audit per surface — ratios are surface-specific.
 
 ### Color-blind parity
 
 Score direction is always communicated by:
 
-1. Mint vs. ochre text color (primary)
-2. Explicit `+` / `−` sign prefix (color-blind backup)
-3. For ranking: ấn vàng (winner) vs. tem chéo × (last) — visual shape, not color
+1. Chip color (green up / coral down) — primary visual cue
+2. Explicit `+` / `−` sign prefix — **always present, always color-blind-safe**
+3. Coin shape for ranking — gold coin (winner) vs. coral coin (last place)
 
-Never rely on hue alone.
+Never rely on hue alone. The sign prefix is the hard requirement; chip color is additive.
 
 ### Dynamic Type
 
-Spectral body, Cormorant name, Spectral label-caps all scale with iOS Dynamic Type. Numeric tiers (`num-hero`, `num-display-lg`, `num-display-md`) opt out at the leaderboard / round-entry tier to preserve column alignment — deliberate trade-off, deliberate weight tradeoff.
+Body copy, names, label-caps, button labels scale with iOS Dynamic Type. Numeric tiers (`num-hero`, `num-display-lg`, `num-display-md`) opt out at the leaderboard / round-entry tier to preserve column alignment — deliberate trade-off.
 
 ### Reduce Motion / Reduce Transparency
 
-- Reduce Motion: drop `h-stamp` animation (instant snap-in); drop `float-in` (no row stagger).
-- Reduce Transparency: deepen `{textures.paper-grain}` to opaque tint or drop it entirely; halftone dots can remain (decorative, no content sits behind them).
+- Reduce Motion: skip chip resize animation (instant snap); skip key press animation.
+- Reduce Transparency: grain overlay already off on day; on night, grain can be removed entirely. No content sits behind either layer.
 
 ## Do's and Don'ts
 
 ### Do
-- Drench each session in a single lacquer surface. The surface IS the screen.
-- Apply halftone + paper grain to every lacquer surface, every screen. Both layers, in order.
-- Use `{colors.gold}` for display-tier text (≥18px) and `{colors.gold-bright}` for small labels. Two-tone gold is the system's contrast contract.
-- Use the winner seal (ấn vàng) as the *only* celebratory moment. Restraint everywhere else.
-- Pair score colors with `+` / `−` prefixes. Always.
-- Set all display fonts to verify Vietnamese diacritic rendering at small sizes — Đ is the canary.
-- Render every numeric in `font-variant-numeric: tabular-nums` so columns stay aligned.
+- Apply bright warm-cream day surface and deep warm night surface, following system appearance.
+- Use color-filled score chips (green up / coral down) with explicit `+`/`−` sign always.
+- Use round coin tokens with Arabic numbers for seat/winner/last-place markers.
+- Use 3D-bevel keypad keys with haptic press.
+- Use Tết-red for primary CTAs and the sign-toggle key.
+- Use the gold winner coin as the only true celebration — "Nhất bàn" is the sole celebratory moment.
+- Pair score chips with `+`/`−` prefixes. Always. The sign is the color-blind contract.
+- Render every numeric with `.monospacedDigit()` / `tabular-nums` so columns stay aligned.
 
 ### Don't
-- Don't introduce a second accent color. Gold does all accent work — no secondary brand color.
+- Don't use a single drenched lacquer surface per session. Surfaces follow system appearance.
+- Don't apply halftone dots to any surface. Halftone pattern is retired entirely.
+- Don't apply grain to day/light surfaces. Grain is night-only, 25% opacity.
 - Don't use SF Mono anywhere. Forbidden.
-- Don't use Liquid Glass. The texture system replaces it.
-- Don't use cards-on-neutral-canvas patterns. Content sits directly on the lacquer.
-- Don't add confetti, mascots, or "🎉 You won!" moments. The ấn vàng is the celebration.
-- Don't tint scores green/red as card backgrounds. Color is text only.
-- Don't replace gold with brighter yellow "to be safer" — `{colors.gold-bright}` exists for small labels; the rich `{colors.gold}` is the brand voltage.
-- Don't soften the display weight. Noto Serif Display 700–800 is the floor for the hero tier.
-- Don't override the surface color per screen unless it's an alternate-session-color setup. One session = one surface.
+- Don't use serif typefaces (Noto Serif Display, Cormorant Garamond, IBM Plex Serif, Spectral). The serif register is retired.
+- Don't use Liquid Glass or glassmorphism.
+- Don't use square seals (ấn vàng / tem chéo) or Hán glyphs (壹/封/×). Use coin tokens with Arabic numbers.
+- Don't add confetti, mascots, emoji, or "🎉 You won!" moments. The gold coin is the celebration.
+- Don't use the old literary labels ("Ấn vàng", "Tem cuối bàn", "Vô địch ván") in user-facing copy. Use "Nhất bàn" / "Bét bàn".
+- Don't introduce a third accent beyond Tết-red + gold.
 
 ## Iteration Guide
 
-1. Visual canon is `themes-preview.html` at the repo root. When tokens here disagree with the preview, the preview wins; update the doc.
-2. When proposing a new component, decide first: does it live on the lacquer surface (yes — 95% of cases) or is it a chrome layer (rare — only for sheets/modals)? Lacquer-native components inherit halftone + grain; chrome components need their own surface treatment specified.
-3. Reference tokens (`{colors.cinnabar}`, `{typography.num-display-md}`) in component definitions, not raw hex. Centralized tokens enforce the contrast contract.
-4. Variants of an existing component (`-active`, `-sealed`, `-winner`) live as separate entries in `components:`, not as nested state objects.
-5. Every new component must declare its contrast ratio against its surface in the YAML. If it fails AA, the component fails review.
-6. Numbers always use Noto Serif Display (large) or IBM Plex Serif (small) with `font-variant-numeric: tabular-nums`. Italic Cormorant is reserved for computed/auto-fill values and player names; never use it for committed score values.
+1. Visual canon is the **`TACTILE / PLAYFUL DIRECTION` (`tc-`) section of `themes-preview.html`** at the repo root. When tokens here disagree with the `tc-` mockup, the mockup wins; update the doc.
+2. When proposing a new component, decide: does it sit on the bright canvas (yes — 95% of cases) or is it a chrome layer (rare — sheets/modals)? Canvas-native components inherit the card-tile and shadow system; chrome components need surface treatment specified.
+3. Reference tokens (`{colors.chip-up}`, `{typography.num-display-md}`) in component definitions, not raw hex. Centralized tokens enforce the contrast contract.
+4. Variants of an existing component (`-active`, `-autofill`, `-winner`) live as separate entries in `components:`, not as nested state objects.
+5. Every new component must declare its contrast ratio against its surface. If it fails AA, the component fails review.
+6. Numbers always use SF Pro with `.monospacedDigit()`. Lighter weight (300) for computed/auto-fill values; never serif, never SF Mono.
 
 ## Known Gaps
 
 - Animation timings for sheet present / dismiss are not formalized — use SwiftUI default `.snappy` / `.spring()` until measured.
-- The split-view layout on iPad regular width is not designed (the lacquer surface assumes single-pane). When iPad lands, decide: full-bleed surface on both panes (two lacquer canvases) or chrome boundary between sidebar and detail.
+- The split-view layout on iPad regular width is not designed. When iPad lands, decide: full-bleed bright canvas on both panes, or chrome boundary.
 - Widget / Lock-Screen treatments are out of scope for MVP.
-- App Icon: a cinnabar tile with a gold 壹 seal centered is the proposed direction; needs explicit asset work.
-- Empty state visual is not in `themes-preview.html` yet — needs to be designed before HomeView builds.
-- Alternate-session-color picker UX is not designed — for MVP, cinnabar is the only surface.
+- App Icon: Tết-red tile with a gold coin `1` centered is the proposed direction; needs explicit asset work.
+- Night surface grain opacity may need tuning per device (OLED vs. LCD) — verify on hardware.
+- Alternate-session-color picker UX is not designed — for MVP, appearance follows system only.

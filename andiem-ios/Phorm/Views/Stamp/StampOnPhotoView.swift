@@ -6,8 +6,11 @@ import SwiftUI
 ///
 /// Sizing convention: intrinsic size is 52pt for the seal, 56pt for the cross.
 /// Callers scale via `.scaleEffect(...)` to match the canvas they live on.
+///
+/// Note: the strong dark drop-shadows here sit over an arbitrary user photo —
+/// they are intentional for legibility and exempt from the no-black-overlay rule.
 
-/// The gold ấn vàng — 52×52, rounded 6, rotated −7°.
+/// The gold winner seal — 52×52, rounded 6, rotated −7°.
 struct LargeWinnerSeal: View {
     var body: some View {
         ZStack {
@@ -26,8 +29,8 @@ struct LargeWinnerSeal: View {
                 )
             RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .stroke(Color.phormPrimary.opacity(0.5), lineWidth: 1.5)
-            Text("壹")
-                .font(.system(size: 24, weight: .heavy, design: .serif))
+            Text("1")
+                .font(.system(size: 24, weight: .heavy, design: .default))
                 .foregroundStyle(Color(red: 0.29, green: 0.08, blue: 0.06))
                 .baselineOffset(-1)
         }
