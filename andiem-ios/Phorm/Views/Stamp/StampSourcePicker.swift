@@ -3,8 +3,8 @@ import PhotosUI
 import UIKit
 
 /// F2 — Đóng dấu source picker.
-/// Lacquer-styled bottom sheet (NOT iOS native action sheet) per c39164d precedent.
-/// Drag handle + 2 source tiles (Chụp ngay gold-outlined / Thư viện cream-outlined) + Hủy text.
+/// Tactile bottom sheet (NOT iOS native action sheet) per c39164d precedent.
+/// Drag handle + 2 source tiles (Chụp ngay red-outlined / Thư viện tactile) + Hủy text.
 struct StampSourcePicker: View {
     @Binding var isPresented: Bool
     var onPick: (UIImage) -> Void
@@ -101,14 +101,14 @@ struct StampSourcePicker: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.lg)
             .background(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Color.phormPrimary.opacity(0.10))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                    .stroke(Color.phormPrimary, lineWidth: 1)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(Color.phormPrimary, lineWidth: 1)
             )
-            .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
     }
@@ -130,15 +130,16 @@ struct StampSourcePicker: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.lg)
+            // Dark editor ground: subtle raised tile, not a cream card.
             .background(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                    .fill(Color.black.opacity(0.18))
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.surfaceElevated)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                    .stroke(Color.phormCream.opacity(0.34), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(Color.phormCream.opacity(0.34), lineWidth: 1)
             )
-            .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
     }

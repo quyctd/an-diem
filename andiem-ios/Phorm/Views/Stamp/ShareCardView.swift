@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-/// F5 — the composed 9:16 lacquer share artifact.
+/// F5 — the composed 9:16 dark share artifact.
 /// Sized at exactly 1080×1920 logical points so `ImageRenderer(scale: 1)` produces
 /// a 1080×1920 pixel JPEG. Center 56% of height is the Locket-safe square zone.
 struct ShareCardView: View {
@@ -54,7 +54,7 @@ struct ShareCardView: View {
 
     var body: some View {
         ZStack {
-            lacquerGround
+            darkGround
 
             // The "scorebook page" — inner gold-hairline frame inset from edges
             innerFrame
@@ -159,7 +159,7 @@ struct ShareCardView: View {
 
     // MARK: - Ground
 
-    private var lacquerGround: some View {
+    private var darkGround: some View {
         ZStack {
             Color.phormSurfaceOxblood
             // Center vignette — brighter gold-tint top
@@ -318,7 +318,7 @@ struct ShareCardView: View {
     }
 
     // MARK: - Photo zone (Locket-style: square, rounded all four corners,
-    // ambient backdrop that bleeds the photo's colors into the lacquer)
+    // ambient backdrop that bleeds the photo's colors into the dark ground)
 
     @ViewBuilder
     private func photoZone(photo: UIImage) -> some View {
@@ -490,7 +490,7 @@ struct ShareCardView: View {
     /// surface is a cinnabar-tinted card with the 印 seal centered.
     private var noPhotoZone: some View {
         ZStack {
-            // Cinnabar card body — pulls a hair brighter than the lacquer ground.
+            // Card body — pulls a hair brighter than the dark ground.
             RoundedRectangle(cornerRadius: 56, style: .continuous)
                 .fill(
                     LinearGradient(
@@ -621,7 +621,7 @@ struct ShareCardView: View {
 
     /// Two-line stamped colophon: ẤN ĐIỂM wordmark with flanking ornament dots,
     /// then "sổ điểm bàn bạc" subline tracked wide. Reads like the printer's
-    /// imprint at the foot of a lacquered ledger page.
+    /// imprint at the foot of a dark ledger page.
     private var colophon: some View {
         VStack(spacing: 12) {
             HStack(spacing: 24) {
@@ -686,7 +686,7 @@ extension ShareCardView {
     }
 }
 
-// MARK: - Halftone tile (matches LacquerSurface but kept self-contained for the renderer)
+// MARK: - Halftone tile (matches AppBackground grain but kept self-contained for the renderer)
 
 private extension UIImage {
     static let shareHalftone: UIImage = {

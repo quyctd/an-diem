@@ -218,12 +218,12 @@ struct StampEditorView: View {
                     .foregroundStyle(isPlaced ? Color.onPrimary : Color.phormPrimary)
                     .frame(width: 20, height: 20)
                     .background(
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
                             .fill(isPlaced ? Color.phormPrimary : Color.phormPrimary.opacity(0.10))
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
-                            .stroke(Color.phormPrimary, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .strokeBorder(Color.phormPrimary, lineWidth: 1)
                     )
                 Text(name)
                     .font(.system(size: 14, weight: .semibold, design: .default))
@@ -239,13 +239,14 @@ struct StampEditorView: View {
             }
             .padding(.horizontal, Spacing.sm)
             .padding(.vertical, 6)
+            // Dark editor ground: subtle raised tile keeps the artifact aesthetic.
             .background(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(Color.black.opacity(0.18))
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.surfaceElevated)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .stroke(Color.phormCream.opacity(isPlaced ? 0.18 : 0.32), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(Color.phormCream.opacity(isPlaced ? 0.18 : 0.32), lineWidth: 1)
             )
             .opacity(isPlaced ? 1.0 : 0.85)
         }
@@ -264,10 +265,10 @@ struct StampEditorView: View {
                     .foregroundStyle(Color.phormPrimary)
                     .frame(width: 116, height: 52)
                     .background(
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        RoundedRectangle(cornerRadius: 13, style: .continuous)
                             .stroke(Color.phormPrimary, lineWidth: 1)
                     )
-                    .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                    .contentShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
             }
             .buttonStyle(.plain)
 
