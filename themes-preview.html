@@ -334,6 +334,83 @@
       transform: rotate(-1.2deg);
     }
 
+    /* ================================================================
+       TACTILE / PLAYFUL DIRECTION — tokens & components
+       ================================================================ */
+
+    .tc-day   { background:#FBF4E6; color:#2A211C; font-family:'Inter',-apple-system,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+    .tc-night { background:#241715; color:#F6ECDA; font-family:'Inter',-apple-system,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+    /* Score chips — solid fill + bottom-edge band = physical depth */
+    .tc-chip { display:inline-flex; align-items:center; justify-content:center; border-radius:14px; font-weight:800; font-variant-numeric:tabular-nums; color:white; flex-shrink:0; letter-spacing:-0.01em; }
+    .tc-chip-up    { background:#21BD73; box-shadow: inset 0 -3px 0 #0F8A48, 0 4px 14px rgba(33,189,115,.30), 0 2px 4px rgba(0,0,0,.12); }
+    .tc-chip-down  { background:#FF6B3D; box-shadow: inset 0 -3px 0 #CC451C, 0 4px 14px rgba(255,107,61,.30), 0 2px 4px rgba(0,0,0,.12); }
+    .tc-chip-zero-day  { background:#ECE4D6; color:#8B7969; box-shadow: inset 0 -3px 0 #BEB09A, 0 2px 6px rgba(0,0,0,.07); }
+    .tc-chip-zero-night{ background:#3A2724; color:#9A7F6F; box-shadow: inset 0 -3px 0 #211510, 0 2px 8px rgba(0,0,0,.30); }
+
+    /* Active chip: bright focus ring layered on fill shadow */
+    .tc-chip-focus-day  { box-shadow: inset 0 -4px 0 rgba(0,0,0,.22), 0 0 0 2.5px #FBF4E6, 0 0 0 5px #E5483A, 0 8px 24px rgba(0,0,0,.16); }
+    .tc-chip-focus-night{ box-shadow: inset 0 -4px 0 rgba(0,0,0,.35), 0 0 0 2.5px #241715, 0 0 0 5px #F2B829, 0 10px 28px rgba(0,0,0,.45); }
+
+    .tc-chip-lg { min-width:82px; height:50px; padding:0 16px; font-size:26px; border-radius:16px; }
+    .tc-chip-sm { min-width:58px; height:36px; padding:0 10px; font-size:16px; border-radius:11px; }
+
+    /* Seat coins — round token with bevel */
+    .tc-coin { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; font-weight:700; flex-shrink:0; }
+    .tc-coin-day   { background:#EDE1CE; color:#8B7969; box-shadow: inset 0 -2px 0 #C0AC90, 0 1px 3px rgba(0,0,0,.10); }
+    .tc-coin-night { background:#352420; color:#9A7F6F; box-shadow: inset 0 -2px 0 #1C1009, 0 1px 4px rgba(0,0,0,.35); }
+    .tc-coin-gold  { background:linear-gradient(135deg,#FFD761 0%,#F2B829 55%,#C8920D 100%); color:#4A2800;
+                     box-shadow: inset 0 1px 0 rgba(255,245,200,.55), inset 0 -2px 0 #C8920D, 0 2px 8px rgba(242,184,41,.50); }
+    .tc-coin-lg { width:36px; height:36px; font-size:15px; }
+    .tc-coin-sm { width:26px; height:26px; font-size:11px; }
+
+    /* Active player row — raised card with white fill */
+    .tc-row-active-day   { background:#FFFBF3; border-radius:16px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 16px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.04); }
+    .tc-row-active-night { background:rgba(255,255,255,.058); border-radius:16px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 20px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.07); }
+
+    /* Inactive row */
+    .tc-row-inactive { display:flex; align-items:center; justify-content:space-between; padding:5px 12px; }
+
+    /* Keypad keys — chunky with 3-D bottom edge */
+    .tc-key { border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:600; cursor:pointer; height:42px; transition:transform 70ms ease,box-shadow 70ms ease; user-select:none; -webkit-user-select:none; font-variant-numeric:tabular-nums; }
+    .tc-key-day    { background:linear-gradient(to bottom,#FFFBF3 0%,#EDE0CC 100%); color:#2A211C; box-shadow:0 4px 0 #BCAD95, 0 1px 2px rgba(0,0,0,.08); }
+    .tc-key-night  { background:linear-gradient(to bottom,#352520 0%,#291810 100%); color:#F6ECDA; box-shadow:0 4px 0 #110806, 0 1px 3px rgba(0,0,0,.45); }
+    .tc-key-day:active    { transform:translateY(3px); box-shadow:0 1px 0 #BCAD95; }
+    .tc-key-night:active  { transform:translateY(3px); box-shadow:0 1px 0 #110806; }
+    .tc-key-sign-day   { background:linear-gradient(to bottom,#FFF0E0 0%,#F0D8B8 100%); color:#C13020; box-shadow:0 4px 0 #BF9060, 0 1px 2px rgba(0,0,0,.08); }
+    .tc-key-sign-night { background:linear-gradient(to bottom,#3D2418 0%,#2C1508 100%); color:#F2B829; box-shadow:0 4px 0 #140700, 0 1px 3px rgba(0,0,0,.50); }
+    .tc-key-sign-day:active  { transform:translateY(3px); box-shadow:0 1px 0 #BF9060; }
+    .tc-key-sign-night:active{ transform:translateY(3px); box-shadow:0 1px 0 #140700; }
+    .tc-key-del-day   { background:linear-gradient(to bottom,#FFFBF3 0%,#EDE0CC 100%); color:#9A8472; box-shadow:0 4px 0 #BCAD95; }
+    .tc-key-del-night { background:linear-gradient(to bottom,#352520 0%,#291810 100%); color:#9A7F6F; box-shadow:0 4px 0 #110806; }
+    .tc-key-del-day:active  { transform:translateY(3px); box-shadow:0 1px 0 #BCAD95; }
+    .tc-key-del-night:active{ transform:translateY(3px); box-shadow:0 1px 0 #110806; }
+
+    /* Confirm CTA — also has bottom-edge depth */
+    .tc-btn-day   { background:#E5483A; color:white; border-radius:13px; font-weight:700; font-size:14px; letter-spacing:.05em; border:none; cursor:pointer; height:44px; width:100%;
+                    box-shadow:inset 0 -4px 0 #B42C1E, 0 4px 12px rgba(229,72,58,.36); transition:transform 70ms ease,box-shadow 70ms ease; }
+    .tc-btn-day:active    { transform:translateY(3px); box-shadow:inset 0 -1px 0 #B42C1E; }
+    .tc-btn-night { background:#F2B829; color:#2A1800; border-radius:13px; font-weight:700; font-size:14px; letter-spacing:.05em; border:none; cursor:pointer; height:44px; width:100%;
+                    box-shadow:inset 0 -4px 0 #C08A08, 0 4px 12px rgba(242,184,41,.40); transition:transform 70ms ease,box-shadow 70ms ease; }
+    .tc-btn-night:active  { transform:translateY(3px); box-shadow:inset 0 -1px 0 #C08A08; }
+
+    /* Tổng pill */
+    .tc-pill { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; }
+    .tc-pill-neutral-day  { background:#EDE1CE; color:#8B7969; border:1px solid #CFBFA2; }
+    .tc-pill-neutral-night{ background:rgba(246,236,218,.07); color:#9A7F6F; border:1px solid rgba(246,236,218,.12); }
+    .tc-pill-ok  { background:rgba(33,189,115,.13); color:#0D7A40; border:1px solid rgba(33,189,115,.28); }
+    .tc-pill-warn{ background:rgba(255,107,61,.12); color:#C04018; border:1px solid rgba(255,107,61,.28); }
+
+    /* Cursor blink for active input */
+    @keyframes tc-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .tc-cursor { display:inline-block; width:2px; height:21px; background:currentColor; border-radius:1px; vertical-align:middle; margin-left:2px; animation:tc-blink 1s steps(1) infinite; }
+
+    /* Summary rows */
+    .tc-sum-row-day    { background:#FFFBF3; border-radius:12px; padding:9px 12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 6px rgba(0,0,0,.05); }
+    .tc-sum-row-night  { background:rgba(255,255,255,.046); border-radius:12px; padding:9px 12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 8px rgba(0,0,0,.22); }
+    .tc-sum-winner-day  { background:#FFFBF3; border-radius:14px; padding:12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 0 0 2px #F2B829, 0 4px 20px rgba(242,184,41,.22); }
+    .tc-sum-winner-night{ background:rgba(255,255,255,.056); border-radius:14px; padding:12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 0 0 2px #F2B829, 0 4px 24px rgba(242,184,41,.35); }
+
     /* ---------- Static helpers shared ---------- */
     .ml-mono { font-feature-settings: "tnum"; }
 
@@ -443,6 +520,436 @@
   </style>
 </head>
 <body class="min-h-screen">
+
+  <!-- ============================================================
+       TACTILE / PLAYFUL DIRECTION (NEW)
+       ============================================================ -->
+  <section id="tactile-playful" class="max-w-[1400px] mx-auto px-6 pt-14 pb-8">
+
+    <!-- Section header -->
+    <div class="flex items-end justify-between pb-7 mb-1" style="border-bottom:1px solid rgba(255,107,61,0.18);">
+      <div>
+        <p class="text-xs uppercase tracking-[0.22em]" style="color:#FF6B3D;">Hướng mới · chất liệu + xúc giác</p>
+        <h2 style="font-family:'Inter',-apple-system,system-ui,sans-serif;font-weight:800;" class="text-4xl md:text-5xl mt-2 leading-[1.02]">
+          Chơi như <span style="color:#F2B829;">đặt quân</span>.
+        </h2>
+        <p class="mt-3 max-w-xl text-sm leading-relaxed" style="color:rgba(232,220,196,0.65);">
+          Chiều sâu từ vật liệu: chip điểm có độ dày, phím có độ nảy, ô nhập đang focus là trung tâm hình ảnh. Vui qua xúc giác, không phải hoạt hình — không mascot, không confetti, không game-show.
+        </p>
+      </div>
+      <div class="hidden md:flex gap-2 text-[10px] uppercase tracking-[0.18em]" style="color:rgba(232,220,196,0.4);">
+        <span>Cream day</span><span style="opacity:0.4;">·</span>
+        <span>Deep night</span><span style="opacity:0.4;">·</span>
+        <span>Coral / Gold</span>
+      </div>
+    </div>
+
+    <!-- 4 phone frames -->
+    <div class="row-phones">
+
+      <!-- ── T1: Round Entry · Day ──────────────────────────────── -->
+      <div>
+        <div class="phone" style="background:linear-gradient(180deg,#DDD3C5 0%,#C9B9A5 100%);box-shadow:0 1px 0 rgba(255,255,255,0.50) inset,0 -1px 0 rgba(0,0,0,0.18) inset,0 40px 60px -20px rgba(60,40,20,0.30),0 12px 24px -8px rgba(0,0,0,0.18);">
+          <div class="phone-notch" style="background:#C0B09A;"></div>
+          <div class="phone-screen tc-day">
+
+            <!-- Header bar -->
+            <div class="px-4 pt-10 flex items-center justify-between">
+              <div>
+                <p style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#8B7969;font-weight:500;">Nhập vòng</p>
+                <p style="font-size:17px;font-weight:700;color:#2A211C;letter-spacing:-0.01em;margin-top:1px;">Phỏm thứ Sáu</p>
+              </div>
+              <div style="background:#E5483A;color:white;border-radius:10px;padding:4px 10px;text-align:center;box-shadow:inset 0 -2px 0 #B42C1E,0 2px 6px rgba(229,72,58,0.35);">
+                <p style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;opacity:0.85;">Vòng</p>
+                <p style="font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;">07</p>
+              </div>
+            </div>
+
+            <!-- Tổng pill row -->
+            <div class="px-4 mt-3 flex items-center justify-between">
+              <span class="tc-pill tc-pill-ok">Tổng: 0 · cân ✓</span>
+              <p style="font-size:10px;color:#8B7969;">chờ Linh nhập</p>
+            </div>
+
+            <!-- Player list -->
+            <div class="px-3 mt-3" style="display:flex;flex-direction:column;gap:5px;">
+
+              <!-- Inactive: Quý — done (faded) -->
+              <div class="tc-row-inactive" style="opacity:0.42;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-day">1</div>
+                  <span style="font-size:16px;font-weight:600;color:#2A211C;">Quý</span>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm">−4</div>
+              </div>
+
+              <!-- Inactive: Nam — done (faded) -->
+              <div class="tc-row-inactive" style="opacity:0.42;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-day">2</div>
+                  <span style="font-size:16px;font-weight:600;color:#2A211C;">Nam</span>
+                </div>
+                <div class="tc-chip tc-chip-up tc-chip-sm">+6</div>
+              </div>
+
+              <!-- ACTIVE: Linh — large, raised, focus ring -->
+              <div class="tc-row-active-day">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="tc-coin tc-coin-lg tc-coin-day" style="background:#FBF4E6;box-shadow:0 0 0 2px #E5483A,inset 0 -2px 0 #C0AC90;">3</div>
+                  <div>
+                    <p style="font-size:17px;font-weight:700;color:#2A211C;line-height:1.1;">Linh</p>
+                    <p style="font-size:10px;color:#E5483A;letter-spacing:0.08em;text-transform:uppercase;margin-top:1px;">đang nhập</p>
+                  </div>
+                </div>
+                <div class="tc-chip tc-chip-up tc-chip-lg tc-chip-focus-day">+3<span class="tc-cursor" style="height:20px;"></span></div>
+              </div>
+
+              <!-- Auto-fill: Hoàng — italic preview (locked) -->
+              <div class="tc-row-inactive" style="opacity:0.52;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-day">4</div>
+                  <div style="display:flex;align-items:baseline;gap:5px;">
+                    <span style="font-size:16px;font-weight:600;color:#2A211C;">Hoàng</span>
+                    <span style="font-size:10px;color:#8B7969;font-style:italic;">tự điền</span>
+                  </div>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm" style="font-style:italic;opacity:0.72;">−5</div>
+              </div>
+
+            </div>
+
+            <!-- Keypad -->
+            <div class="px-3 mt-3">
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+                <div class="tc-key tc-key-day">1</div>
+                <div class="tc-key tc-key-day">2</div>
+                <div class="tc-key tc-key-day">3</div>
+                <div class="tc-key tc-key-day">4</div>
+                <div class="tc-key tc-key-day">5</div>
+                <div class="tc-key tc-key-day">6</div>
+                <div class="tc-key tc-key-day">7</div>
+                <div class="tc-key tc-key-day">8</div>
+                <div class="tc-key tc-key-day">9</div>
+                <div class="tc-key tc-key-sign-day" style="font-size:15px;font-weight:700;">+/−</div>
+                <div class="tc-key tc-key-day">0</div>
+                <div class="tc-key tc-key-del-day" style="font-size:17px;">⌫</div>
+              </div>
+              <button class="tc-btn-day" style="margin-top:5px;">Xác nhận · Linh</button>
+            </div>
+
+          </div>
+        </div>
+        <p class="phone-label">Nhập vòng · ngày</p>
+      </div>
+
+      <!-- ── T2: Round Entry · Night ────────────────────────────── -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen tc-night">
+
+            <!-- Header bar -->
+            <div class="px-4 pt-10 flex items-center justify-between">
+              <div>
+                <p style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#9A7F6F;font-weight:500;">Nhập vòng</p>
+                <p style="font-size:17px;font-weight:700;color:#F6ECDA;letter-spacing:-0.01em;margin-top:1px;">Phỏm thứ Sáu</p>
+              </div>
+              <div style="background:#F2B829;color:#2A1800;border-radius:10px;padding:4px 10px;text-align:center;box-shadow:inset 0 -2px 0 #C08A08,0 2px 6px rgba(242,184,41,0.40);">
+                <p style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;opacity:0.75;">Vòng</p>
+                <p style="font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;">07</p>
+              </div>
+            </div>
+
+            <!-- Tổng pill row -->
+            <div class="px-4 mt-3 flex items-center justify-between">
+              <span class="tc-pill tc-pill-ok" style="background:rgba(33,189,115,.12);color:#30D884;border-color:rgba(33,189,115,.25);">Tổng: 0 · cân ✓</span>
+              <p style="font-size:10px;color:#9A7F6F;">chờ Linh nhập</p>
+            </div>
+
+            <!-- Player list -->
+            <div class="px-3 mt-3" style="display:flex;flex-direction:column;gap:5px;">
+
+              <!-- Inactive: Quý -->
+              <div class="tc-row-inactive" style="opacity:0.38;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-night">1</div>
+                  <span style="font-size:16px;font-weight:600;color:#F6ECDA;">Quý</span>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm">−4</div>
+              </div>
+
+              <!-- Inactive: Nam -->
+              <div class="tc-row-inactive" style="opacity:0.38;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-night">2</div>
+                  <span style="font-size:16px;font-weight:600;color:#F6ECDA;">Nam</span>
+                </div>
+                <div class="tc-chip tc-chip-up tc-chip-sm">+6</div>
+              </div>
+
+              <!-- ACTIVE: Linh -->
+              <div class="tc-row-active-night">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="tc-coin tc-coin-lg tc-coin-night" style="background:#2E1D1A;box-shadow:0 0 0 2px #F2B829,inset 0 -2px 0 #1C1009;">3</div>
+                  <div>
+                    <p style="font-size:17px;font-weight:700;color:#F6ECDA;line-height:1.1;">Linh</p>
+                    <p style="font-size:10px;color:#F2B829;letter-spacing:0.08em;text-transform:uppercase;margin-top:1px;">đang nhập</p>
+                  </div>
+                </div>
+                <div class="tc-chip tc-chip-up tc-chip-lg tc-chip-focus-night">+3<span class="tc-cursor" style="height:20px;"></span></div>
+              </div>
+
+              <!-- Auto-fill: Hoàng -->
+              <div class="tc-row-inactive" style="opacity:0.48;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-night">4</div>
+                  <div style="display:flex;align-items:baseline;gap:5px;">
+                    <span style="font-size:16px;font-weight:600;color:#F6ECDA;">Hoàng</span>
+                    <span style="font-size:10px;color:#9A7F6F;font-style:italic;">tự điền</span>
+                  </div>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm" style="font-style:italic;opacity:0.68;">−5</div>
+              </div>
+
+            </div>
+
+            <!-- Keypad -->
+            <div class="px-3 mt-3">
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+                <div class="tc-key tc-key-night">1</div>
+                <div class="tc-key tc-key-night">2</div>
+                <div class="tc-key tc-key-night">3</div>
+                <div class="tc-key tc-key-night">4</div>
+                <div class="tc-key tc-key-night">5</div>
+                <div class="tc-key tc-key-night">6</div>
+                <div class="tc-key tc-key-night">7</div>
+                <div class="tc-key tc-key-night">8</div>
+                <div class="tc-key tc-key-night">9</div>
+                <div class="tc-key tc-key-sign-night" style="font-size:15px;font-weight:700;">+/−</div>
+                <div class="tc-key tc-key-night">0</div>
+                <div class="tc-key tc-key-del-night" style="font-size:17px;">⌫</div>
+              </div>
+              <button class="tc-btn-night" style="margin-top:5px;">Xác nhận · Linh</button>
+            </div>
+
+          </div>
+        </div>
+        <p class="phone-label">Nhập vòng · đêm</p>
+      </div>
+
+      <!-- ── T3: End-of-session Summary · Day ───────────────────── -->
+      <div>
+        <div class="phone" style="background:linear-gradient(180deg,#DDD3C5 0%,#C9B9A5 100%);box-shadow:0 1px 0 rgba(255,255,255,0.50) inset,0 -1px 0 rgba(0,0,0,0.18) inset,0 40px 60px -20px rgba(60,40,20,0.30),0 12px 24px -8px rgba(0,0,0,0.18);">
+          <div class="phone-notch" style="background:#C0B09A;"></div>
+          <div class="phone-screen tc-day">
+
+            <!-- Top bar -->
+            <div class="px-4 pt-10 flex items-center justify-between">
+              <div>
+                <p style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#8B7969;font-weight:500;">Phiên kết thúc</p>
+                <p style="font-size:17px;font-weight:700;color:#2A211C;letter-spacing:-0.01em;margin-top:1px;">Phỏm thứ Sáu</p>
+              </div>
+              <div style="background:#EDE1CE;color:#8B7969;border-radius:8px;padding:4px 9px;text-align:center;box-shadow:inset 0 -2px 0 #C0AC90;">
+                <p style="font-size:9px;letter-spacing:0.10em;text-transform:uppercase;font-weight:600;">8 vòng</p>
+                <p style="font-size:12px;font-weight:700;line-height:1.2;">1g 22p</p>
+              </div>
+            </div>
+
+            <!-- Thin gold rule -->
+            <div style="height:2px;background:linear-gradient(to right,transparent,#F2B829,transparent);margin:10px 16px 0;opacity:0.6;"></div>
+
+            <!-- Champion row — hero treatment -->
+            <div class="tc-sum-winner-day" style="margin:10px 12px 0;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="tc-coin tc-coin-lg tc-coin-gold" style="width:40px;height:40px;font-size:17px;font-weight:800;">1</div>
+                <div>
+                  <p style="font-size:10px;color:#C8920D;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;">Nhất bàn</p>
+                  <p style="font-size:21px;font-weight:800;color:#2A211C;letter-spacing:-0.02em;line-height:1.1;">Quý</p>
+                </div>
+              </div>
+              <div class="tc-chip tc-chip-up" style="min-width:72px;height:46px;padding:0 14px;font-size:24px;border-radius:14px;box-shadow:inset 0 -3px 0 #0F8A48,0 0 0 2px #F2B829,0 6px 18px rgba(33,189,115,.30);">+14</div>
+            </div>
+
+            <!-- Runners -->
+            <div class="px-3 mt-2" style="display:flex;flex-direction:column;gap:5px;">
+
+              <div class="tc-sum-row-day">
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-day">2</div>
+                  <span style="font-size:16px;font-weight:600;color:#2A211C;">Nam</span>
+                </div>
+                <div class="tc-chip tc-chip-up tc-chip-sm">+3</div>
+              </div>
+
+              <div class="tc-sum-row-day">
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-day">3</div>
+                  <span style="font-size:16px;font-weight:600;color:#2A211C;">Linh</span>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm">−8</div>
+              </div>
+
+              <!-- Last place — Bét bàn muted marker -->
+              <div class="tc-sum-row-day" style="opacity:0.75;">
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <div class="tc-coin tc-coin-sm" style="background:#F5E6E0;color:#C04018;box-shadow:inset 0 -2px 0 #D9BFBA;font-size:13px;width:26px;height:26px;">×</div>
+                  <div>
+                    <span style="font-size:16px;font-weight:600;color:#2A211C;">Hoàng</span>
+                    <span style="font-size:10px;color:#C04018;margin-left:5px;letter-spacing:0.06em;text-transform:uppercase;">Bét</span>
+                  </div>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm">−9</div>
+              </div>
+
+            </div>
+
+            <!-- Stats strip -->
+            <div style="margin:10px 12px 0;background:#F5ECD8;border-radius:10px;padding:8px 12px;display:flex;justify-content:space-around;">
+              <div style="text-align:center;">
+                <p style="font-size:9px;color:#8B7969;text-transform:uppercase;letter-spacing:0.12em;">Điểm cao</p>
+                <p style="font-size:14px;font-weight:700;color:#2A211C;font-variant-numeric:tabular-nums;">+8</p>
+              </div>
+              <div style="width:1px;background:#D8C9AD;"></div>
+              <div style="text-align:center;">
+                <p style="font-size:9px;color:#8B7969;text-transform:uppercase;letter-spacing:0.12em;">Cân bằng</p>
+                <p style="font-size:14px;font-weight:700;color:#2A211C;">6/8</p>
+              </div>
+              <div style="width:1px;background:#D8C9AD;"></div>
+              <div style="text-align:center;">
+                <p style="font-size:9px;color:#8B7969;text-transform:uppercase;letter-spacing:0.12em;">Vòng lớn</p>
+                <p style="font-size:14px;font-weight:700;color:#2A211C;font-variant-numeric:tabular-nums;">±12</p>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div style="padding:10px 12px 0;">
+              <button class="tc-btn-day" style="background:#2A211C;box-shadow:inset 0 -4px 0 #0E0B08,0 4px 12px rgba(0,0,0,.25);">Phiên mới</button>
+            </div>
+
+          </div>
+        </div>
+        <p class="phone-label">Kết thúc phiên · ngày</p>
+      </div>
+
+      <!-- ── T4: End-of-session Summary · Night ─────────────────── -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen tc-night">
+
+            <!-- Top bar -->
+            <div class="px-4 pt-10 flex items-center justify-between">
+              <div>
+                <p style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#9A7F6F;font-weight:500;">Phiên kết thúc</p>
+                <p style="font-size:17px;font-weight:700;color:#F6ECDA;letter-spacing:-0.01em;margin-top:1px;">Phỏm thứ Sáu</p>
+              </div>
+              <div style="background:#2E1D1A;color:#9A7F6F;border-radius:8px;padding:4px 9px;text-align:center;box-shadow:inset 0 -2px 0 #1C1009;">
+                <p style="font-size:9px;letter-spacing:0.10em;text-transform:uppercase;font-weight:600;">8 vòng</p>
+                <p style="font-size:12px;font-weight:700;line-height:1.2;">1g 22p</p>
+              </div>
+            </div>
+
+            <!-- Gold rule -->
+            <div style="height:2px;background:linear-gradient(to right,transparent,#F2B829,transparent);margin:10px 16px 0;opacity:0.55;"></div>
+
+            <!-- Champion row -->
+            <div class="tc-sum-winner-night" style="margin:10px 12px 0;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="tc-coin tc-coin-lg tc-coin-gold" style="width:40px;height:40px;font-size:17px;font-weight:800;">1</div>
+                <div>
+                  <p style="font-size:10px;color:#F2B829;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;">Nhất bàn</p>
+                  <p style="font-size:21px;font-weight:800;color:#F6ECDA;letter-spacing:-0.02em;line-height:1.1;">Quý</p>
+                </div>
+              </div>
+              <div class="tc-chip tc-chip-up" style="min-width:72px;height:46px;padding:0 14px;font-size:24px;border-radius:14px;box-shadow:inset 0 -3px 0 #0F8A48,0 0 0 2px #F2B829,0 6px 20px rgba(33,189,115,.25);">+14</div>
+            </div>
+
+            <!-- Runners -->
+            <div class="px-3 mt-2" style="display:flex;flex-direction:column;gap:5px;">
+
+              <div class="tc-sum-row-night">
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-night">2</div>
+                  <span style="font-size:16px;font-weight:600;color:#F6ECDA;">Nam</span>
+                </div>
+                <div class="tc-chip tc-chip-up tc-chip-sm">+3</div>
+              </div>
+
+              <div class="tc-sum-row-night">
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <div class="tc-coin tc-coin-sm tc-coin-night">3</div>
+                  <span style="font-size:16px;font-weight:600;color:#F6ECDA;">Linh</span>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm">−8</div>
+              </div>
+
+              <div class="tc-sum-row-night" style="opacity:0.72;">
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <div class="tc-coin tc-coin-sm" style="background:#3D1E18;color:#FF6B3D;box-shadow:inset 0 -2px 0 #200E09;font-size:13px;font-weight:700;width:26px;height:26px;">×</div>
+                  <div>
+                    <span style="font-size:16px;font-weight:600;color:#F6ECDA;">Hoàng</span>
+                    <span style="font-size:10px;color:#FF6B3D;margin-left:5px;letter-spacing:0.06em;text-transform:uppercase;">Bét</span>
+                  </div>
+                </div>
+                <div class="tc-chip tc-chip-down tc-chip-sm">−9</div>
+              </div>
+
+            </div>
+
+            <!-- Stats strip -->
+            <div style="margin:10px 12px 0;background:rgba(255,255,255,.045);border-radius:10px;padding:8px 12px;display:flex;justify-content:space-around;border:1px solid rgba(255,255,255,.06);">
+              <div style="text-align:center;">
+                <p style="font-size:9px;color:#9A7F6F;text-transform:uppercase;letter-spacing:0.12em;">Điểm cao</p>
+                <p style="font-size:14px;font-weight:700;color:#F6ECDA;font-variant-numeric:tabular-nums;">+8</p>
+              </div>
+              <div style="width:1px;background:rgba(246,236,218,.12);"></div>
+              <div style="text-align:center;">
+                <p style="font-size:9px;color:#9A7F6F;text-transform:uppercase;letter-spacing:0.12em;">Cân bằng</p>
+                <p style="font-size:14px;font-weight:700;color:#F6ECDA;">6/8</p>
+              </div>
+              <div style="width:1px;background:rgba(246,236,218,.12);"></div>
+              <div style="text-align:center;">
+                <p style="font-size:9px;color:#9A7F6F;text-transform:uppercase;letter-spacing:0.12em;">Vòng lớn</p>
+                <p style="font-size:14px;font-weight:700;color:#F6ECDA;font-variant-numeric:tabular-nums;">±12</p>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div style="padding:10px 12px 0;">
+              <button class="tc-btn-night">Phiên mới</button>
+            </div>
+
+          </div>
+        </div>
+        <p class="phone-label">Kết thúc phiên · đêm</p>
+      </div>
+
+    </div><!-- /row-phones -->
+
+    <!-- Design notes -->
+    <div class="mt-10 grid md:grid-cols-3 gap-8 text-sm">
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.18em]" style="color:#FF6B3D;">Chip điểm có chiều dày</p>
+        <p class="mt-2 leading-relaxed" style="color:rgba(232,220,196,0.70);">
+          Mỗi chip là một viên cờ — màu đặc, bóng có màu, cạnh dưới tối hơn tạo cảm giác nổi. Kích thước tăng 1.4× ở ô đang focus; ba ô còn lại mờ và nhỏ hơn — không cần đọc nhãn để biết ai đang nhập.
+        </p>
+      </div>
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.18em]" style="color:#F2B829;">Phím bấm có độ nảy</p>
+        <p class="mt-2 leading-relaxed" style="color:rgba(232,220,196,0.70);">
+          Mỗi phím có cạnh dưới shadow tạo hiệu ứng 3-D. CSS <code style="font-size:11px;background:rgba(255,255,255,0.06);padding:1px 4px;border-radius:3px;">:active</code> translateY(3px) + thu shadow — phím lõm xuống khi nhấn mà không cần JavaScript. Toàn bộ keypad phản hồi ngay, dưới 70ms.
+        </p>
+      </div>
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.18em]" style="color:#21BD73;">Cân bằng màu sắc + ký hiệu</p>
+        <p class="mt-2 leading-relaxed" style="color:rgba(232,220,196,0.70);">
+          Chip xanh lá (#21BD73) luôn đi kèm ký hiệu <strong style="color:#21BD73;">+</strong>; chip cam (#FF6B3D) luôn đi kèm <strong style="color:#FF6B3D;">−</strong>. Người dùng bị rối màu vẫn đọc được từ ký tự. Tự điền (Hoàng) in nghiêng để phân biệt với giá trị người nhập.
+        </p>
+      </div>
+    </div>
+
+  </section>
+  <!-- /TACTILE SECTION -->
 
   <!-- ============================================================
        INTRO
