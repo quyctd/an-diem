@@ -56,8 +56,8 @@ struct RoundEntryView: View {
 
             bottomDock
         }
-        .lacquerBackground(.phormSurfaceCinnabarDeep)
-        .presentationBackground(Color.phormSurfaceCinnabarDeep)
+        .lacquerBackground(.phormSurfaceCinnabar)
+        .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDragIndicator(.visible)
         .preferredColorScheme(.dark)
         .confirmationDialog("Xóa vòng này?", isPresented: $showDeleteConfirm) {
@@ -120,8 +120,7 @@ struct RoundEntryView: View {
                     .font(.phormDisplayMd)
                     .foregroundStyle(Color.phormPrimary)
                 Text("điểm ai bao nhiêu?")
-                    .font(.system(size: 18, weight: .regular, design: .serif))
-                    .italic()
+                    .font(.system(size: 18, weight: .regular, design: .default))
                     .foregroundStyle(Color.phormCream.opacity(0.82))
             }
             Spacer()
@@ -166,126 +165,93 @@ struct RoundEntryView: View {
         }
     }
 
+    /// One player row: Coin seat token + name + ScoreChip.
+    ///
+    /// Visual hierarchy:
+    ///   • Focused row  — surfaceTile card + shadow + .large chip (isFocused border) + .winner coin.
+    ///   • Auto-fill row — .winner coin at 55% opacity + .small chip at 72% opacity; full row opacity.
+    ///   • Inactive rows — .seat coin + .small chip; whole row dimmed to 42%.
+    ///
+    /// The chip value fed to ScoreChip:
+    ///   • Auto-fill row  → draft.autoFillValue  (app-computed, not host-typed)
+    ///   • All other rows → draft.entries[idx]   (nil = empty = chip shows "0")
     @ViewBuilder
     private func playerRow(idx: Int, name: String) -> some View {
-        let isFocused = draft.focusedIndex == idx
-        let isAuto = draft.autoFillIndex == idx
+        let isFocused    = draft.focusedIndex == idx
+        let isAuto       = draft.autoFillIndex == idx
+        let chipValue:   Int?             = isAuto ? draft.autoFillValue : draft.entries[idx]
+        let chipSize:    ScoreChip.Size   = isFocused ? .large : .small
+        let coinVariant: Coin.Variant     = (isFocused || isAuto) ? .winner : .seat
+
         HStack(spacing: Spacing.md) {
-            // Seat seal — Hán numeral per player position. Gives a fixed glyph anchor
-            // the host can verify before typing ("I'm entering for 叁, that's Linh").
-            // Bright winner-gold when focused; muted default otherwise.
-            Seal(
-                glyph: SealGlyph.forRank(idx + 1),
-                variant: isFocused ? .winner : .default,
-                size: 30
-            )
+            // Seat coin — gold winner token for focused/auto rows; neutral for inactive.
+            Coin(text: SealGlyph.forRank(idx + 1), variant: coinVariant, size: 30)
+                .opacity(isAuto && !isFocused ? 0.55 : 1.0)
+
+            // Player name — primary tint for focused, faint gold for auto-fill, cream otherwise.
             Text(name)
                 .font(.phormNameMd)
                 .foregroundStyle(
                     isFocused ? Color.phormPrimary
-                    : isAuto ? Color.phormCreamDim
+                    : isAuto  ? Color.phormGoldBright.opacity(0.85)
                     : Color.phormCream
                 )
-            Spacer()
-            cellView(idx: idx, isFocused: isFocused, isAuto: isAuto)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture { draft.focusedIndex = idx }
-    }
 
-    @ViewBuilder
-    private func cellView(idx: Int, isFocused: Bool, isAuto: Bool) -> some View {
-        ZStack(alignment: .topTrailing) {
-            HStack(spacing: 2) {
-                cellValue(idx: idx, isFocused: isFocused, isAuto: isAuto)
+            Spacer()
+
+            // Score chip + blinking caret (caret only when focused).
+            HStack(spacing: 6) {
+                ScoreChip(value: chipValue, size: chipSize, isFocused: isFocused)
+                    .opacity(isAuto && !isFocused ? 0.72 : 1.0)
                 if isFocused {
                     BlinkingCaret()
                 }
             }
-            .frame(width: 110, alignment: .trailing)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(cellBackground(isFocused: isFocused, isAuto: isAuto))
-
-            if isAuto {
-                Seal(glyph: "封", variant: .winner, size: 22)
-                    .offset(x: 8, y: -8)
-                    .transition(.scale.combined(with: .opacity))
-            }
         }
-        .frame(height: 44)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        // Focused row: surfaceTile card with drop shadow.
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.surfaceTile)
+                .shadow(color: .black.opacity(0.28), radius: 8, y: 4)
+                .opacity(isFocused ? 1 : 0)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture { draft.focusedIndex = idx }
+        // Inactive non-auto rows recede; focused and auto rows stay at full opacity.
+        .opacity((!isFocused && !isAuto) ? 0.42 : 1.0)
+        .animation(.easeInOut(duration: 0.18), value: isFocused)
     }
 
-    @ViewBuilder
-    private func cellValue(idx: Int, isFocused: Bool, isAuto: Bool) -> some View {
-        if isAuto, let v = draft.autoFillValue {
-            Text(ScoreFormat.signed(v))
-                .font(.phormNumberScript)
-                .foregroundStyle(ScoreFormat.color(for: v))
-        } else if let v = draft.entries[idx] {
-            // Typed value: sign-aware color (mint +, ochre −, cream 0). The same
-            // color appears in the keypad's sign key — closing the loop between
-            // mode you're in and what you see in the cell.
-            Text(ScoreFormat.signed(v))
-                .font(.phormNumberEntry)
-                .foregroundStyle(ScoreFormat.color(for: v))
-        } else if isFocused {
-            // Empty placeholder on the focused row hints at the active sign mode.
-            Text(draft.signMode < 0 ? "\u{2212}" : "+")
-                .font(.phormNumberEntry)
-                .foregroundStyle(modeColor.opacity(0.50))
-        } else {
-            Text("0")
-                .font(.phormNumberEntry)
-                .foregroundStyle(Color.phormCream.opacity(0.32))
-        }
-    }
+    // MARK: - Validation pill (Tổng)
 
-    /// Current sign-mode accent color — mint for add, ochre for subtract. Drives
-    /// the focused cell border, value text, placeholder hint, and keypad sign key.
-    private var modeColor: Color {
-        draft.signMode < 0 ? .scoreNegative : .scorePositive
-    }
-
-    @ViewBuilder
-    private func cellBackground(isFocused: Bool, isAuto: Bool) -> some View {
-        let shape = RoundedRectangle(cornerRadius: 2, style: .continuous)
-        ZStack {
-            if isFocused {
-                shape.fill(modeColor.opacity(0.14))
-                shape.strokeBorder(modeColor, lineWidth: 1.5)
-            } else if isAuto {
-                shape.fill(Color.phormPrimary.opacity(0.06))
-                shape.strokeBorder(Color.phormPrimaryActive, lineWidth: 1)
-            } else {
-                shape.fill(Color.black.opacity(0.18))
-                shape.strokeBorder(Color.phormCream.opacity(0.30), lineWidth: 1)
-            }
-        }
-    }
-
-    // MARK: - Validation
-
+    /// Rounded Capsule pill summarising the round total.
+    /// Balanced (sum = 0): chipUp-tinted "0 · cân".
+    /// Unbalanced: chipDown-tinted "<signed> ⚠".
     private var validationRow: some View {
         let sum = draft.liveSum
-        let ok = sum == 0
+        let ok  = sum == 0
         return HStack {
-            SectionLabel(text: "Tổng")
             Spacer()
             Text(ok ? "0 · cân" : "\(ScoreFormat.signed(sum)) ⚠")
                 .font(.phormNumberMd)
-                .foregroundStyle(ok ? Color.scorePositive : Color.warning)
-        }
-        .padding(.top, Spacing.sm)
-        .overlay(alignment: .top) {
-            Rectangle()
-                .fill(Color.phormCream.opacity(0.18))
-                .frame(height: 1)
+                .foregroundStyle(ok ? Color.scorePositive : Color.scoreNegative)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(ok
+                              ? Color.scorePositive.opacity(0.14)
+                              : Color.scoreNegative.opacity(0.14))
+                )
+            Spacer()
         }
     }
 
     // MARK: - Bottom dock (keypad + CTA)
 
+    /// Flat surface with a light cream hairline at the top — no heavy gradient.
     private var bottomDock: some View {
         VStack(spacing: Spacing.sm) {
             Keypad(
@@ -298,14 +264,12 @@ struct RoundEntryView: View {
         .padding(.horizontal, Spacing.md)
         .padding(.bottom, Spacing.sm)
         .background(
-            LinearGradient(
-                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.6), .phormSurfaceCinnabarDeep],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 380)
-            .allowsHitTesting(false),
-            alignment: .bottom
+            Color.phormSurfaceCinnabar
+                .overlay(alignment: .top) {
+                    Rectangle()
+                        .fill(Color.phormCreamStroke)
+                        .frame(height: 1)
+                }
         )
     }
 
