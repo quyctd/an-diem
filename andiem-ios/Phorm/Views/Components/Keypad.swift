@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// Custom numeric keypad — lives at the bottom of RoundEntryView on lacquer.
-/// Sharp 2pt corners, dark tint, cream ink. Save CTA is the gold primary button.
+/// Keys are 3-D tactile: a rounded face over a darker ridge, depressing on press + haptic.
+/// Save CTA gets the same ridge treatment with phormPrimary fill.
 struct Keypad: View {
     let onKey: (KeypadKey) -> Void
     let onSave: () -> Void
@@ -56,67 +57,66 @@ struct Keypad: View {
                 }
                 .buttonStyle(.plain)
 
-                LacquerPrimaryButton(
-                    title: "Đóng dấu — lưu vòng",
-                    enabled: canSave,
-                    action: {
-                        Haptics.success()
-                        onSave()
-                    }
-                )
+                // Save CTA — tactile 3D with phormPrimary fill.
+                TactileKey(
+                    fill: canSave ? Color.phormPrimary : Color.phormPrimaryDisabled,
+                    haptic: { Haptics.success() },
+                    action: { if canSave { onSave() } }
+                ) {
+                    Text("Đóng dấu — lưu vòng")
+                        .font(.phormButton)
+                        .tracking(2.0)
+                        .textCase(.uppercase)
+                        .foregroundStyle(Color.onChip)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                }
+                .disabled(!canSave)
             }
         }
     }
 
     @ViewBuilder
     private func key(_ kind: KeyKind) -> some View {
-        Button {
-            switch kind {
-            case .digit(let d):
-                Haptics.tap()
-                onKey(.digit(d))
-            case .sign:
-                Haptics.toggle()
-                onKey(.sign)
-            case .delete:
-                Haptics.toggle()
-                onKey(.delete)
-            }
-        } label: {
+        TactileKey(
+            fill: keyFill(kind),
+            haptic: keyHaptic(kind),
+            action: { keyAction(kind) }
+        ) {
             keyLabel(for: kind)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(
-                    RoundedRectangle(cornerRadius: 3, style: .continuous)
-                        .fill(keyBackgroundFill(kind))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 3, style: .continuous)
-                        .stroke(signKeyBorderColor(kind), lineWidth: 1)
-                )
         }
-        .buttonStyle(.plain)
+    }
+
+    /// Sign key gets phormPrimary (brand accent); all other keys use surfaceTile.
+    private func keyFill(_ kind: KeyKind) -> Color {
+        if case .sign = kind { return .phormPrimary }
+        return .surfaceTile
+    }
+
+    /// Haptic fired on press-down — toggle for state-changing keys, tap for digits.
+    private func keyHaptic(_ kind: KeyKind) -> () -> Void {
+        switch kind {
+        case .digit: return { Haptics.tap() }
+        case .sign, .delete: return { Haptics.toggle() }
+        }
+    }
+
+    /// Fires the appropriate callback for each key kind.
+    private func keyAction(_ kind: KeyKind) {
+        switch kind {
+        case .digit(let d): onKey(.digit(d))
+        case .sign:         onKey(.sign)
+        case .delete:       onKey(.delete)
+        }
     }
 
     /// Sign-mode accent — mint when add, ochre when subtract. The sign key uses
-    /// this for its glyph, border, and background tint so the active mode is
-    /// loud enough that the host won't mistake `+` for `−` mid-typing.
+    /// this for its glyph so the active mode is loud enough that the host won't
+    /// mistake `+` for `−` mid-typing.
     private var modeColor: Color {
         sign < 0 ? .scoreNegative : .scorePositive
-    }
-
-    /// Sign key border picks up the mode color at 0.7 opacity — strong enough
-    /// to read as "this key is what colors the cells above."
-    private func signKeyBorderColor(_ kind: KeyKind) -> Color {
-        if case .sign = kind { return modeColor.opacity(0.70) }
-        return Color.phormCream.opacity(0.18)
-    }
-
-    /// Background of the sign key gets a faint mode-color wash on top of the
-    /// utility-key dark tint — same trick as the focused cell.
-    private func keyBackgroundFill(_ kind: KeyKind) -> Color {
-        if case .sign = kind { return modeColor.opacity(0.18) }
-        return isUtility(kind) ? Color.black.opacity(0.28) : Color.black.opacity(0.18)
     }
 
     @ViewBuilder
@@ -143,8 +143,33 @@ struct Keypad: View {
                 .foregroundStyle(Color.phormCreamDim)
         }
     }
+}
 
-    private func isUtility(_ k: KeyKind) -> Bool {
-        switch k { case .sign, .delete: return true; case .digit: return false }
+// MARK: - Tactile key
+
+/// Chunky 3-D key: a rounded face sits over a darker ridge offset 4 pt below.
+/// On press the face translates down 3 pt and the ridge shrinks — simulating a
+/// physical button depression. A haptic fires on touch-down, the action on release.
+private struct TactileKey<Label: View>: View {
+    var fill: Color = .surfaceTile
+    var ridge: Color = Color.black.opacity(0.25)
+    var haptic: () -> Void = { Haptics.tap() }
+    let action: () -> Void
+    @ViewBuilder var label: () -> Label
+    @GestureState private var pressed = false
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 14, style: .continuous)
+        label()
+            .background(shape.fill(fill))
+            .background(shape.fill(ridge).offset(y: pressed ? 1 : 4))
+            .offset(y: pressed ? 3 : 0)
+            .contentShape(shape)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .updating($pressed) { _, s, _ in if !s { s = true; haptic() } }
+                    .onEnded { _ in action() }
+            )
+            .animation(.spring(response: 0.18, dampingFraction: 0.6), value: pressed)
     }
 }
