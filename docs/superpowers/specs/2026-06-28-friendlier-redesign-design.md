@@ -115,13 +115,51 @@ implementation plan must **update it first** to show both surfaces (day paper + 
 lacquer) and the plain wording across the four key screens, for raw.githack review,
 **before** touching SwiftUI. Cheaper iteration loop than rebuilding the app per tweak.
 
+## F. Typography — fully clean sans (scope expansion, 2026-06-28)
+
+Live feedback widened the ask beyond color/wording: also fix **font** and **sizing**, because
+the round-entry **input is hard to focus on**. Decisions:
+
+- **Drop the serif print register entirely.** Rework `Font+Tokens.swift` so every token's
+  `design: .serif` becomes **`.default` (SF Pro)** — a humanist sans with full Vietnamese
+  diacritic coverage and built-in Dynamic Type. Default is **system SF Pro** (zero font
+  bundling); bundling Inter is a deferred option, not taken unless asked.
+- Numerals keep `.monospacedDigit()` (tabular figures for column alignment). This is *not*
+  SF Mono — proportional sans with tabular figures — and is the legible/friendly choice.
+- Player names drop italic-serif "signature" styling → clean medium-weight sans. The
+  auto-fill computed value keeps one subtle distinction (lighter weight) so "the app wrote
+  this" still reads vs. host-entered values.
+- **Brand survives the serif loss** through the lacquer color, warm paper, and seal motif —
+  not through the typeface. This is an accepted tradeoff, not an oversight.
+
+## G. Input-focus hierarchy — the core fix (layout unchanged)
+
+The round-entry screen currently signals the active cell only with a 14%-opacity tint + a
+thin 1.5px border, and all values are the same 22pt — nothing dominates, so the eye can't
+find where it's typing. Fix, within the existing layout:
+
+- **Focused row grows:** numeral `22pt → ~34pt` bold, name full opacity, cell fill stronger
+  (modeColor ~0.20) + 2px border, more vertical padding.
+- **Inactive rows recede:** numeral ~20pt, name + value dimmed (~0.5 opacity).
+- **Auto-fill row** stays distinct (gold) but quieter than the focused row.
+- Net: at any moment exactly one row clearly reads as "where I'm typing."
+
+## H. Sizing — hierarchy only, no global inflation
+
+No blanket size increase and no touch-target changes. The only size moves are the
+active-vs-inactive and primary-vs-secondary contrasts in F/G.
+
 ## E. Docs to update (source-of-truth, part of the work)
 
 - `DESIGN.md` — replace "one drenched surface / no light-dark peers" frontmatter and score
-  tokens with the dual-surface system + new jade/rust (day) and peach (night) values.
-- `CLAUDE.md` — update the "App does NOT have binary light/dark" and terminology anchors.
+  tokens with the dual-surface system + new jade/rust (day) and peach (night) values. Also
+  replace the serif/"No SF Mono / numerals use serif" typography section with the clean-sans
+  system (F).
+- `CLAUDE.md` — update the "App does NOT have binary light/dark" and terminology anchors, and
+  the "No SF Mono / Noto Serif numerals" anchor → clean sans + tabular figures.
 - `PRODUCT.md` — update anti-reference/terminology anchors referencing "ấn vàng" / "tem
-  chéo" as primary labels (the seal *shape* stays; the *labels* go plain).
+  chéo" as primary labels (the seal *shape* stays; the *labels* go plain), and note the brand
+  now rests on lacquer color + paper + seal, not the serif register.
 - `design-walkthrough.html` — leave untouched (kept for diff reference).
 
 ## Out of scope

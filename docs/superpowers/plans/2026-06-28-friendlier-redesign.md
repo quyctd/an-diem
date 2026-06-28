@@ -35,6 +35,8 @@
 - `andiem-ios/Phorm/DesignSystem/LacquerSurface.swift` — paper-vs-lacquer surface treatment (Task 4).
 - `andiem-ios/Phorm/Views/SummaryView.swift` — plain wording + seal glyph "1" / down-seal (Task 5).
 - `DESIGN.md`, `CLAUDE.md`, `PRODUCT.md` — doc anchors (Task 6).
+- `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift` — serif → clean sans (Task 7).
+- `andiem-ios/Phorm/Views/RoundEntryView.swift` — active/inactive row hierarchy (Task 8).
 
 ---
 
@@ -422,11 +424,11 @@ The design docs are intentional commitments; this redesign overturns several, so
 
 - [ ] **Step 1: Update `DESIGN.md`**
 
-Replace the "one drenched lacquer surface / no light-dark equal peers" framing with the dual-surface system. Update the score-token section: day values jade `#1B6B47` (up) / rust `#A63A1E` (down); night values mint `#B6E0C2` (up) / peach `#F2B488` (down, replacing the failing `#E6A665`). Add the paper palette (ground `#F2E9D8`, ink `#2E1C16`, secondary `#6B5A4A`). Note seal content is Arabic, not Hán. State the canonical reference is the dual-surface `themes-preview.html`.
+Replace the "one drenched lacquer surface / no light-dark equal peers" framing with the dual-surface system. Update the score-token section: day values jade `#1B6B47` (up) / rust `#A63A1E` (down); night values mint `#B6E0C2` (up) / peach `#F2B488` (down, replacing the failing `#E6A665`). Add the paper palette (ground `#F2E9D8`, ink `#2E1C16`, secondary `#6B5A4A`). Note seal content is Arabic, not Hán. Replace the serif typography section (Noto/Cormorant/Plex, "numerals use serif") with the clean-sans system: system SF Pro across the app, numerals `.monospacedDigit()` tabular, SF Mono still forbidden. State the canonical reference is the dual-surface `themes-preview.html`.
 
 - [ ] **Step 2: Update `CLAUDE.md`**
 
-In the "Design system anchors" section, replace "App does NOT have binary light/dark equal peers… one drenched lacquer surface per session" with the paper-by-day / lacquer-by-night model (follow system). Update the score-semantics line to the new adaptive up/down values. Update the brand/voice anchor that names "ấn vàng / tem chéo" so it describes the seal *shape* as the earned decoration with plain labels ("Nhất bàn / Bét bàn") and Arabic rank content.
+In the "Design system anchors" section, replace "App does NOT have binary light/dark equal peers… one drenched lacquer surface per session" with the paper-by-day / lacquer-by-night model (follow system). Update the score-semantics line to the new adaptive up/down values. Update the brand/voice anchor that names "ấn vàng / tem chéo" so it describes the seal *shape* as the earned decoration with plain labels ("Nhất bàn / Bét bàn") and Arabic rank content. Replace the "No SF Mono / Noto Serif numerals" anchor with: clean system sans (SF Pro) across the app, tabular figures for numerals; the brand now rests on lacquer color + paper + seal, not the serif register.
 
 - [ ] **Step 3: Update `PRODUCT.md`**
 
@@ -441,8 +443,174 @@ git commit -m "docs: dual-surface + plain-wording redesign (supersede locked anc
 
 ---
 
+## Task 7: Typography overhaul — serif → clean sans
+
+Rework the type tokens from the editorial serif (currently falling back to New York) to a
+clean humanist sans (system SF Pro). No view callsites change — they reference the same
+token names.
+
+**Files:**
+- Modify: `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`
+
+**Interfaces:**
+- Consumes: nothing.
+- Produces: all `Font.phorm*` token names unchanged in signature/spelling; only their
+  underlying `design:` (and the name-italic styling) change. `Font.scaledSerif(...)` helper
+  is renamed to `scaledSans(...)` and used by `phormHeroDisplay` / `phormDisplayLg` /
+  `phormCaptionSection` (callsites are inside this same file — update them too).
+
+- [ ] **Step 1: Swap serif → default across every token**
+
+In `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`, change every `design: .serif` to
+`design: .default`. Specifically: `phormDisplayMd`, `phormTitleLg`, `phormTitleMd`,
+`phormTitleSm`, `phormBodyMd`, `phormBodySm`, `phormCaption`, `phormButton`,
+`phormNameDisplay`, `phormNameMd`, `phormNumberHero`, `phormNumberRanking`,
+`phormNumberEntry`, `phormNumberMd`, `phormNumberSm`, `phormNumberChip`, `phormNumberScript`,
+`phormKeypadDigit`. Keep every size, weight, and `.monospacedDigit()` exactly as-is.
+
+- [ ] **Step 2: De-serif the names + the scaled helper**
+
+Rename the helper `scaledSerif` → `scaledSans` and change its body to use `.withDesign(.default)`
+(falling back to the plain system descriptor). Update its three callers (`phormHeroDisplay`,
+`phormDisplayLg`, `phormCaptionSection`) to call `scaledSans`. For the player-name tokens,
+drop `.italic()` and keep a clean weight:
+
+```swift
+    /// Player display name — clean medium-weight sans. 22pt / 600.
+    static let phormNameDisplay  = Font.system(size: 22, weight: .semibold, design: .default)
+    /// Player name in round-entry rows. 18pt / 600.
+    static let phormNameMd       = Font.system(size: 18, weight: .semibold, design: .default)
+```
+
+Keep `phormNumberScript` distinct from `phormNumberEntry` by **weight** instead of italic —
+make it `weight: .regular` (vs entry's `.bold`) so the auto-fill value still reads as
+"the app wrote this":
+
+```swift
+    /// Auto-fill computed value — lighter weight marks "machine wrote this". 22pt / 400.
+    static let phormNumberScript  = Font.system(size: 22, weight: .regular, design: .default).monospacedDigit()
+```
+
+- [ ] **Step 3: Update the file doc comment**
+
+Replace the top doc comment (lines ~4-13) describing the serif/Noto/Cormorant/Plex target +
+"SF Mono is forbidden" with a short note: tokens use system SF Pro (clean humanist sans, full
+Vietnamese diacritics, Dynamic Type); numerals use `.monospacedDigit()` for tabular
+alignment; SF Mono remains forbidden (tabular SF Pro ≠ SF Mono).
+
+- [ ] **Step 4: Build to verify it compiles**
+
+Run:
+```bash
+cd andiem-ios && xcodebuild build -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15
+```
+Expected: `** BUILD SUCCEEDED **`.
+
+- [ ] **Step 5: USER VISUAL CHECKPOINT**
+
+Ask the user to confirm in the simulator that all text/numerals now render as clean sans and
+read well at body sizes in both appearances. (No automated test — typography is visual.)
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add andiem-ios/Phorm/DesignSystem/Font+Tokens.swift
+git commit -m "feat: clean sans typography (drop serif register)"
+```
+
+---
+
+## Task 8: Input-focus hierarchy in round entry
+
+Make the active player row visually dominant so the scribe always knows where they're
+typing. Layout unchanged — only the focused-vs-inactive styling diverges.
+
+**Files:**
+- Modify: `andiem-ios/Phorm/Views/RoundEntryView.swift` (`playerRow(idx:name:)` ~169-194,
+  `cellValue(idx:isFocused:isAuto:)` ~219-242, `cellBackground(isFocused:isAuto:)` ~250-265)
+
+**Interfaces:**
+- Consumes: `modeColor`, `draft.focusedIndex`, `draft.autoFillIndex`, `ScoreFormat`,
+  `Seal`/`SealGlyph` (Arabic from Task 2), `phormNumberEntry` (now sans from Task 7).
+- Produces: no new symbols; visual hierarchy only.
+
+- [ ] **Step 1: Add a focused-size numeral token**
+
+In `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`, add one token next to the numeral tier:
+
+```swift
+    /// Focused round-entry value — the dominant number on the entry screen. 34pt / 800.
+    static let phormNumberEntryFocused = Font.system(size: 34, weight: .heavy, design: .default).monospacedDigit()
+```
+
+- [ ] **Step 2: Enlarge + brighten the focused value, dim inactive**
+
+In `RoundEntryView.swift`, in `cellValue(idx:isFocused:isAuto:)` use the focused token and
+full opacity when focused, and dim the typed value when not focused. Replace the typed-value
+branch (lines ~225-231) and the focused-placeholder branch (~232-236) so the focused row uses
+`phormNumberEntryFocused`:
+
+```swift
+        } else if let v = draft.entries[idx] {
+            Text(ScoreFormat.signed(v))
+                .font(isFocused ? .phormNumberEntryFocused : .phormNumberEntry)
+                .foregroundStyle(ScoreFormat.color(for: v))
+                .opacity(isFocused ? 1.0 : 0.5)
+        } else if isFocused {
+            Text(draft.signMode < 0 ? "\u{2212}" : "+")
+                .font(.phormNumberEntryFocused)
+                .foregroundStyle(modeColor.opacity(0.50))
+```
+
+(Leave the `isAuto` branch at the top and the final non-focused `"0"` placeholder branch as
+they are — the `"0"` already sits at 0.32 opacity.)
+
+- [ ] **Step 3: Strengthen the focused cell background, recede inactive rows**
+
+In `cellBackground(isFocused:isAuto:)` (lines ~250-265), bump the focused fill/border:
+
+```swift
+            if isFocused {
+                shape.fill(modeColor.opacity(0.20))
+                shape.strokeBorder(modeColor, lineWidth: 2)
+```
+
+Then in `playerRow(idx:name:)` (lines ~169-194), dim the whole inactive, non-auto row so the
+focused row dominates. Add at the end of the `HStack` modifier chain (after `.onTapGesture`):
+
+```swift
+        .opacity(isFocused || isAuto ? 1.0 : 0.5)
+```
+
+- [ ] **Step 4: Build to verify it compiles**
+
+Run:
+```bash
+cd andiem-ios && xcodebuild build -scheme Phorm \
+  -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15
+```
+Expected: `** BUILD SUCCEEDED **`.
+
+- [ ] **Step 5: USER VISUAL CHECKPOINT**
+
+Ask the user to confirm in the simulator: tapping a player row makes that row's number grow
+and the others visibly recede; it's always obvious which cell is active. Tune the 0.5 dim /
+34pt size only if the user wants it stronger or softer.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add andiem-ios/Phorm/DesignSystem/Font+Tokens.swift \
+  andiem-ios/Phorm/Views/RoundEntryView.swift
+git commit -m "feat: enlarge active entry row, dim inactive rows"
+```
+
+---
+
 ## Final verification
 
 - [ ] Full test suite green: `cd andiem-ios && xcodebuild test -scheme Phorm -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -20` → all tests pass (existing Totals/AutoFill/SessionShare/SessionActions + new SealGlyph).
 - [ ] No user-facing literary terms or Hán glyphs remain (Task 5 Step 4 grep clean).
 - [ ] User confirms, via simulator in both Light and Dark appearance: round-entry and summary scores/labels are comfortably legible; summary shows "Nhất bàn" / "Bét bàn"; seals show Arabic content; last place is muted, not an aggressive ×; surface flips paper↔lacquer with system appearance and brand identity persists.
+- [ ] User confirms: all text renders as clean sans (no serif); on the round-entry screen the focused player's number is clearly the dominant element and inactive rows recede — it's always obvious which cell is active.
