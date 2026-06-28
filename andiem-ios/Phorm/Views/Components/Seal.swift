@@ -57,18 +57,9 @@ struct Seal: View {
     private var glyphSize: CGFloat { size * 0.58 }
 }
 
-/// Hán-Việt numerals used for rank seals — matches themes-preview.html.
+/// Rank numerals for tokens — plain Arabic so a Vietnamese player reads them instantly.
 enum SealGlyph {
-    private static let table: [String] = [
-        "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌"
-    ]
-
-    /// 1-based rank → 壹 / 贰 / 叁 / 肆 … (falls back to Arabic past 8).
-    static func forRank(_ rank: Int) -> String {
-        guard rank >= 1 else { return "" }
-        if rank <= table.count { return table[rank - 1] }
-        return "\(rank)"
-    }
+    static func forRank(_ rank: Int) -> String { rank >= 1 ? "\(rank)" : "" }
 }
 
 #Preview {
