@@ -20,7 +20,7 @@ SCREENS=(
   "empty:06-empty.png"
 )
 
-echo "Booting $SIM_NAME…"
+echo "Booting ${SIM_NAME}…"
 xcrun simctl boot "$SIM_NAME" 2>/dev/null || true
 open -a Simulator
 
