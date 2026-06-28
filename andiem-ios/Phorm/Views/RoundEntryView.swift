@@ -169,7 +169,7 @@ struct RoundEntryView: View {
     ///
     /// Visual hierarchy:
     ///   • Focused row  — surfaceTile card + shadow + .large chip (isFocused border) + .winner coin.
-    ///   • Auto-fill row — .winner coin at 55% opacity + .small chip at 72% opacity; full row opacity.
+    ///   • Auto-fill row — gold tint throughout; whole row at 0.72 opacity (single quieted treatment).
     ///   • Inactive rows — .seat coin + .small chip; whole row dimmed to 42%.
     ///
     /// The chip value fed to ScoreChip:
@@ -182,27 +182,35 @@ struct RoundEntryView: View {
         let chipValue:   Int?             = isAuto ? draft.autoFillValue : draft.entries[idx]
         let chipSize:    ScoreChip.Size   = isFocused ? .large : .small
         let coinVariant: Coin.Variant     = (isFocused || isAuto) ? .winner : .seat
+        // Show pending sign hint when focused on an empty non-auto cell.
+        let showSignHint = isFocused && !isAuto && draft.entries[idx] == nil
 
         HStack(spacing: Spacing.md) {
             // Seat coin — gold winner token for focused/auto rows; neutral for inactive.
             Coin(text: SealGlyph.forRank(idx + 1), variant: coinVariant, size: 30)
-                .opacity(isAuto && !isFocused ? 0.55 : 1.0)
 
-            // Player name — primary tint for focused, faint gold for auto-fill, cream otherwise.
+            // Player name — primary tint for focused, gold for auto-fill, cream otherwise.
             Text(name)
                 .font(.phormNameMd)
                 .foregroundStyle(
                     isFocused ? Color.phormPrimary
-                    : isAuto  ? Color.phormGoldBright.opacity(0.85)
+                    : isAuto  ? Color.phormGoldBright
                     : Color.phormCream
                 )
 
             Spacer()
 
-            // Score chip + blinking caret (caret only when focused).
+            // Score chip + sign placeholder hint + blinking caret (caret only when focused).
             HStack(spacing: 6) {
                 ScoreChip(value: chipValue, size: chipSize, isFocused: isFocused)
-                    .opacity(isAuto && !isFocused ? 0.72 : 1.0)
+                    .overlay(alignment: .center) {
+                        if showSignHint {
+                            Text(draft.signMode < 0 ? "\u{2212}" : "+")
+                                .font(.phormNumberMd)
+                                .foregroundStyle(draft.signMode < 0 ? Color.scoreNegative : Color.scorePositive)
+                                .opacity(0.5)
+                        }
+                    }
                 if isFocused {
                     BlinkingCaret()
                 }
@@ -219,9 +227,10 @@ struct RoundEntryView: View {
         )
         .contentShape(Rectangle())
         .onTapGesture { draft.focusedIndex = idx }
-        // Inactive non-auto rows recede; focused and auto rows stay at full opacity.
-        .opacity((!isFocused && !isAuto) ? 0.42 : 1.0)
+        // Row opacity: focused = full, auto = 0.72 (single quieted row), inactive = 0.42.
+        .opacity(isFocused ? 1.0 : isAuto ? 0.72 : 0.42)
         .animation(.easeInOut(duration: 0.18), value: isFocused)
+        .animation(.easeInOut(duration: 0.18), value: isAuto)
     }
 
     // MARK: - Validation pill (Tổng)
