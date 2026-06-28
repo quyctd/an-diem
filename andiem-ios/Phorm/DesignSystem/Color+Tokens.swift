@@ -1,9 +1,8 @@
 import SwiftUI
 
-/// Hà Nội cũ palette — Vietnamese vernacular print register.
-/// See DESIGN.md and themes-preview.html for the canonical visual.
-/// Token NAMES are preserved from the prior trading-terminal palette so existing
-/// view callsites keep compiling; VALUES are swapped to the new lacquer system.
+/// Tactile/playful warm palette — see DESIGN.md (tc-) and themes-preview.html.
+/// Token NAMES are preserved from earlier palettes so existing view callsites keep
+/// compiling; VALUES resolve to the tactile warm system (cream day / deep-warm night).
 extension Color {
     // MARK: - Brand accent (Tết-red + gold — adaptive asset catalog)
     /// Tết-red accent / focus ring / CTA (adaptive: same day+night).
@@ -66,4 +65,37 @@ extension Color {
     static let focusRowTint       = Color("FocusRowTint")
     static let scorePositiveTint  = Color("ScorePositiveTint")
     static let scoreNegativeTint  = Color("ScoreNegativeTint")
+
+    // MARK: - Tactile depth (bevels, ridges, key faces — tc- mockup)
+    /// Opaque card surface — tactile cards, summary rows, recent-strip container.
+    static let cardSurface       = Color("SurfaceCard")
+    /// Keypad digit/delete key face gradient stops + ridge.
+    static let keyFaceTop        = Color("KeyFaceTop")
+    static let keyFaceBottom     = Color("KeyFaceBottom")
+    static let keyRidge          = Color("KeyRidge")
+    /// Keypad sign key face + ridge + glyph ink.
+    static let keySignFaceTop    = Color("KeySignFaceTop")
+    static let keySignFaceBottom = Color("KeySignFaceBottom")
+    static let keySignRidge      = Color("KeySignRidge")
+    static let keySignInk        = Color("KeySignInk")
+    /// Neutral coin face + bottom bevel.
+    static let coinSeat          = Color("CoinSeat")
+    static let coinSeatBevel     = Color("CoinSeatBevel")
+    /// Neutral chip bottom bevel.
+    static let chipNeutralBevel  = Color("ChipNeutralBevel")
+    /// Soft drop-shadow ink for tactile cards (adaptive alpha).
+    static let cardShadow        = Color("CardShadow")
+    /// Fixed chip bottom-bevel inks (same across appearances — chip fills are fixed too).
+    static let chipUpBevel       = Color(red: 0x0F/255, green: 0x8A/255, blue: 0x48/255) // #0F8A48
+    static let chipDownBevel     = Color(red: 0xCC/255, green: 0x45/255, blue: 0x1C/255) // #CC451C
+    /// Gold coin gradient stops (135°): FFD761 → F2B829 → C8920D.
+    static let coinGoldStops: [Color] = [
+        Color(red: 0xFF/255, green: 0xD7/255, blue: 0x61/255),
+        Color(red: 0xF2/255, green: 0xB8/255, blue: 0x29/255),
+        Color(red: 0xC8/255, green: 0x92/255, blue: 0x0D/255)
+    ]
+    /// Last-place (Bét) coin marker — fixed across appearances.
+    static let lastMarkerFill    = Color(red: 0xF5/255, green: 0xE6/255, blue: 0xE0/255) // #F5E6E0
+    static let lastMarkerInk     = Color(red: 0xC0/255, green: 0x40/255, blue: 0x18/255) // #C04018
+    static let lastMarkerBevel   = Color(red: 0xD9/255, green: 0xBF/255, blue: 0xBA/255) // #D9BFBA
 }
