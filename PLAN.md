@@ -138,7 +138,7 @@ Không có unit test bắt buộc cho MVP — personal app, dependency thấp. C
 
 ## Post-MVP roadmap
 
-- **Đóng dấu (share card)** — designed, spec in [`docs/superpowers/specs/2026-05-26-dong-dau-share-card-design.md`](docs/superpowers/specs/2026-05-26-dong-dau-share-card-design.md). Visual contract in `themes-preview.html` (frames F1–F5). One photo + two taps at session end → 9:16 lacquer share card → AirDrop/Zalo/Locket/IG/Reels/TikTok.
+- **Khoe bàn (share card)** — end-of-session photo feature (formerly "đóng dấu"; UI wording is now plain "Khoe bàn", markers are "huy hiệu"). Spec in [`docs/superpowers/specs/2026-05-26-dong-dau-share-card-design.md`](docs/superpowers/specs/2026-05-26-dong-dau-share-card-design.md). Visual contract in `themes-preview.html` (frames F1–F5). One photo + two taps at session end → 9:16 share card → AirDrop/Zalo/Locket/IG/Reels/TikTok.
 
 ## Out of scope (MVP)
 
