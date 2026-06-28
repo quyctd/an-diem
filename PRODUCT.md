@@ -18,7 +18,7 @@ Success looks like: app cold-launches into an active session in 0 taps. A round 
 
 ## Brand Personality
 
-Confident, fast, deliberate. Voice: terse, Vietnamese, no marketing fluff and no game-show energy. The interface feels like a pro tool that respects the user's time. Trust comes from numeric density, typographic confidence, and clarity — not from reassurance copy. Visual register borrows from **Vietnamese vernacular print**: Diêm Thống Nhất matchbox labels, vỏ chai Bia Hà Nội, 1980s lottery tickets, old TTXVN newsprint, áo dài silk patterns — read through a contemporary designer's eye, not as pastiche. The leaderboard reads like a lacquered scorebook a friend group keeps; numbers are inked with character, not LED. Tone in moments of warning is matter-of-fact, never apologetic and never alarming: "Tổng: −3 ⚠" tells the host something is off; it doesn't scold them.
+Confident, fast, deliberate. Voice: terse, Vietnamese, no marketing fluff and no game-show energy. The interface feels like a pro tool that respects the user's time. Trust comes from numeric density, typographic confidence, and clarity — not from reassurance copy. Visual register: card-table tactility with Vietnamese accents — Tết-red + gold, color-filled score chips as physical pieces, clean sans numerals. Not a lacquered scorebook, not an LED board. Character comes from material depth and color pop, not the typeface. Tone in moments of warning is matter-of-fact, never apologetic and never alarming: "Tổng: −3 ⚠" tells the host something is off; it doesn't scold them.
 
 ## Anti-references
 

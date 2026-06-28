@@ -67,7 +67,7 @@ struct Keypad: View {
                         .font(.phormButton)
                         .tracking(2.0)
                         .textCase(.uppercase)
-                        .foregroundStyle(Color.onChip)
+                        .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
                 }

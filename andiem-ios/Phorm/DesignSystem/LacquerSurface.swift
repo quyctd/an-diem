@@ -37,7 +37,9 @@ extension View {
 // MARK: - Precomputed texture tiles
 
 private extension UIImage {
-    /// 4×4 tile with one cream pinprick — composites into the halftone dot grid.
+    /// 4×4 tile with one cream pinprick — currently unused / retired from the surface system.
+    /// Halftone-dot compositing was removed when the design moved to flat day surfaces + night-only grain.
+    /// This tile is kept for reference but is not applied by any active view.
     static let phormHalftone: UIImage = {
         let size = CGSize(width: 4, height: 4)
         let renderer = UIGraphicsImageRenderer(size: size)

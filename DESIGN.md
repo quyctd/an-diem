@@ -416,6 +416,13 @@ Don't introduce bounce, elastic, or confetti motion. The app is matter-of-fact.
 
 ### Contrast — measured per surface
 
+Score chips (primary score-legibility path):
+
+| Combination | Ratio | WCAG | Use |
+|---|---|---|---|
+| Dark ink on up-chip | ≈ 6.5:1 | AA Normal | Chip number — `#2A211C` on `#21BD73` |
+| Dark ink on down-chip | ≈ 5.6:1 | AA Normal | Chip number — `#2A211C` on `#FF6B3D` |
+
 Day surface (`#FBF4E6`):
 
 | Combination | Ratio | WCAG | Use |
@@ -423,8 +430,8 @@ Day surface (`#FBF4E6`):
 | Ink on day | ~12:1 | AA+ | Body text |
 | Ink-muted on day | ~4.8:1 | AA Normal | Labels, meta |
 | Brand-red on day | ~6.5:1 | AA+ | Headers, CTAs |
-| Score-up jade on day | ~5.5:1 | AA Normal | Up score text |
-| Score-down rust on day | ~5.7:1 | AA Normal | Down score text |
+| Score-up jade on day | ~5.5:1 | AA Normal | Up score text (non-chip / dense leaderboard contexts) |
+| Score-down rust on day | ~5.7:1 | AA Normal | Down score text (non-chip / dense leaderboard contexts) |
 | Gold on day | ~3.5:1 | Large only | Winner coin (large bold) |
 
 Night surface (`#241715`):
@@ -432,8 +439,8 @@ Night surface (`#241715`):
 | Combination | Ratio | WCAG | Use |
 |---|---|---|---|
 | Cream on night | ~12:1 | AA+ | Body text |
-| Score-up mint on night | 5.81:1 | AA Normal | Up score text |
-| Score-down peach on night | ~5.2:1 | AA Normal | Down score text |
+| Score-up mint on night | 5.81:1 | AA Normal | Up score text (non-chip / dense leaderboard contexts) |
+| Score-down peach on night | ~5.2:1 | AA Normal | Down score text (non-chip / dense leaderboard contexts) |
 
 When extending tokens, re-run the audit per surface — ratios are surface-specific.
 
