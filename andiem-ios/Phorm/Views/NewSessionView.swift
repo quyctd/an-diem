@@ -97,14 +97,15 @@ struct NewSessionView: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(Color.phormCreamDim)
                     .frame(width: 32, height: 32)
-                    .background(Circle().fill(Color.black.opacity(0.18)))
+                    .background(Circle().fill(Color.surfaceTile))
+                    .overlay(Circle().strokeBorder(Color.hairline, lineWidth: 1))
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 6) {
                 SectionLabel(text: "Khai phiên")
                 Text("Mở phiên mới")
                     .font(.phormTitleLg)
-                    .foregroundStyle(Color.phormCream)
+                    .foregroundStyle(Color.bodyText)
             }
         }
     }
@@ -116,16 +117,16 @@ struct NewSessionView: View {
             SectionLabel(text: "Tên phiên")
             TextField("", text: $sessionName)
                 .font(.phormNameDisplay)
-                .foregroundStyle(Color.phormCream)
+                .foregroundStyle(Color.bodyText)
                 .padding(.horizontal, Spacing.md)
                 .padding(.vertical, Spacing.sm)
                 .background(
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .fill(Color.black.opacity(0.18))
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color.surfaceTile)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .stroke(Color.phormCream.opacity(0.30), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(Color.hairline, lineWidth: 1)
                 )
         }
     }
@@ -139,7 +140,7 @@ struct NewSessionView: View {
                 SectionLabel(text: "Nhóm vừa rồi")
                 Text(group.playerNames.joined(separator: " · "))
                     .font(.phormNameMd)
-                    .foregroundStyle(Color.phormCream)
+                    .foregroundStyle(Color.bodyText)
                     .lineLimit(2)
             }
             Spacer(minLength: Spacing.sm)
@@ -154,7 +155,7 @@ struct NewSessionView: View {
                     .padding(.horizontal, Spacing.sm + 2)
                     .padding(.vertical, 8)
                     .background(
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .fill(Color.phormPrimary)
                     )
             }
@@ -162,12 +163,7 @@ struct NewSessionView: View {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.sm)
-        .background(Color.black.opacity(0.18))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .tactileCard(radius: 14)
     }
 
     // MARK: - Players block
@@ -203,7 +199,7 @@ struct NewSessionView: View {
         HStack(spacing: Spacing.xs) {
             Text(name)
                 .font(.phormNameMd)
-                .foregroundStyle(Color.phormCream)
+                .foregroundStyle(Color.bodyText)
             Button {
                 players.remove(at: index)
             } label: {
@@ -216,10 +212,10 @@ struct NewSessionView: View {
         .padding(.vertical, 6)
         .background(Color.phormPrimary.opacity(0.10))
         .overlay(
-            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                .stroke(Color.phormPrimary.opacity(0.55), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(Color.phormPrimary.opacity(0.55), lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
     private var addPlayerField: some View {
@@ -230,7 +226,7 @@ struct NewSessionView: View {
                     .foregroundStyle(Color.phormPrimary)
                 TextField("Nam Hà \"Anh Tuấn\" Mai…", text: $nameInput, onCommit: commitPlayers)
                     .font(.phormNameMd)
-                    .foregroundStyle(Color.phormCream)
+                    .foregroundStyle(Color.bodyText)
                     .focused($nameInputFocused)
                     .submitLabel(.done)
                     .textInputAutocapitalization(.words)
@@ -248,15 +244,18 @@ struct NewSessionView: View {
             }
             .padding(.horizontal, Spacing.md)
             .padding(.vertical, Spacing.sm)
-            .background(Color.black.opacity(0.18))
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.surfaceTile)
+            )
             .overlay(
-                RoundedRectangle(cornerRadius: 2, style: .continuous)
-                    .stroke(
-                        nameInputFocused ? Color.phormPrimary : Color.phormCream.opacity(0.30),
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(
+                        nameInputFocused ? Color.phormPrimary : Color.hairline,
                         style: StrokeStyle(lineWidth: nameInputFocused ? 1.5 : 1, dash: nameInputFocused ? [] : [4, 3])
                     )
             )
-            .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
             Text("Cách nhau bằng dấu cách · dùng \"…\" cho tên dài hai từ")
                 .font(.phormCaptionSection)
@@ -316,7 +315,7 @@ struct NewSessionView: View {
                     HStack {
                         Text(name)
                             .font(.phormNameMd)
-                            .foregroundStyle(Color.phormCream)
+                            .foregroundStyle(Color.bodyText)
                         Spacer()
                         Image(systemName: "plus")
                             .font(.system(size: 12, weight: .semibold))
@@ -331,17 +330,12 @@ struct NewSessionView: View {
                 .buttonStyle(.plain)
                 if name != autosuggestMatches.last {
                     Rectangle()
-                        .fill(Color.phormCream.opacity(0.12))
+                        .fill(Color.hairline)
                         .frame(height: 1)
                 }
             }
         }
-        .background(Color.black.opacity(0.18))
-        .overlay(
-            RoundedRectangle(cornerRadius: 2, style: .continuous)
-                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+        .tactileCard(radius: 14)
     }
 
     // MARK: - CTA
@@ -358,7 +352,7 @@ struct NewSessionView: View {
         .padding(.bottom, Spacing.sm)
         .background(
             LinearGradient(
-                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.55), .phormSurfaceCinnabarDeep.opacity(0.9)],
+                colors: [Color.phormSurfaceCinnabar.opacity(0), Color.phormSurfaceCinnabar.opacity(0.85), Color.phormSurfaceCinnabar],
                 startPoint: .top,
                 endPoint: .bottom
             )
