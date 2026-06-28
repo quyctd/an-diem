@@ -1,94 +1,298 @@
-# An Điểm Friendlier Redesign — Implementation Plan
+# An Điểm Tactile/Playful Redesign — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Fix the two shipped-app complaints — low text contrast and unclear literary terminology — by making the app a real light(paper)/dark(lacquer) app with comfortable AA contrast and plain table-talk wording, while keeping the seal motif as a legible brand mark.
+**Goal:** Turn the round-score experience from "a page you read" into "a card-table you play on" — tactile color-filled score chips with depth, a 3D pressable keypad with haptics, round coin seat tokens, a brightened day/night palette, plain table-talk wording, and clean sans type.
 
-**Architecture:** Adaptive-in-place token layer. The hardcoded `phorm*` color statics in `Color+Tokens.swift` are repointed to `Color("AssetName")` backed by `Assets.xcassets` colorsets whose **light appearance = warm paper palette** and **dark appearance = lacquer palette**. View callsites keep the same token names, so the diff concentrates in the token layer + asset catalog. Terminology and seal-glyph changes are localized string/component edits. The `themes-preview.html` mockup is updated first as the visual reference; SwiftUI follows.
+**Architecture:** Adaptive bright color tokens (day/night) repointed in `Color+Tokens.swift` via `Assets.xcassets`. New SwiftUI components — `ScoreChip` (filled tactile tile) and `Coin` (round seat/winner token, replacing the square `Seal`) — built once and reused by `RoundEntryView` and `SummaryView`. `Keypad` rebuilt with 3D keys + haptics. Lacquer halftone/grain texture retired on core screens; depth comes from chip/key shadows. The `TACTILE / PLAYFUL DIRECTION` section of `themes-preview.html` (CSS prefix `tc-`, frames T1–T4) is the canonical visual contract for exact colors, radii, shadows, and sizes.
 
-**Tech Stack:** SwiftUI (iOS 17+), SwiftData, `Assets.xcassets` colorsets with `luminosity` appearance variants, Swift Testing (`import Testing`) for logic, `xcodebuild` for build verification.
+**Tech Stack:** SwiftUI (iOS 17+), SwiftData, `Assets.xcassets` colorsets with `luminosity` light/dark variants, existing `Haptics` helper, Swift Testing for logic, `xcodebuild` for build verification. Scheme `Phorm`, simulator `iPhone 17`.
 
 ## Global Constraints
 
-- iOS 17+, SwiftUI only (no UIKit views; UIKit allowed only for the existing texture baking in `LacquerSurface.swift`).
+- iOS 17+, SwiftUI only (UIKit allowed only for existing texture/image helpers).
 - Vietnamese-only UI copy. No English strings, no i18n scaffolding.
-- Score up/down must ALWAYS pair color with the explicit `+`/`−` sign prefix (color-blind requirement). Up = green family, down = warm-rust family. Text color only, never card fill.
-- Single accent color: gold-leaf. Do not introduce a second accent. The seal/stamp is the only decoration the app earns.
-- No Liquid Glass / glassmorphism. No SF Mono — numerals stay Noto Serif Display / IBM Plex Serif.
-- Target AA: body/normal text ≥ 4.5:1; large/display ≥ 3:1. Both surfaces measured.
-- Appearance follows system. No mode-picker UI, no onboarding.
-- Build/test scheme: `Phorm`. Simulator: `iPhone 17`. Tests use Swift Testing (`@Suite`/`@Test`/`#expect`).
-- Exact paper/lacquer hex values (locked in spec `docs/superpowers/specs/2026-06-28-friendlier-redesign-design.md`):
-  - Paper ground `#F2E9D8`; ink primary `#2E1C16`; ink secondary `#6B5A4A`; accent cinnabar `#8C2A22`; up jade `#1B6B47`; down rust `#A63A1E`.
-  - Lacquer ground `#8C2A22`; cream `#F3E8D2`; cream-dim `#D6C4A0`; up mint `#B6E0C2`; down peach `#F2B488`; gold `#D9B25A`; gold-bright `#E8C570`; onPrimary ink `#5A1612`.
+- **Every score number keeps an explicit `+`/`−` sign prefix** (color-blind safety; the chip fill is an addition, not a replacement, for that cue).
+- Score chips are **color-filled** (up `#21BD73`, down `#FF6B3D`, neutral `#ECE4D6` day) with white bold tabular numbers — this intentionally overrides the old "score color is text-only" rule.
+- Playful = material depth + motion + color. **Never** mascots, confetti, emoji, or 🎉-style copy.
+- Single brand-accent family: Tết-red `#E5483A` + gold `#F2B829`. Gold carries the winner coin / special keys.
+- Clean sans only (system SF Pro; Inter is the mockup target). Numbers use `.monospacedDigit()` (tabular). SF Mono forbidden.
+- Appearance follows system. No onboarding / mode-picker.
+- Canonical visual contract: `themes-preview.html` → `TACTILE / PLAYFUL DIRECTION` section (`tc-` classes, T1–T4). When this plan and the mockup disagree, the mockup wins — read exact values from it.
+- Exact palette (verbatim): day bg `#FBF4E6`, tile `#FFFBF3`, ink `#2A211C`; night bg `#241715`, ink `#F6ECDA`; accent `#E5483A`; gold `#F2B829`; chip-up `#21BD73`; chip-down `#FF6B3D`; chip-neutral-day `#ECE4D6`; on-chip text `#FFFFFF`.
+- Build verification command (every visual task): `cd andiem-ios && xcodebuild build -scheme Phorm -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15` → expect `** BUILD SUCCEEDED **`. Interactive UI confirmation is deferred to the user (simulator click injection can't drive SwiftUI).
 
 ---
 
 ## File map
 
-- `themes-preview.html` — update mockup to both surfaces + plain wording (Task 1).
-- `andiem-ios/PhormTests/SealGlyphTests.swift` — **create**: unit tests for Arabic rank output (Task 2).
-- `andiem-ios/Phorm/Views/Components/Seal.swift` — `SealGlyph.forRank` → Arabic; doc-comment update (Task 2).
-- `andiem-ios/Phorm/Views/RoundEntryView.swift:211` — auto-fill seal glyph `封` → `=` (Task 2).
-- `andiem-ios/Phorm/Resources/Assets.xcassets/*.colorset` — **create** 6 adaptive colorsets (Task 3).
-- `andiem-ios/Phorm/DesignSystem/Color+Tokens.swift` — repoint statics to `Color("…")` (Task 3).
-- `andiem-ios/Phorm/DesignSystem/LacquerSurface.swift` — paper-vs-lacquer surface treatment (Task 4).
-- `andiem-ios/Phorm/Views/SummaryView.swift` — plain wording + seal glyph "1" / down-seal (Task 5).
-- `DESIGN.md`, `CLAUDE.md`, `PRODUCT.md` — doc anchors (Task 6).
-- `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift` — serif → clean sans (Task 7).
-- `andiem-ios/Phorm/Views/RoundEntryView.swift` — active/inactive row hierarchy (Task 8).
+- `themes-preview.html` — tactile mockup (Task 1, **already done**: commits `827a98f`, `8984a7c`, `0ffcbb3`).
+- `andiem-ios/Phorm/Resources/Assets.xcassets/*.colorset` — bright adaptive colorsets (Task 2).
+- `andiem-ios/Phorm/DesignSystem/Color+Tokens.swift` — repoint statics (Task 2).
+- `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift` — serif → clean sans (Task 3).
+- `andiem-ios/Phorm/DesignSystem/LacquerSurface.swift` — flat bright surfaces, retire texture (Task 4).
+- `andiem-ios/Phorm/Views/Components/ScoreChip.swift` — **create** tactile chip (Task 5).
+- `andiem-ios/Phorm/Views/Components/Coin.swift` — **create** round coin token; `andiem-ios/PhormTests/SealGlyphTests.swift` — **create** (Task 6).
+- `andiem-ios/Phorm/Views/Components/Seal.swift` — `SealGlyph` → Arabic; deprecate square `Seal` in favor of `Coin` (Task 6).
+- `andiem-ios/Phorm/Views/Components/Keypad.swift`, `andiem-ios/Phorm/DesignSystem/Haptics.swift` — tactile keypad (Task 7).
+- `andiem-ios/Phorm/Views/RoundEntryView.swift` — tactile rebuild (Task 8).
+- `andiem-ios/Phorm/Views/SummaryView.swift`, `SessionView.swift` — tactile + plain wording (Task 9).
+- `DESIGN.md`, `CLAUDE.md`, `PRODUCT.md` — doc anchors (Task 10).
 
 ---
 
-## Task 1: Update `themes-preview.html` to dual surface + plain wording
+## Task 2: Bright tactile color tokens (day/night adaptive)
 
-The repo's canonical visual reference. Locks the exact paper palette visually **before** any Swift change. No automated test — ends with a user visual-review checkpoint.
+Repoint the high-traffic color statics to bright adaptive colorsets. View callsites keep their token names.
 
 **Files:**
-- Modify: `themes-preview.html`
+- Create colorsets under `andiem-ios/Phorm/Resources/Assets.xcassets/`: `SurfaceRoot`, `SurfaceTile`, `InkPrimary`, `InkSecondary`, `BrandAccent`, `BrandGold`, `ChipUp`, `ChipDown`, `ChipNeutral`, `OnChip` (each a `.colorset/Contents.json`).
+- Modify: `andiem-ios/Phorm/DesignSystem/Color+Tokens.swift`.
 
 **Interfaces:**
-- Produces: visually-confirmed paper palette hexes (ground `#F2E9D8`, ink `#2E1C16`, secondary `#6B5A4A`, accent cinnabar `#8C2A22`, up jade `#1B6B47`, down rust `#A63A1E`) reused verbatim by Task 3, and confirmed wording "Nhất bàn" / "Bét bàn" reused by Task 5.
+- Produces adaptive statics (same names used in views): `phormSurfaceCinnabar` → `Color("SurfaceRoot")`; `phormCream` → `Color("InkPrimary")`; `phormCreamDim`/`phormMuted` → `Color("InkSecondary")`; `phormPrimary` → `Color("BrandAccent")`; `phormGoldBright` → `Color("BrandGold")`; `scorePositive` → `Color("ChipUp")`; `scoreNegative`/`warning` → `Color("ChipDown")`. New: `Color.surfaceTile = Color("SurfaceTile")`, `Color.chipNeutral = Color("ChipNeutral")`, `Color.onChip = Color("OnChip")`.
 
-- [ ] **Step 1: Add a light(paper) variant of the four key screens**
+- [ ] **Step 1: Create the 10 colorsets**
 
-In `themes-preview.html`, duplicate the existing four-screen `.hanoi` mockup block into a second "paper" section. For the paper section set the screen background to `#F2E9D8`, body text/numerals to `#2E1C16`, secondary labels to `#6B5A4A`, section headers/accents to cinnabar `#8C2A22`, positive scores to jade `#1B6B47` (with `+` prefix), negative scores to rust `#A63A1E` (with `−`/U+2212 prefix). Keep the existing cinnabar block as the "night/lacquer" reference and change only its negative-score color to peach `#F2B488`.
+For each, create `<Name>.colorset/Contents.json` with an unqualified (light) color = day value and a `luminosity: dark` entry = night value, using this shape (example `BrandAccent`):
 
-- [ ] **Step 2: Apply plain wording in both sections**
+```json
+{
+  "colors" : [
+    { "idiom" : "universal", "color" : { "color-space" : "srgb", "components" : { "alpha" : "1.000", "red" : "0xE5", "green" : "0x48", "blue" : "0x3A" } } },
+    { "idiom" : "universal", "appearances" : [ { "appearance" : "luminosity", "value" : "dark" } ], "color" : { "color-space" : "srgb", "components" : { "alpha" : "1.000", "red" : "0xE5", "green" : "0x48", "blue" : "0x3A" } } }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}
+```
 
-Replace user-facing labels in the summary screen markup: "Vô địch ván" → "Nhất bàn"; remove the "Ấn vàng" callout label (keep the gold seal shape beside the champion); "Tem cuối bàn" → "Bét bàn"; any tied-state copy → "Hoà — chưa rõ ai nhất, ai bét". Replace Hán seal glyphs (`壹`/`封`/`贰`…) with Arabic `1 2 3 …`; replace the `×` last marker with a muted rank seal (de-emphasized ring, no aggressive X).
+Hex pairs (light day / dark night):
 
-- [ ] **Step 3: Open in browser and self-check contrast**
+| Colorset | Day | Night |
+|---|---|---|
+| `SurfaceRoot` | `0xFB,0xF4,0xE6` | `0x24,0x17,0x15` |
+| `SurfaceTile` | `0xFF,0xFB,0xF3` | `0x3A,0x28,0x24` |
+| `InkPrimary` | `0x2A,0x21,0x1C` | `0xF6,0xEC,0xDA` |
+| `InkSecondary` | `0x6B,0x5A,0x4A` | `0xC9,0xB7,0x9C` |
+| `BrandAccent` | `0xE5,0x48,0x3A` | `0xE5,0x48,0x3A` |
+| `BrandGold` | `0xF2,0xB8,0x29` | `0xF2,0xB8,0x29` |
+| `ChipUp` | `0x21,0xBD,0x73` | `0x21,0xBD,0x73` |
+| `ChipDown` | `0xFF,0x6B,0x3D` | `0xFF,0x6B,0x3D` |
+| `ChipNeutral` | `0xEC,0xE4,0xD6` | `0x4A,0x39,0x34` |
+| `OnChip` | `0xFF,0xFF,0xFF` | `0xFF,0xFF,0xFF` |
 
-Open `themes-preview.html` locally. Verify by eye that on the paper section every score, label, and numeral is comfortably legible, and the night section's negative scores (peach) read clearly. Adjust only if a value looks visibly wrong; if so, record the corrected hex (it overrides the spec value for Task 3).
+- [ ] **Step 2: Repoint statics in `Color+Tokens.swift`**
+
+Change these statics to asset references (keep names; update doc comments):
+
+```swift
+    static let phormPrimary    = Color("BrandAccent")   // Tết-red accent / focus ring / CTA
+    static let phormGoldBright = Color("BrandGold")     // winner coin, special keys
+    static let phormCream      = Color("InkPrimary")    // primary text (adaptive)
+    static let phormCreamDim   = Color("InkSecondary")
+    static let phormMuted      = Color("InkSecondary")
+    static let phormSurfaceCinnabar = Color("SurfaceRoot")
+    static let scorePositive   = Color("ChipUp")
+    static let scoreNegative   = Color("ChipDown")
+    static let warning         = Color("ChipDown")
+    /// Card / tile surface — chips, active-row card, panels.
+    static let surfaceTile     = Color("SurfaceTile")
+    /// Neutral/zero chip fill.
+    static let chipNeutral     = Color("ChipNeutral")
+    /// Text on a color-filled chip (white).
+    static let onChip          = Color("OnChip")
+```
+
+Leave `onPrimary`, `phormPrimaryActive`, `phormPrimaryDisabled`, `phormSurfaceCinnabarDeep`, and the alternate surfaces as-is for now (Task 4 / later tasks adjust usage).
+
+- [ ] **Step 3: Build to verify it compiles and asset names resolve**
+
+Run the Global-Constraints build command. Expected: `** BUILD SUCCEEDED **`. Confirm each `Color("…")` name exactly matches a created `.colorset` directory.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add themes-preview.html
-git commit -m "design: dual-surface (paper/lacquer) + plain wording in themes-preview"
+git add andiem-ios/Phorm/Resources/Assets.xcassets andiem-ios/Phorm/DesignSystem/Color+Tokens.swift
+git commit -m "feat: bright tactile day/night color tokens"
 ```
-
-- [ ] **Step 5: USER VISUAL CHECKPOINT**
-
-Ask the user to review via raw.githack (`https://raw.githack.com/quyctd/an-diem/<branch>/themes-preview.html`) and confirm the paper palette + wording before proceeding to Swift. Record any hex/wording corrections; they override the spec defaults downstream.
 
 ---
 
-## Task 2: Arabic rank seals (drop Hán glyphs)
+## Task 3: Clean sans typography
 
-Pure-logic + component change. The only unit-testable task.
+Rework type tokens from editorial serif (currently New York fallback) to system SF Pro. No view callsites change.
 
-**Files:**
-- Create: `andiem-ios/PhormTests/SealGlyphTests.swift`
-- Modify: `andiem-ios/Phorm/Views/Components/Seal.swift:60-72` (the `SealGlyph` enum), and its doc comments at `:3-7`, `:60`
-- Modify: `andiem-ios/Phorm/Views/RoundEntryView.swift:211` (auto-fill badge glyph)
+**Files:** Modify `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`.
+
+**Interfaces:** Token names unchanged; only `design:` and name-italic change. Helper `scaledSerif` → `scaledSans`. Adds `phormNumberEntryFocused` for Task 8.
+
+- [ ] **Step 1: Swap every `design: .serif` → `design: .default`**
+
+Apply to all tokens: `phormDisplayMd`, `phormTitleLg`, `phormTitleMd`, `phormTitleSm`, `phormBodyMd`, `phormBodySm`, `phormCaption`, `phormButton`, `phormNameDisplay`, `phormNameMd`, `phormNumberHero`, `phormNumberRanking`, `phormNumberEntry`, `phormNumberMd`, `phormNumberSm`, `phormNumberChip`, `phormNumberScript`, `phormKeypadDigit`. Keep all sizes, weights, and `.monospacedDigit()`.
+
+- [ ] **Step 2: De-serif names + scaled helper; add focused numeral**
+
+Rename helper `scaledSerif` → `scaledSans` using `.withDesign(.default)`, update its callers (`phormHeroDisplay`, `phormDisplayLg`, `phormCaptionSection`). Drop `.italic()` on names; distinguish `phormNumberScript` by weight not italic; add the focused token:
+
+```swift
+    static let phormNameDisplay  = Font.system(size: 22, weight: .semibold, design: .default)
+    static let phormNameMd       = Font.system(size: 18, weight: .semibold, design: .default)
+    static let phormNumberScript = Font.system(size: 22, weight: .regular, design: .default).monospacedDigit()
+    /// Focused round-entry value — dominant number on the entry screen. 34pt / 800.
+    static let phormNumberEntryFocused = Font.system(size: 34, weight: .heavy, design: .default).monospacedDigit()
+```
+
+- [ ] **Step 3: Update the file doc comment** to describe system SF Pro (humanist sans, full Vietnamese diacritics, Dynamic Type), tabular figures for numerals, SF Mono still forbidden.
+
+- [ ] **Step 4: Build** (Global-Constraints command). Expected `** BUILD SUCCEEDED **`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add andiem-ios/Phorm/DesignSystem/Font+Tokens.swift
+git commit -m "feat: clean sans typography (drop serif register)"
+```
+
+---
+
+## Task 4: Flat bright surfaces (retire lacquer texture on core screens)
+
+The tactile direction gets depth from chips/keys, not surface noise. `LacquerBackground` becomes a plain adaptive surface (no halftone, no heavy vignette).
+
+**Files:** Modify `andiem-ios/Phorm/DesignSystem/LacquerSurface.swift:13-53`.
+
+**Interfaces:** `LacquerBackground` and `.lacquerBackground(_:)` keep their signatures; body simplified.
+
+- [ ] **Step 1: Simplify `LacquerBackground.body`**
+
+Replace the `body` (lines 16-44) so it renders just the adaptive surface with an optional very-faint grain in dark only (keep the precomputed `phormGrain` for night warmth; drop halftone + bright vignette):
+
+```swift
+    @Environment(\.colorScheme) private var scheme
+
+    var body: some View {
+        ZStack {
+            surface
+            if scheme == .dark {
+                Image(uiImage: .phormGrain)
+                    .resizable(resizingMode: .tile)
+                    .blendMode(.overlay)
+                    .opacity(0.25)
+                    .allowsHitTesting(false)
+            }
+        }
+    }
+```
+
+(Leave the `phormHalftone`/`phormGrain` static tile definitions in the file; only the `body` stops using halftone. The default `surface` parameter stays `.phormSurfaceCinnabar`, now `SurfaceRoot`.)
+
+- [ ] **Step 2: Build** (Global-Constraints command). Expected `** BUILD SUCCEEDED **`.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add andiem-ios/Phorm/DesignSystem/LacquerSurface.swift
+git commit -m "feat: flat bright surface, retire halftone texture"
+```
+
+---
+
+## Task 5: `ScoreChip` tactile component
+
+A reusable color-filled chip tile with depth and a size variant. Used by round entry and summary.
+
+**Files:** Create `andiem-ios/Phorm/Views/Components/ScoreChip.swift`.
 
 **Interfaces:**
-- Consumes: nothing.
-- Produces: `SealGlyph.forRank(_ rank: Int) -> String` now returns Arabic decimal (`"1"`, `"2"`, … ; `""` for rank < 1). Callsites in `RoundEntryView.swift:178` and `SessionView.swift:186` are unchanged (they already pass the result through). `Seal` keeps `enum Variant { case default, winner, last }` and `init(glyph:variant:size:)` unchanged.
+- Consumes: `Color.scorePositive`/`scoreNegative`/`chipNeutral`/`onChip`, `ScoreFormat.signed(_:)`.
+- Produces: `ScoreChip(value: Int?, size: ScoreChip.Size, isFocused: Bool)` where `enum Size { case small, large }`. `value == nil` or `0` → neutral chip; `>0` → up fill; `<0` → down fill. Renders `ScoreFormat.signed(value ?? 0)` (or a placeholder when nil) in `OnChip` white, tabular bold. Visual contract = `tc-chip-*` in the mockup: radius 14, bottom bevel `inset 0 -3px`, soft drop shadow, large ≈82×50 / small ≈58×36, focus ring (accent) when `isFocused`.
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Implement `ScoreChip`**
+
+```swift
+import SwiftUI
+
+/// Color-filled tactile score tile — the card-table "piece". Up = green, down = coral,
+/// zero/empty = neutral. White tabular number with explicit +/− sign. Matches `tc-chip-*`.
+struct ScoreChip: View {
+    enum Size { case small, large }
+
+    let value: Int?
+    var size: Size = .small
+    var isFocused: Bool = false
+
+    private var fill: Color {
+        switch value ?? 0 {
+        case let v where v > 0: return .scorePositive
+        case let v where v < 0: return .scoreNegative
+        default:                return .chipNeutral
+        }
+    }
+    private var label: String { value == nil ? "0" : ScoreFormat.signed(value!) }
+    private var isZeroOrEmpty: Bool { (value ?? 0) == 0 }
+    private var dims: (w: CGFloat, h: CGFloat, font: CGFloat, radius: CGFloat) {
+        size == .large ? (82, 50, 30, 16) : (58, 36, 20, 14)
+    }
+
+    var body: some View {
+        Text(label)
+            .font(.system(size: dims.font, weight: .heavy, design: .default).monospacedDigit())
+            .foregroundStyle(isZeroOrEmpty ? Color.phormMuted : Color.onChip)
+            .frame(width: dims.w, height: dims.h)
+            .background(
+                RoundedRectangle(cornerRadius: dims.radius, style: .continuous)
+                    .fill(fill)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: dims.radius, style: .continuous)
+                            .fill(Color.black.opacity(0.12))
+                            .mask(alignment: .bottom) { Rectangle().frame(height: 3) }
+                    )
+                    .shadow(color: fill.opacity(0.35), radius: 6, y: 3)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: dims.radius, style: .continuous)
+                    .strokeBorder(Color.phormPrimary, lineWidth: isFocused ? 3 : 0)
+            )
+            .animation(.spring(response: 0.28, dampingFraction: 0.7), value: size)
+            .accessibilityLabel(Text(label))
+    }
+}
+
+#Preview {
+    HStack(spacing: 12) {
+        ScoreChip(value: 12, size: .large, isFocused: true)
+        ScoreChip(value: -7)
+        ScoreChip(value: 0)
+        ScoreChip(value: nil)
+    }
+    .padding()
+    .background(Color.phormSurfaceCinnabar)
+}
+```
+
+- [ ] **Step 2: Build** (Global-Constraints command). Expected `** BUILD SUCCEEDED **` (the `#Preview` compiles it).
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add andiem-ios/Phorm/Views/Components/ScoreChip.swift
+git commit -m "feat: ScoreChip tactile filled tile component"
+```
+
+---
+
+## Task 6: `Coin` token + Arabic rank (replace square seal)
+
+Round coin seat/winner token replacing the square `Seal`; rank content becomes Arabic. Includes the unit-testable `SealGlyph` change.
+
+**Files:**
+- Create: `andiem-ios/Phorm/Views/Components/Coin.swift`, `andiem-ios/PhormTests/SealGlyphTests.swift`.
+- Modify: `andiem-ios/Phorm/Views/Components/Seal.swift` (`SealGlyph.forRank` → Arabic).
+
+**Interfaces:**
+- Produces: `SealGlyph.forRank(_:) -> String` returns Arabic (`"1"`…, `""` for <1). `Coin(text: String, variant: Coin.Variant, size: CGFloat)` with `enum Variant { case seat, winner, last }` — round token: `seat` = tile fill + ink number, `winner` = gold radial + dark number, `last` = muted coral ring + ink number. Visual contract = `tc-coin*` in the mockup.
+
+- [ ] **Step 1: Write the failing `SealGlyph` test**
 
 Create `andiem-ios/PhormTests/SealGlyphTests.swift`:
 
@@ -98,519 +302,241 @@ import Testing
 
 @Suite("SealGlyph")
 struct SealGlyphTests {
-    @Test func ranksRenderAsArabicDecimals() {
+    @Test func ranksRenderAsArabic() {
         #expect(SealGlyph.forRank(1) == "1")
-        #expect(SealGlyph.forRank(2) == "2")
         #expect(SealGlyph.forRank(8) == "8")
         #expect(SealGlyph.forRank(12) == "12")
     }
-
-    @Test func nonPositiveRankIsEmpty() {
+    @Test func nonPositiveIsEmpty() {
         #expect(SealGlyph.forRank(0) == "")
         #expect(SealGlyph.forRank(-3) == "")
     }
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run to verify it fails**
 
-Run:
-```bash
-cd andiem-ios && xcodebuild test -scheme Phorm \
-  -destination 'platform=iOS Simulator,name=iPhone 17' \
-  -only-testing:PhormTests/SealGlyph 2>&1 | tail -20
-```
-Expected: FAIL — `forRank(1)` currently returns `"壹"`, not `"1"`.
+`cd andiem-ios && xcodebuild test -scheme Phorm -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:PhormTests/SealGlyph 2>&1 | tail -20` → FAIL (`forRank(1)` currently `"壹"`).
 
-- [ ] **Step 3: Replace the Hán table with Arabic output**
+- [ ] **Step 3: Make `SealGlyph` return Arabic**
 
-In `andiem-ios/Phorm/Views/Components/Seal.swift`, replace the `SealGlyph` enum (lines 60-72) with:
+In `Seal.swift` replace the `SealGlyph` enum body:
 
 ```swift
-/// Rank numerals for seals — plain Arabic so a Vietnamese player reads them at a glance.
+/// Rank numerals for tokens — plain Arabic so a Vietnamese player reads them instantly.
 enum SealGlyph {
-    /// 1-based rank → "1" / "2" / "3" … ("" for rank < 1).
-    static func forRank(_ rank: Int) -> String {
-        guard rank >= 1 else { return "" }
-        return "\(rank)"
-    }
+    static func forRank(_ rank: Int) -> String { rank >= 1 ? "\(rank)" : "" }
 }
 ```
 
-Also update the `Seal` struct doc comment (lines 3-7) to drop the "Hán-Việt numeral" / "ấn vàng / tem chéo" wording, e.g.:
+- [ ] **Step 4: Create the `Coin` component**
 
 ```swift
-/// Rank seal — the gold-leaf stamp brand mark. Content is plain Arabic rank.
-/// Variants: `.winner` (solid gold, dark ink, glow), `.last` (muted ring),
-/// `.default` (gold border + faint gold tint).
-```
+import SwiftUI
 
-- [ ] **Step 4: Update the auto-fill badge glyph**
+/// Round seat / winner token — the tactile "coin". Replaces the square Seal.
+/// Matches `tc-coin*` in themes-preview.html.
+struct Coin: View {
+    enum Variant { case seat, winner, last }
 
-In `andiem-ios/Phorm/Views/RoundEntryView.swift:211`, change the decorative auto-fill seal from the Hán `封` to a legible "computed" mark:
+    let text: String
+    var variant: Variant = .seat
+    var size: CGFloat = 32
 
-```swift
-                Seal(glyph: "=", variant: .winner, size: 22)
-```
-
-(The `=` reads as "auto-computed", consistent with the `−(sum)` auto-fill semantics.)
-
-- [ ] **Step 5: Update the in-file `#Preview` and run tests**
-
-In `Seal.swift` the `#Preview` (lines 74-90) passes `SealGlyph.forRank(...)` (fine) and two literals `"封"`/`"×"` (lines 85-86) — change those two to `"1"` and `"4"` so the preview matches. Then run:
-
-```bash
-cd andiem-ios && xcodebuild test -scheme Phorm \
-  -destination 'platform=iOS Simulator,name=iPhone 17' \
-  -only-testing:PhormTests/SealGlyph 2>&1 | tail -20
-```
-Expected: PASS.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add andiem-ios/PhormTests/SealGlyphTests.swift \
-  andiem-ios/Phorm/Views/Components/Seal.swift \
-  andiem-ios/Phorm/Views/RoundEntryView.swift
-git commit -m "feat: legible Arabic rank seals, drop Hán glyphs"
-```
-
----
-
-## Task 3: Adaptive color tokens (paper light / lacquer dark)
-
-The core contrast fix. Create 6 adaptive colorsets and repoint the high-traffic statics to them. View callsites are untouched.
-
-**Files:**
-- Create: 6 colorsets under `andiem-ios/Phorm/Resources/Assets.xcassets/`:
-  `InkPrimary.colorset`, `InkSecondary.colorset`, `SurfaceRoot.colorset`, `ScoreUp.colorset`, `ScoreDown.colorset`, `GoldLabel.colorset` (each with `Contents.json`)
-- Modify: `andiem-ios/Phorm/DesignSystem/Color+Tokens.swift`
-
-**Interfaces:**
-- Consumes: paper hexes confirmed in Task 1.
-- Produces: these statics become adaptive (same names, used in views unchanged):
-  `phormCream` → `Color("InkPrimary")`; `phormCreamDim` & `phormMuted` → `Color("InkSecondary")`; `phormSurfaceCinnabar` → `Color("SurfaceRoot")`; `scorePositive` → `Color("ScoreUp")`; `scoreNegative` & `warning` → `Color("ScoreDown")`; `phormGoldBright` → `Color("GoldLabel")`. `phormPrimary` (gold), `onPrimary` (`#5A1612`), and `phormSurfaceCinnabarDeep` (`#5A1612`) stay fixed (they read on both surfaces).
-
-- [ ] **Step 1: Create the colorset directories and `Contents.json`**
-
-For each colorset, create `andiem-ios/Phorm/Resources/Assets.xcassets/<Name>.colorset/Contents.json` with two color entries: an unqualified (light) entry = paper value, and a `luminosity: dark` entry = lacquer value. Use this template (example shown for `InkPrimary`; substitute the hex pair per the table below):
-
-```json
-{
-  "colors" : [
-    {
-      "color" : { "color-space" : "srgb", "components" : { "alpha" : "1.000", "red" : "0x2E", "green" : "0x1C", "blue" : "0x16" } },
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [ { "appearance" : "luminosity", "value" : "dark" } ],
-      "color" : { "color-space" : "srgb", "components" : { "alpha" : "1.000", "red" : "0xF3", "green" : "0xE8", "blue" : "0xD2" } },
-      "idiom" : "universal"
-    }
-  ],
-  "info" : { "author" : "xcode", "version" : 1 }
-}
-```
-
-Hex pairs (light / dark):
-
-| Colorset | Light (paper) | Dark (lacquer) |
-|---|---|---|
-| `InkPrimary` | `0x2E,0x1C,0x16` | `0xF3,0xE8,0xD2` |
-| `InkSecondary` | `0x6B,0x5A,0x4A` | `0xD6,0xC4,0xA0` |
-| `SurfaceRoot` | `0xF2,0xE9,0xD8` | `0x8C,0x2A,0x22` |
-| `ScoreUp` | `0x1B,0x6B,0x47` | `0xB6,0xE0,0xC2` |
-| `ScoreDown` | `0xA6,0x3A,0x1E` | `0xF2,0xB4,0x88` |
-| `GoldLabel` | `0x8C,0x2A,0x22` | `0xE8,0xC5,0x70` |
-
-- [ ] **Step 2: Repoint the statics in `Color+Tokens.swift`**
-
-In `andiem-ios/Phorm/DesignSystem/Color+Tokens.swift`, change these six static definitions from fixed RGB to asset references (keep the doc comments, update the contrast notes):
-
-```swift
-    /// Primary text. Adaptive: espresso ink on paper / cream on lacquer.
-    static let phormCream    = Color("InkPrimary")
-    /// Secondary text, labels, dates. Adaptive: taupe / cream-dim.
-    static let phormCreamDim = Color("InkSecondary")
-    /// Neutral muted (alias of secondary).
-    static let phormMuted    = Color("InkSecondary")
-    /// Root session surface. Adaptive: warm paper / cinnabar lacquer.
-    static let phormSurfaceCinnabar = Color("SurfaceRoot")
-    /// Positive scores. Adaptive: deep jade / mint. Always with `+` sign.
-    static let scorePositive = Color("ScoreUp")
-    /// Negative scores. Adaptive: burnt rust / peach. Always with `−` sign.
-    static let scoreNegative = Color("ScoreDown")
-    /// Soft warning (non-zero round total) — reuses the down color.
-    static let warning       = Color("ScoreDown")
-    /// Brighter gold for small labels. Adaptive: cinnabar on paper / gold on lacquer.
-    static let phormGoldBright = Color("GoldLabel")
-```
-
-Leave `phormPrimary`, `phormPrimaryActive`, `phormPrimaryDisabled`, `onPrimary`, `phormSurfaceCinnabarDeep`, and the alternate surfaces (`phormSurfaceOchre/Jade/Oxblood`) as their existing fixed values.
-
-- [ ] **Step 3: Classify `phormSurfaceCinnabarDeep` usages**
-
-Run:
-```bash
-cd andiem-ios && grep -rn "phormSurfaceCinnabarDeep" Phorm --include="*.swift"
-```
-For each hit, confirm it is used as dark ink / accent / vignette (reads on both surfaces) and NOT as a full-screen surface fill. If any hit fills a root background, note it for the Task 4 verification (it must instead use `phormSurfaceCinnabar`). Expected: all uses are ink/vignette/deep-panel accents — no change needed. Record findings in the commit message.
-
-- [ ] **Step 4: Build to verify it compiles and assets resolve**
-
-Run:
-```bash
-cd andiem-ios && xcodebuild build -scheme Phorm \
-  -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15
-```
-Expected: `** BUILD SUCCEEDED **`. (Missing-asset names would surface as runtime fallback, not build failure — so also confirm each `Color("…")` name matches a created colorset directory exactly.)
-
-- [ ] **Step 5: Capture light + dark screenshots for review**
-
-Build/run is verified; UI driving is deferred to the user (see memory: simulator click injection doesn't reach SwiftUI). Use the existing screenshot tooling if it runs headlessly:
-```bash
-cd andiem-ios && ./tools/screenshots/capture.sh 2>&1 | tail -10 || echo "capture needs manual run"
-```
-If capture is not automatable, ask the user to run the app in both Light and Dark appearance (Simulator → Settings → Developer → Dark Appearance) and confirm legibility.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add andiem-ios/Phorm/Resources/Assets.xcassets \
-  andiem-ios/Phorm/DesignSystem/Color+Tokens.swift
-git commit -m "feat: adaptive paper/lacquer color tokens for AA contrast"
-```
-
----
-
-## Task 4: Adaptive lacquer surface (paper grain by day, lacquer by night)
-
-The `LacquerBackground` currently always draws cinnabar + halftone + heavy vignette. On the paper surface it must render as calm warm paper with only subtle grain (no screen-blend halftone, no dark vignette eating contrast).
-
-**Files:**
-- Modify: `andiem-ios/Phorm/DesignSystem/LacquerSurface.swift:13-53`
-
-**Interfaces:**
-- Consumes: `Color("SurfaceRoot")` (via `phormSurfaceCinnabar`, now adaptive) from Task 3.
-- Produces: `LacquerBackground` and `.lacquerBackground(_:)` unchanged in signature; texture intensity now reacts to color scheme.
-
-- [ ] **Step 1: Make texture intensity react to color scheme**
-
-In `andiem-ios/Phorm/DesignSystem/LacquerSurface.swift`, add `@Environment(\.colorScheme) private var scheme` to `LacquerBackground` and gate the heavy lacquer textures so they only apply in dark mode. Replace the `body` (lines 16-44) with:
-
-```swift
-    @Environment(\.colorScheme) private var scheme
-
-    var body: some View {
-        ZStack {
-            surface
-
-            if scheme == .dark {
-                // Lacquer night: warm vignette + halftone + grain
-                LinearGradient(
-                    colors: [
-                        Color(red: 1.0, green: 0.86, blue: 0.70).opacity(0.10),
-                        .clear,
-                        Color.black.opacity(0.18)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                Image(uiImage: .phormHalftone)
-                    .resizable(resizingMode: .tile)
-                    .blendMode(.screen)
-                    .allowsHitTesting(false)
-                Image(uiImage: .phormGrain)
-                    .resizable(resizingMode: .tile)
-                    .blendMode(.overlay)
-                    .opacity(0.55)
-                    .allowsHitTesting(false)
-            } else {
-                // Paper day: only faint grain, no vignette/halftone
-                Image(uiImage: .phormGrain)
-                    .resizable(resizingMode: .tile)
-                    .blendMode(.multiply)
-                    .opacity(0.05)
-                    .allowsHitTesting(false)
-            }
+    private var fill: AnyShapeStyle {
+        switch variant {
+        case .seat:   return AnyShapeStyle(Color.surfaceTile)
+        case .winner: return AnyShapeStyle(RadialGradient(colors: [Color.phormGoldBright, Color.phormGoldBright.opacity(0.78)], center: .topLeading, startRadius: 1, endRadius: size))
+        case .last:   return AnyShapeStyle(Color.scoreNegative.opacity(0.16))
         }
     }
+    private var textColor: Color {
+        switch variant {
+        case .seat:   return .phormCreamDim
+        case .winner: return Color(red: 0x3A/255, green: 0x22/255, blue: 0x06/255)
+        case .last:   return .scoreNegative
+        }
+    }
+    private var ring: Color {
+        switch variant {
+        case .seat:   return .phormCreamStroke
+        case .winner: return .phormGoldBright
+        case .last:   return .scoreNegative.opacity(0.5)
+        }
+    }
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: size * 0.46, weight: .bold, design: .default).monospacedDigit())
+            .foregroundStyle(textColor)
+            .frame(width: size, height: size)
+            .background(Circle().fill(fill))
+            .overlay(Circle().strokeBorder(ring, lineWidth: variant == .seat ? 1 : 2))
+            .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+            .accessibilityHidden(true)
+    }
+}
+
+#Preview {
+    HStack(spacing: 14) {
+        Coin(text: "1", variant: .winner, size: 40)
+        Coin(text: "2")
+        Coin(text: "4", variant: .last)
+    }.padding().background(Color.phormSurfaceCinnabar)
+}
 ```
 
-- [ ] **Step 2: Build to verify it compiles**
+- [ ] **Step 5: Run the test to verify it passes**
 
-Run:
-```bash
-cd andiem-ios && xcodebuild build -scheme Phorm \
-  -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15
-```
-Expected: `** BUILD SUCCEEDED **`.
-
-- [ ] **Step 3: USER VISUAL CHECKPOINT (light + dark)**
-
-Ask the user to confirm: in Light appearance the background is calm paper (no red cast, faint grain only) and text is crisp; in Dark appearance the lacquer + halftone + vignette still read as before. Adjust grain opacity/blend only if the user reports it muddies the paper.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add andiem-ios/Phorm/DesignSystem/LacquerSurface.swift
-git commit -m "feat: paper surface by day, lacquer texture only at night"
-```
-
----
-
-## Task 5: Plain table-talk wording + legible seals in summary
-
-Localized string + seal-content edits in the summary screen.
-
-**Files:**
-- Modify: `andiem-ios/Phorm/Views/SummaryView.swift` (champion block ~150-179, last-place block ~210-228, tied copy ~239-242)
-
-**Interfaces:**
-- Consumes: `Seal` + `SealGlyph` from Task 2 (`.winner`/`.last` variants, Arabic content).
-- Produces: no new symbols; user-facing copy only.
-
-- [ ] **Step 1: Relabel the champion block**
-
-In `andiem-ios/Phorm/Views/SummaryView.swift`, in `championBlock(name:total:)`:
-- Change the section label (line ~150) from `SectionLabel(text: "Vô địch ván", tone: .gold)` to `SectionLabel(text: "Nhất bàn", tone: .gold)`.
-- Change the winner seal glyph (line ~164) from `Seal(glyph: "壹", variant: .winner, size: 34)` to `Seal(glyph: "1", variant: .winner, size: 34)`.
-- Remove the `Text("Ấn vàng")` label (lines ~165-167) and its leading `Seal`+`Text` `HStack` decoration block reduces to just the gold seal beside the champion. If removing the whole boxed callout (lines ~163-178) reads cleaner, keep only the gold `Seal(glyph: "1", variant: .winner, size: 34)` as a trailing accent on the name row; do not leave an empty bordered box.
-
-- [ ] **Step 2: Relabel the last-place block**
-
-In `lastPlaceBlock(name:)`:
-- Change `SectionLabel(text: "Tem cuối bàn")` (line ~214) to `SectionLabel(text: "Bét bàn")`.
-- Change the last seal (line ~220) from `Seal(glyph: "×", variant: .last, size: 28)` to `Seal(glyph: "\(ranking.count)", variant: .last, size: 28)` so it shows the (de-emphasized) last rank number, not an aggressive ×.
-
-- [ ] **Step 3: Soften the tied-state copy**
-
-Change the tied-rank explanatory text (line ~241) from `"Phiên có tổng bằng nhau, không xác định vô địch/cuối bàn"` to `"Hoà — chưa rõ ai nhất, ai bét"`. (Leave the `"Chưa đóng dấu được"` label at line ~239; it is already plain.)
-
-- [ ] **Step 4: Grep for any remaining literary terms**
-
-Run:
-```bash
-cd andiem-ios && grep -rn "Vô địch\|Ấn vàng\|Tem cuối bàn\|壹\|封\|贰\|叁\|肆\|×" Phorm --include="*.swift"
-```
-Expected: no user-facing matches remain (screenshot-support doc comments in `ScreenshotSupport.swift` are non-user-facing — update their comments for accuracy but they don't render).
-
-- [ ] **Step 5: Build to verify it compiles**
-
-Run:
-```bash
-cd andiem-ios && xcodebuild build -scheme Phorm \
-  -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15
-```
-Expected: `** BUILD SUCCEEDED **`.
+`cd andiem-ios && xcodebuild test -scheme Phorm -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:PhormTests/SealGlyph 2>&1 | tail -20` → PASS. (Also runs the build, compiling `Coin`'s `#Preview`.)
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add andiem-ios/Phorm/Views/SummaryView.swift
-git commit -m "feat: plain table-talk wording (Nhất bàn / Bét bàn) in summary"
+git add andiem-ios/Phorm/Views/Components/Coin.swift andiem-ios/Phorm/Views/Components/Seal.swift andiem-ios/PhormTests/SealGlyphTests.swift
+git commit -m "feat: round Coin token + Arabic rank (replace Hán seal glyphs)"
 ```
 
 ---
 
-## Task 6: Update source-of-truth docs
+## Task 7: Tactile keypad (3D keys + haptics)
 
-The design docs are intentional commitments; this redesign overturns several, so they must be rewritten to match.
+Rebuild the keypad keys as chunky 3D buttons that depress on press, with haptic feedback.
 
-**Files:**
-- Modify: `DESIGN.md`, `CLAUDE.md`, `PRODUCT.md`
+**Files:** Modify `andiem-ios/Phorm/Views/Components/Keypad.swift`; use `andiem-ios/Phorm/DesignSystem/Haptics.swift`.
 
-**Interfaces:** none (prose).
+**Interfaces:**
+- Consumes: existing `Keypad` public API (`onKey`, `onSave`, `canSave`, `sign`), `Haptics`, `Color.surfaceTile`/`phormPrimary`/`phormGoldBright`/`onChip`/`phormCream`.
+- Produces: same `Keypad` init signature; internal key view becomes a tactile button. Visual contract = `tc-key*` in the mockup: gradient face, `box-shadow 0 4px 0` bottom ridge (SwiftUI: a darker capsule/rounded-rect offset below, or bottom inset), press → `translateY(3px)` + ridge shrink. Sign key tinted brand-accent; save/CTA gets the 3D bottom edge.
 
-- [ ] **Step 1: Update `DESIGN.md`**
+- [ ] **Step 1: Read the current `Keypad.swift`** to learn its exact key layout, the `onKey` payload type, and how the sign key + delete + save are wired. Preserve all behavior.
 
-Replace the "one drenched lacquer surface / no light-dark equal peers" framing with the dual-surface system. Update the score-token section: day values jade `#1B6B47` (up) / rust `#A63A1E` (down); night values mint `#B6E0C2` (up) / peach `#F2B488` (down, replacing the failing `#E6A665`). Add the paper palette (ground `#F2E9D8`, ink `#2E1C16`, secondary `#6B5A4A`). Note seal content is Arabic, not Hán. Replace the serif typography section (Noto/Cormorant/Plex, "numerals use serif") with the clean-sans system: system SF Pro across the app, numerals `.monospacedDigit()` tabular, SF Mono still forbidden. State the canonical reference is the dual-surface `themes-preview.html`.
+- [ ] **Step 2: Add a tactile key button style**
 
-- [ ] **Step 2: Update `CLAUDE.md`**
+Implement a reusable key button that renders a rounded-rect face over a darker "ridge" rectangle offset `+4` in y, and on press translates the face down by 3 and shrinks the visible ridge, firing `Haptics`. Use the existing `Haptics` API discovered in Step 1 (e.g. a light impact). Example shape (adapt names to the actual file):
 
-In the "Design system anchors" section, replace "App does NOT have binary light/dark equal peers… one drenched lacquer surface per session" with the paper-by-day / lacquer-by-night model (follow system). Update the score-semantics line to the new adaptive up/down values. Update the brand/voice anchor that names "ấn vàng / tem chéo" so it describes the seal *shape* as the earned decoration with plain labels ("Nhất bàn / Bét bàn") and Arabic rank content. Replace the "No SF Mono / Noto Serif numerals" anchor with: clean system sans (SF Pro) across the app, tabular figures for numerals; the brand now rests on lacquer color + paper + seal, not the serif register.
+```swift
+private struct TactileKey<Label: View>: View {
+    var fill: Color = .surfaceTile
+    var ridge: Color = Color.black.opacity(0.18)
+    let action: () -> Void
+    @ViewBuilder var label: () -> Label
+    @GestureState private var pressed = false
 
-- [ ] **Step 3: Update `PRODUCT.md`**
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 14, style: .continuous)
+        label()
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .background(shape.fill(fill))
+            .background(shape.fill(ridge).offset(y: pressed ? 1 : 4))
+            .offset(y: pressed ? 3 : 0)
+            .contentShape(shape)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .updating($pressed) { _, s, _ in if !s { s = true; Haptics.tap() } }
+                    .onEnded { _ in action() }
+            )
+            .animation(.spring(response: 0.18, dampingFraction: 0.6), value: pressed)
+    }
+}
+```
 
-Adjust the brand anchor and accessibility-commitments lines: keep the gold seal as the one earned decoration but state its labels are plain table talk and its content is legible Arabic. Update the WCAG line to reflect both surfaces are measured AA (paper ink ~12:1, day scores ≥5.5:1; night cream 6.96:1, night down-score peach ~5.2:1).
+(If `Haptics` has no `tap()`, use whatever light-impact method it exposes; do not add a new dependency.)
+
+- [ ] **Step 3: Apply `TactileKey` to digits, sign, delete, and save**
+
+Wrap each existing key with `TactileKey`. Sign key `fill: .phormPrimary` with `.onChip` glyph; save/confirm uses `.phormPrimary` fill, `.onChip` label, same ridge treatment. Digits use `.surfaceTile` with `.phormCream` text. Keep the existing grid layout and callbacks.
+
+- [ ] **Step 4: Build** (Global-Constraints command). Expected `** BUILD SUCCEEDED **`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add andiem-ios/Phorm/Views/Components/Keypad.swift andiem-ios/Phorm/DesignSystem/Haptics.swift
+git commit -m "feat: tactile 3D keypad keys with haptic press"
+```
+
+---
+
+## Task 8: `RoundEntryView` tactile rebuild
+
+Compose the new pieces into the hero screen: coin seat tokens, `ScoreChip` per player, the focused row enlarged on a tile card with the rest receding, a "Tổng" pill, plain wording, on the flat bright surface.
+
+**Files:** Modify `andiem-ios/Phorm/Views/RoundEntryView.swift` (`playerRow`, `cellView`, `cellValue`, `cellBackground`, `validationRow`, `bottomDock`).
+
+**Interfaces:** Consumes `ScoreChip`, `Coin`, `SealGlyph` (Arabic), `Color.surfaceTile`, `phormNumberEntryFocused`, `ScoreFormat`. No new public symbols.
+
+- [ ] **Step 1: Read the current `RoundEntryView.swift` in full** to map the existing row/cell/dock structure and the `draft` state (`focusedIndex`, `autoFillIndex`, `entries`, `signMode`, `liveSum`).
+
+- [ ] **Step 2: Rebuild `playerRow`** so each row is: `Coin(text: SealGlyph.forRank(idx+1), variant: seatVariant)` + name + `ScoreChip(value: draft.entries[idx], size: isFocused ? .large : .small, isFocused: isFocused)`. The focused row sits on a `surfaceTile` rounded card with shadow and full opacity; inactive non-auto rows at `opacity(0.42)`. The auto-fill row uses a gold-tinted chip/coin but is quieter than the focused row. Keep the existing tap-to-focus and the `cellValue` typed/auto/placeholder logic, now rendered through `ScoreChip` (the chip shows the typed value; the focused empty state shows the sign placeholder).
+
+- [ ] **Step 3: Replace the "Tổng" `validationRow` with a pill badge** — a rounded `Capsule` with `ScoreFormat.signed(sum)`: balanced (sum 0) → `chipUp`-tinted "0 · cân"; else `chipDown`-tinted "\(signed) ⚠". Matches `tc-tong` in the mockup.
+
+- [ ] **Step 4: Update `bottomDock`** — drop the heavy `phormSurfaceCinnabarDeep` gradient; let the keypad (now tactile) sit on the flat surface with a light top hairline. Keep the `Keypad(...)` call unchanged.
+
+- [ ] **Step 5: Grep for leftover literary/Hán/serif-isms in this file** — `grep -n "壹\|封\|×\|italic\|phormSurfaceCinnabarDeep" andiem-ios/Phorm/Views/RoundEntryView.swift` — resolve any user-facing ones.
+
+- [ ] **Step 6: Build** (Global-Constraints command). Expected `** BUILD SUCCEEDED **`.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add andiem-ios/Phorm/Views/RoundEntryView.swift
+git commit -m "feat: tactile round-entry — chips, coins, active-row card, Tổng pill"
+```
+
+---
+
+## Task 9: `SummaryView` (+ `SessionView`) tactile + plain wording
+
+Apply chips/coins and plain table-talk wording to the end-of-session and leaderboard surfaces.
+
+**Files:** Modify `andiem-ios/Phorm/Views/SummaryView.swift` (champion ~145-180, runners ~182-206, last ~210-228, tied ~239-242); `andiem-ios/Phorm/Views/SessionView.swift:185-186` (leaderboard coin).
+
+**Interfaces:** Consumes `ScoreChip`, `Coin`, `SealGlyph`. Copy only otherwise.
+
+- [ ] **Step 1: Champion block** — label "Vô địch ván" → **"Nhất bàn"**; show `Coin(text: "1", variant: .winner, size: 40)` + champion name + `ScoreChip(value: total, size: .large)`; remove the "Ấn vàng" callout label and its bordered box (no empty box left behind).
+
+- [ ] **Step 2: Runners + last** — runner totals render as small `ScoreChip`s; last-place label "Tem cuối bàn" → **"Bét bàn"**, marker = `Coin(text: "\(ranking.count)", variant: .last)` (muted coral coin, not `×`).
+
+- [ ] **Step 3: Tied copy** — "Phiên có tổng bằng nhau, không xác định vô địch/cuối bàn" → **"Hoà — chưa rõ ai nhất, ai bét"**.
+
+- [ ] **Step 4: `SessionView` leaderboard** — replace the square `Seal(glyph: SealGlyph.forRank(rank), …)` at line ~185 with `Coin(text: SealGlyph.forRank(rank), variant: coinVariant(rank))` (winner for rank 1, last for the bottom seat per existing `sealVariant` logic, else seat).
+
+- [ ] **Step 5: Grep both files** — `grep -n "Vô địch\|Ấn vàng\|Tem cuối bàn\|壹\|封\|×" andiem-ios/Phorm/Views/SummaryView.swift andiem-ios/Phorm/Views/SessionView.swift` → no user-facing matches.
+
+- [ ] **Step 6: Build** (Global-Constraints command). Expected `** BUILD SUCCEEDED **`.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add andiem-ios/Phorm/Views/SummaryView.swift andiem-ios/Phorm/Views/SessionView.swift
+git commit -m "feat: tactile summary + leaderboard, plain table-talk wording"
+```
+
+---
+
+## Task 10: Update source-of-truth docs
+
+**Files:** Modify `DESIGN.md`, `CLAUDE.md`, `PRODUCT.md`.
+
+- [ ] **Step 1: `DESIGN.md`** — replace the lacquer-surface/serif/text-only-score sections with the tactile system: bright day/night palette (values from Global Constraints), color-filled chips with sign prefix, coin tokens, 3D keypad, clean sans + tabular figures, retired halftone. Point to the `tc-` section of `themes-preview.html` as canonical.
+
+- [ ] **Step 2: `CLAUDE.md`** — update Design-system anchors: dual bright surface (follow system), tactile chips override the text-only-score rule, coins replace seals, sans replaces serif, Tết-red + gold accents.
+
+- [ ] **Step 3: `PRODUCT.md`** — note the approved override: colored score chips + brighter playful register are intentional; still-rejected list stays (mascots/confetti/emoji). Brand rests on Tết-red + gold + coin/chip tactility.
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add DESIGN.md CLAUDE.md PRODUCT.md
-git commit -m "docs: dual-surface + plain-wording redesign (supersede locked anchors)"
-```
-
----
-
-## Task 7: Typography overhaul — serif → clean sans
-
-Rework the type tokens from the editorial serif (currently falling back to New York) to a
-clean humanist sans (system SF Pro). No view callsites change — they reference the same
-token names.
-
-**Files:**
-- Modify: `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`
-
-**Interfaces:**
-- Consumes: nothing.
-- Produces: all `Font.phorm*` token names unchanged in signature/spelling; only their
-  underlying `design:` (and the name-italic styling) change. `Font.scaledSerif(...)` helper
-  is renamed to `scaledSans(...)` and used by `phormHeroDisplay` / `phormDisplayLg` /
-  `phormCaptionSection` (callsites are inside this same file — update them too).
-
-- [ ] **Step 1: Swap serif → default across every token**
-
-In `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`, change every `design: .serif` to
-`design: .default`. Specifically: `phormDisplayMd`, `phormTitleLg`, `phormTitleMd`,
-`phormTitleSm`, `phormBodyMd`, `phormBodySm`, `phormCaption`, `phormButton`,
-`phormNameDisplay`, `phormNameMd`, `phormNumberHero`, `phormNumberRanking`,
-`phormNumberEntry`, `phormNumberMd`, `phormNumberSm`, `phormNumberChip`, `phormNumberScript`,
-`phormKeypadDigit`. Keep every size, weight, and `.monospacedDigit()` exactly as-is.
-
-- [ ] **Step 2: De-serif the names + the scaled helper**
-
-Rename the helper `scaledSerif` → `scaledSans` and change its body to use `.withDesign(.default)`
-(falling back to the plain system descriptor). Update its three callers (`phormHeroDisplay`,
-`phormDisplayLg`, `phormCaptionSection`) to call `scaledSans`. For the player-name tokens,
-drop `.italic()` and keep a clean weight:
-
-```swift
-    /// Player display name — clean medium-weight sans. 22pt / 600.
-    static let phormNameDisplay  = Font.system(size: 22, weight: .semibold, design: .default)
-    /// Player name in round-entry rows. 18pt / 600.
-    static let phormNameMd       = Font.system(size: 18, weight: .semibold, design: .default)
-```
-
-Keep `phormNumberScript` distinct from `phormNumberEntry` by **weight** instead of italic —
-make it `weight: .regular` (vs entry's `.bold`) so the auto-fill value still reads as
-"the app wrote this":
-
-```swift
-    /// Auto-fill computed value — lighter weight marks "machine wrote this". 22pt / 400.
-    static let phormNumberScript  = Font.system(size: 22, weight: .regular, design: .default).monospacedDigit()
-```
-
-- [ ] **Step 3: Update the file doc comment**
-
-Replace the top doc comment (lines ~4-13) describing the serif/Noto/Cormorant/Plex target +
-"SF Mono is forbidden" with a short note: tokens use system SF Pro (clean humanist sans, full
-Vietnamese diacritics, Dynamic Type); numerals use `.monospacedDigit()` for tabular
-alignment; SF Mono remains forbidden (tabular SF Pro ≠ SF Mono).
-
-- [ ] **Step 4: Build to verify it compiles**
-
-Run:
-```bash
-cd andiem-ios && xcodebuild build -scheme Phorm \
-  -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15
-```
-Expected: `** BUILD SUCCEEDED **`.
-
-- [ ] **Step 5: USER VISUAL CHECKPOINT**
-
-Ask the user to confirm in the simulator that all text/numerals now render as clean sans and
-read well at body sizes in both appearances. (No automated test — typography is visual.)
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add andiem-ios/Phorm/DesignSystem/Font+Tokens.swift
-git commit -m "feat: clean sans typography (drop serif register)"
-```
-
----
-
-## Task 8: Input-focus hierarchy in round entry
-
-Make the active player row visually dominant so the scribe always knows where they're
-typing. Layout unchanged — only the focused-vs-inactive styling diverges.
-
-**Files:**
-- Modify: `andiem-ios/Phorm/Views/RoundEntryView.swift` (`playerRow(idx:name:)` ~169-194,
-  `cellValue(idx:isFocused:isAuto:)` ~219-242, `cellBackground(isFocused:isAuto:)` ~250-265)
-
-**Interfaces:**
-- Consumes: `modeColor`, `draft.focusedIndex`, `draft.autoFillIndex`, `ScoreFormat`,
-  `Seal`/`SealGlyph` (Arabic from Task 2), `phormNumberEntry` (now sans from Task 7).
-- Produces: no new symbols; visual hierarchy only.
-
-- [ ] **Step 1: Add a focused-size numeral token**
-
-In `andiem-ios/Phorm/DesignSystem/Font+Tokens.swift`, add one token next to the numeral tier:
-
-```swift
-    /// Focused round-entry value — the dominant number on the entry screen. 34pt / 800.
-    static let phormNumberEntryFocused = Font.system(size: 34, weight: .heavy, design: .default).monospacedDigit()
-```
-
-- [ ] **Step 2: Enlarge + brighten the focused value, dim inactive**
-
-In `RoundEntryView.swift`, in `cellValue(idx:isFocused:isAuto:)` use the focused token and
-full opacity when focused, and dim the typed value when not focused. Replace the typed-value
-branch (lines ~225-231) and the focused-placeholder branch (~232-236) so the focused row uses
-`phormNumberEntryFocused`:
-
-```swift
-        } else if let v = draft.entries[idx] {
-            Text(ScoreFormat.signed(v))
-                .font(isFocused ? .phormNumberEntryFocused : .phormNumberEntry)
-                .foregroundStyle(ScoreFormat.color(for: v))
-                .opacity(isFocused ? 1.0 : 0.5)
-        } else if isFocused {
-            Text(draft.signMode < 0 ? "\u{2212}" : "+")
-                .font(.phormNumberEntryFocused)
-                .foregroundStyle(modeColor.opacity(0.50))
-```
-
-(Leave the `isAuto` branch at the top and the final non-focused `"0"` placeholder branch as
-they are — the `"0"` already sits at 0.32 opacity.)
-
-- [ ] **Step 3: Strengthen the focused cell background, recede inactive rows**
-
-In `cellBackground(isFocused:isAuto:)` (lines ~250-265), bump the focused fill/border:
-
-```swift
-            if isFocused {
-                shape.fill(modeColor.opacity(0.20))
-                shape.strokeBorder(modeColor, lineWidth: 2)
-```
-
-Then in `playerRow(idx:name:)` (lines ~169-194), dim the whole inactive, non-auto row so the
-focused row dominates. Add at the end of the `HStack` modifier chain (after `.onTapGesture`):
-
-```swift
-        .opacity(isFocused || isAuto ? 1.0 : 0.5)
-```
-
-- [ ] **Step 4: Build to verify it compiles**
-
-Run:
-```bash
-cd andiem-ios && xcodebuild build -scheme Phorm \
-  -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -15
-```
-Expected: `** BUILD SUCCEEDED **`.
-
-- [ ] **Step 5: USER VISUAL CHECKPOINT**
-
-Ask the user to confirm in the simulator: tapping a player row makes that row's number grow
-and the others visibly recede; it's always obvious which cell is active. Tune the 0.5 dim /
-34pt size only if the user wants it stronger or softer.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add andiem-ios/Phorm/DesignSystem/Font+Tokens.swift \
-  andiem-ios/Phorm/Views/RoundEntryView.swift
-git commit -m "feat: enlarge active entry row, dim inactive rows"
+git commit -m "docs: tactile/playful redesign (supersede prior anchors)"
 ```
 
 ---
 
 ## Final verification
 
-- [ ] Full test suite green: `cd andiem-ios && xcodebuild test -scheme Phorm -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -20` → all tests pass (existing Totals/AutoFill/SessionShare/SessionActions + new SealGlyph).
-- [ ] No user-facing literary terms or Hán glyphs remain (Task 5 Step 4 grep clean).
-- [ ] User confirms, via simulator in both Light and Dark appearance: round-entry and summary scores/labels are comfortably legible; summary shows "Nhất bàn" / "Bét bàn"; seals show Arabic content; last place is muted, not an aggressive ×; surface flips paper↔lacquer with system appearance and brand identity persists.
-- [ ] User confirms: all text renders as clean sans (no serif); on the round-entry screen the focused player's number is clearly the dominant element and inactive rows recede — it's always obvious which cell is active.
+- [ ] Full suite green: `cd andiem-ios && xcodebuild test -scheme Phorm -destination 'platform=iOS Simulator,name=iPhone 17' 2>&1 | tail -20` (existing Totals/AutoFill/SessionShare/SessionActions + new SealGlyph).
+- [ ] No user-facing literary terms / Hán glyphs / serif remain (Task 8/9 greps clean).
+- [ ] **USER visual confirmation in the simulator**, Light + Dark: round entry shows color-filled chips with the focused row enlarged on a card and others receding; keypad keys depress with haptics; coins show Arabic; "Tổng" is a pill; summary shows "Nhất bàn"/"Bét bàn" with a gold winner coin; surfaces are bright and flip day/night with system appearance.

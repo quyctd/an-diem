@@ -1,9 +1,58 @@
 # An Điểm — Friendlier Redesign (contrast + plain wording)
 
 **Date:** 2026-06-28
-**Status:** Approved design, pending implementation plan
+**Status:** Approved design — TACTILE/PLAYFUL revision is authoritative (see top section)
 **Scope:** Live-app feedback fix — color contrast is hard to follow, and the literary
 terms "Ấn vàng" / "Tem cuối bàn" / "Vô địch ván" aren't clear for normal play.
+
+---
+
+## ⭐ AUTHORITATIVE REVISION (2026-06-28): Tactile / Playful direction
+
+After reviewing the dual-surface + plain-wording mockup, the user widened the goal twice:
+(1) fix font + sizing because the **input was hard to focus on**, then (2) the design felt
+like **"reading a page, not playing"** — so the final, approved direction is **tactile and
+brightened**: score entry should feel like **placing physical pieces on a card table**.
+
+**This revision supersedes sections A, G, and H below** (the restrained two-surface palette,
+the text-color-only score rule, and the dim-only focus treatment). Sections B (plain wording),
+C (legible seals — now coins), D (preview-first), E (docs), and F (clean sans) still hold.
+
+**The canonical visual contract is the `TACTILE / PLAYFUL DIRECTION` section at the top of
+`themes-preview.html`** (CSS prefix `tc-`, frames T1–T4). Exact colors, radii, shadows, and
+sizes live there — implementers read values from it; this spec captures the decisions.
+
+### Intentional anti-reference overrides
+PRODUCT.md previously forbade colored score fills ("score color is text only, never card
+fill"), confetti/game energy, and a louder register. The user has explicitly steered past
+the first and the restraint. Still rejected: mascots, confetti, emoji, 🎉-style copy. Playful
+comes from **material depth + motion + color pops**, not cartoon.
+
+### Tactile system (authoritative)
+- **Bright palette (both appearances).** Day: bg `#FBF4E6`, tile `#FFFBF3`, ink `#2A211C`.
+  Night: bg `#241715`, ink/cream `#F6ECDA`. Brand accent (Tết-red) `#E5483A`; gold (winner /
+  special) `#F2B829`. Lacquer halftone/grain texture is **retired** on the core screens —
+  depth now comes from chip/key shadows, not surface noise.
+- **Score chips are COLOR-FILLED tiles** (overrides text-only rule): up `#21BD73`, down
+  `#FF6B3D`, neutral/zero `#ECE4D6` (day). White bold tabular number. **Always keep the
+  explicit `+`/`−` sign prefix** (color-blind safety preserved via sign + the chip itself).
+  Chip = rounded-rect (r≈14px), solid fill, `inset 0 -3px` bottom-bevel band + soft drop
+  shadow → reads as a physical piece.
+- **Active-row dominance:** focused player's chip ≈1.4× (`tc-chip-lg`) with a bright focus
+  ring, elevated on a white card; inactive rows ~0.40 opacity, smaller chip — no layout
+  collapse. Replaces section G's dim-only treatment.
+- **Keypad = tactile 3D keys:** gradient face + `box-shadow: 0 4px 0` bottom ridge; press =
+  `translateY(3px)` + ridge shrink (in-app: pair with existing `Haptics`). Sign-toggle key
+  uses the brand accent. Confirm CTA gets the same 3D bottom edge.
+- **Seat marker = round coin token** (Arabic seat number); winner = gold coin, champion row
+  framed gold. Last place = muted coin (coral), not an aggressive ×.
+- **"Tổng" = a rounded pill badge**, state-aware (balanced green "cân" / unbalanced orange ⚠).
+- Type: clean sans (Inter target / system SF Pro fallback), `tabular-nums` on all numbers.
+
+Everything below this section is retained for rationale/history; where it disagrees with this
+revision or with the `tc-` mockup, **this revision and the mockup win.**
+
+---
 
 ## Problem
 
