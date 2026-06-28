@@ -194,7 +194,7 @@ struct ShareCardView: View {
             RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .stroke(Color.phormPrimary, lineWidth: 1.8)
             Text("印")
-                .font(.system(size: 32, weight: .heavy, design: .serif))
+                .font(.system(size: 32, weight: .heavy, design: .default))
                 .foregroundStyle(Color.phormPrimary)
         }
         .frame(width: 64, height: 64)
@@ -207,11 +207,11 @@ struct ShareCardView: View {
     private var cornerMeta: some View {
         VStack(alignment: .trailing, spacing: 10) {
             Text(weekdayLine.uppercased())
-                .font(.system(size: 22, weight: .semibold, design: .serif))
+                .font(.system(size: 22, weight: .semibold, design: .default))
                 .tracking(4.0)
                 .foregroundStyle(Color.phormGoldBright)
             Text(dateLine)
-                .font(.system(size: 30, weight: .medium, design: .serif).monospacedDigit())
+                .font(.system(size: 30, weight: .medium, design: .default).monospacedDigit())
                 .tracking(2.0)
                 .foregroundStyle(Color.phormCream)
             tallyStrokes(count: roundCount)
@@ -246,7 +246,7 @@ struct ShareCardView: View {
         HStack(alignment: .center, spacing: 10) {
             if count > 20 {
                 Text("20+")
-                    .font(.system(size: 14, weight: .medium, design: .serif))
+                    .font(.system(size: 14, weight: .medium, design: .default))
                     .tracking(1.2)
                     .foregroundStyle(Color.phormCreamDim)
             }
@@ -257,7 +257,7 @@ struct ShareCardView: View {
                 tallyGroup(strokes: remainder)
             }
             Text("vòng")
-                .font(.system(size: 16, weight: .medium, design: .serif))
+                .font(.system(size: 16, weight: .medium, design: .default))
                 .tracking(2.4)
                 .foregroundStyle(Color.phormCreamDim)
                 .textCase(.uppercase)
@@ -294,7 +294,7 @@ struct ShareCardView: View {
                     .fill(Color.phormPrimary.opacity(0.55))
                     .frame(width: 60, height: 1)
                 Text("phiên kết thúc")
-                    .font(.system(size: 26, weight: .semibold, design: .serif))
+                    .font(.system(size: 26, weight: .semibold, design: .default))
                     .tracking(6.0)
                     .foregroundStyle(Color.phormGoldBright)
                     .textCase(.uppercase)
@@ -306,7 +306,7 @@ struct ShareCardView: View {
             // The title — biggest type on the card, two lines max, allowed to
             // breathe. Cormorant italic via .serif fallback.
             Text(session.name)
-                .font(.system(size: 110, weight: .bold, design: .serif).italic())
+                .font(.system(size: 110, weight: .bold, design: .default))
                 .foregroundStyle(Color.phormCream)
                 .multilineTextAlignment(.center)
                 .lineSpacing(-8)
@@ -368,10 +368,10 @@ struct ShareCardView: View {
                 .frame(width: 220, height: 220)
 
                 Text("Chạm để thêm ảnh nhóm")
-                    .font(.system(size: 32, weight: .semibold, design: .serif))
+                    .font(.system(size: 32, weight: .semibold, design: .default))
                     .foregroundStyle(Color.phormCream)
                 Text("Chụp ngay · hoặc thư viện")
-                    .font(.system(size: 22, weight: .medium, design: .serif))
+                    .font(.system(size: 22, weight: .medium, design: .default))
                     .tracking(3.0)
                     .textCase(.uppercase)
                     .foregroundStyle(Color.phormCreamDim)
@@ -508,7 +508,7 @@ struct ShareCardView: View {
             // Centered 印 — bigger, no decorative box around it; the rounded card
             // is the container now.
             Text("印")
-                .font(.system(size: 320, weight: .heavy, design: .serif))
+                .font(.system(size: 320, weight: .heavy, design: .default))
                 .foregroundStyle(Color.phormPrimary)
                 .shadow(color: .black.opacity(0.30), radius: 8, y: 4)
         }
@@ -546,13 +546,13 @@ struct ShareCardView: View {
     private func rankingRow(rank: Int, name: String, total: Int, isWinner: Bool, isLastSeat: Bool) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 18) {
             Text(rankGlyph(rank: rank))
-                .font(.system(size: 22, weight: .semibold, design: .serif).monospacedDigit())
+                .font(.system(size: 22, weight: .semibold, design: .default).monospacedDigit())
                 .tracking(2.0)
                 .foregroundStyle(Color.phormCreamDim)
                 .frame(width: 56, alignment: .leading)
             HStack(alignment: .firstTextBaseline, spacing: 14) {
                 Text(name)
-                    .font(.system(size: 48, weight: .semibold, design: .serif).italic())
+                    .font(.system(size: 48, weight: .semibold, design: .default))
                     .foregroundStyle(isWinner ? Color.phormPrimary : Color.phormCream)
                     .lineLimit(1)
                 if isWinner {
@@ -570,7 +570,7 @@ struct ShareCardView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 8)
             Text(ScoreFormat.signed(total))
-                .font(.system(size: 52, weight: .heavy, design: .serif).monospacedDigit())
+                .font(.system(size: 52, weight: .heavy, design: .default).monospacedDigit())
                 .foregroundStyle(isWinner ? Color.phormPrimary : ScoreFormat.color(for: total))
         }
     }
@@ -582,7 +582,7 @@ struct ShareCardView: View {
             RoundedRectangle(cornerRadius: 4, style: .continuous)
                 .fill(Color.phormPrimary)
             Text("壹")
-                .font(.system(size: 18, weight: .heavy, design: .serif))
+                .font(.system(size: 18, weight: .heavy, design: .default))
                 .foregroundStyle(Color.onPrimary)
         }
         .frame(width: 34, height: 34)
@@ -628,13 +628,13 @@ struct ShareCardView: View {
             HStack(spacing: 24) {
                 colophonOrnament(side: .leading)
                 Text("ẤN ĐIỂM")
-                    .font(.system(size: 36, weight: .heavy, design: .serif))
+                    .font(.system(size: 36, weight: .heavy, design: .default))
                     .tracking(10.0)
                     .foregroundStyle(Color.phormGoldBright)
                 colophonOrnament(side: .trailing)
             }
             Text("sổ điểm bàn bạc")
-                .font(.system(size: 18, weight: .medium, design: .serif))
+                .font(.system(size: 18, weight: .medium, design: .default))
                 .tracking(8.0)
                 .foregroundStyle(Color.phormCreamDim)
                 .textCase(.uppercase)

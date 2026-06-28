@@ -19,7 +19,7 @@ struct Seal: View {
             RoundedRectangle(cornerRadius: 4, style: .continuous)
                 .strokeBorder(borderColor, lineWidth: 1.5)
             Text(glyph)
-                .font(.system(size: glyphSize, weight: .heavy, design: .serif))
+                .font(.system(size: glyphSize, weight: .heavy, design: .default))
                 .foregroundStyle(glyphColor)
                 .baselineOffset(-1)
         }

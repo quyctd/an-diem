@@ -283,7 +283,7 @@ struct SessionView: View {
                     .foregroundStyle(Color.phormCream)
                 Spacer()
                 Text("chạm để sửa")
-                    .font(.system(size: 12, weight: .regular, design: .serif).italic())
+                    .font(.system(size: 12, weight: .regular, design: .default))
                     .foregroundStyle(Color.phormCreamDim)
             }
             VStack(spacing: Spacing.sm) {

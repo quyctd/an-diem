@@ -26,8 +26,8 @@ struct ImportConfirmView: View {
 
             cta
         }
-        .lacquerBackground(.phormSurfaceOchre)
-        .presentationBackground(Color.phormSurfaceOchre)
+        .lacquerBackground()
+        .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
     }
@@ -39,7 +39,6 @@ struct ImportConfirmView: View {
                 SectionLabel(text: "Nhận phiên", tone: .gold)
                 Text("Có ai vừa gửi")
                     .font(.phormTitleLg)
-                    .italic()
                     .foregroundStyle(Color.phormCream)
             }
             Spacer()

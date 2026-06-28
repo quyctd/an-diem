@@ -80,7 +80,6 @@ struct HistoryView: View {
                 SectionLabel(text: "Lưu trữ")
                 Text("Lịch sử phiên")
                     .font(.phormTitleLg)
-                    .italic()
                     .foregroundStyle(Color.phormCream)
             }
             Spacer()
@@ -98,7 +97,6 @@ struct HistoryView: View {
         VStack(alignment: .center, spacing: Spacing.sm) {
             Text("Chưa có phiên nào trong sổ.")
                 .font(.phormNameMd)
-                .italic()
                 .foregroundStyle(Color.phormCreamDim)
                 .multilineTextAlignment(.center)
             Text("Mở ván đầu để bắt đầu ghi.")

@@ -83,8 +83,8 @@ struct NewSessionView: View {
 
             cta
         }
-        .lacquerBackground(.phormSurfaceCinnabarDeep)
-        .presentationBackground(Color.phormSurfaceCinnabarDeep)
+        .lacquerBackground()
+        .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDragIndicator(.visible)
     }
 
@@ -104,7 +104,6 @@ struct NewSessionView: View {
                 SectionLabel(text: "Khai phiên")
                 Text("Mở phiên mới")
                     .font(.phormTitleLg)
-                    .italic()
                     .foregroundStyle(Color.phormCream)
             }
         }

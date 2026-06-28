@@ -214,7 +214,7 @@ struct StampEditorView: View {
         } label: {
             HStack(spacing: 8) {
                 Text(glyph)
-                    .font(.system(size: 14, weight: .heavy, design: .serif))
+                    .font(.system(size: 14, weight: .heavy, design: .default))
                     .foregroundStyle(isPlaced ? Color.onPrimary : Color.phormPrimary)
                     .frame(width: 20, height: 20)
                     .background(
@@ -226,7 +226,7 @@ struct StampEditorView: View {
                             .stroke(Color.phormPrimary, lineWidth: 1)
                     )
                 Text(name)
-                    .font(.system(size: 14, weight: .semibold, design: .serif).italic())
+                    .font(.system(size: 14, weight: .semibold, design: .default))
                     .foregroundStyle(Color.phormCream)
                     .lineLimit(1)
                 if !isPlaced {

@@ -104,7 +104,7 @@ struct SummaryView: View {
 
             cta
         }
-        .lacquerBackground(.phormSurfaceOxblood)
+        .lacquerBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationTitle("")
@@ -117,7 +117,7 @@ struct SummaryView: View {
         .sheet(isPresented: $showShareSheet) {
             if let shareCardImage {
                 ShareSheet(image: shareCardImage)
-                    .presentationBackground(Color.phormSurfaceCinnabarDeep)
+                    .presentationBackground(Color.phormSurfaceCinnabar)
             }
         }
     }
@@ -129,7 +129,6 @@ struct SummaryView: View {
             SectionLabel(text: "Phiên kết thúc", tone: .gold)
             Text(session.name)
                 .font(.phormDisplayMd)
-                .italic()
                 .foregroundStyle(Color.phormCream)
                 .lineLimit(2)
             Text(metaLine)
@@ -149,7 +148,7 @@ struct SummaryView: View {
             HStack(alignment: .center, spacing: Spacing.md) {
                 Coin(text: "1", variant: .winner, size: 40)
                 Text(name)
-                    .font(.system(size: 40, weight: .bold, design: .serif).italic())
+                    .font(.system(size: 40, weight: .bold, design: .default))
                     .foregroundStyle(Color.phormCream)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
@@ -218,7 +217,7 @@ struct SummaryView: View {
                 Text(isRankTied
                      ? "Hoà — chưa rõ ai nhất, ai bét"
                      : "Chụp ảnh nhóm — hoặc chọn ảnh có sẵn.")
-                    .font(.system(size: 12, weight: .regular, design: .serif))
+                    .font(.system(size: 12, weight: .regular, design: .default))
                     .foregroundStyle(Color.phormCream.opacity(isRankTied ? 0.65 : 1))
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -259,7 +258,7 @@ struct SummaryView: View {
                     ZStack {
                         Rectangle().fill(Color.phormPrimary.opacity(0.12))
                         Text("印")
-                            .font(.system(size: 24, weight: .heavy, design: .serif))
+                            .font(.system(size: 24, weight: .heavy, design: .default))
                             .foregroundStyle(Color.phormPrimary)
                     }
                     .frame(width: 52, height: 52)
@@ -268,7 +267,7 @@ struct SummaryView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     SectionLabel(text: "Đã đóng dấu", tone: .gold)
                     Text("Chạm để sửa hoặc chia sẻ lại")
-                        .font(.system(size: 12, weight: .regular, design: .serif))
+                        .font(.system(size: 12, weight: .regular, design: .default))
                         .foregroundStyle(Color.phormCream)
                 }
                 Spacer()
@@ -322,7 +321,7 @@ struct SummaryView: View {
         .padding(.bottom, Spacing.sm)
         .background(
             LinearGradient(
-                colors: [.clear, .phormSurfaceCinnabarDeep.opacity(0.55), .phormSurfaceCinnabarDeep.opacity(0.9)],
+                colors: [.clear, .phormSurfaceCinnabar.opacity(0.55), .phormSurfaceCinnabar.opacity(0.9)],
                 startPoint: .top,
                 endPoint: .bottom
             )

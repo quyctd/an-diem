@@ -29,7 +29,7 @@ struct SplashView: View {
 
                 VStack(spacing: 6) {
                     Text("Ấn Điểm")
-                        .font(.system(size: 52, weight: .bold, design: .serif).italic())
+                        .font(.system(size: 52, weight: .bold, design: .default))
                         .foregroundStyle(Color.phormCream)
                         .opacity(wordmarkVisible ? 1 : 0)
                         .offset(y: wordmarkVisible ? 0 : 6)

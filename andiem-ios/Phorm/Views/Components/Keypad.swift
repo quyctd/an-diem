@@ -142,10 +142,10 @@ struct Keypad: View {
             // Asymmetry is the affordance — the bigger one is what gets typed.
             HStack(spacing: 6) {
                 Text("+")
-                    .font(.system(size: sign > 0 ? 28 : 18, weight: .bold, design: .serif))
+                    .font(.system(size: sign > 0 ? 28 : 18, weight: .bold, design: .default))
                     .foregroundStyle(sign > 0 ? Color.scorePositive : Color.phormCream.opacity(0.22))
                 Text("\u{2212}")
-                    .font(.system(size: sign < 0 ? 28 : 18, weight: .bold, design: .serif))
+                    .font(.system(size: sign < 0 ? 28 : 18, weight: .bold, design: .default))
                     .foregroundStyle(sign < 0 ? Color.scoreNegative : Color.phormCream.opacity(0.22))
             }
         case .delete:
