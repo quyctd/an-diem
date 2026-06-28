@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// Custom numeric keypad — lives at the bottom of RoundEntryView on lacquer.
-/// Keys are 3-D tactile: a rounded face over a darker ridge, depressing on press + haptic.
-/// Save CTA gets the same ridge treatment with phormPrimary fill.
+/// Custom numeric keypad at the bottom of RoundEntryView.
+/// Keys are 3-D tactile: a warm gradient face over a colored ridge, depressing on press + haptic.
+/// Save CTA gets the same ridge treatment with a Tết-red fill.
 struct Keypad: View {
     let onKey: (KeypadKey) -> Void
     let onSave: () -> Void
@@ -37,29 +37,29 @@ struct Keypad: View {
             }
 
             HStack(spacing: 8) {
-                Button {
-                    Haptics.nav()
-                    onKey(.next)
-                } label: {
+                // "Tiếp" — neutral tactile key.
+                TactileKey(
+                    face: keyFace, ridge: .keyRidge,
+                    haptic: { Haptics.nav() },
+                    a11yLabel: "Người tiếp theo",
+                    action: { onKey(.next) }
+                ) {
                     Text("Tiếp")
                         .font(.phormButton)
                         .tracking(1.5)
                         .textCase(.uppercase)
-                        .foregroundStyle(Color.phormCream)
-                        .frame(width: 90, height: 48)
-                        .background(
-                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                .stroke(Color.phormCream.opacity(0.30), lineWidth: 1)
-                        )
-                        // Stroke-only background isn't opaque, so SwiftUI's hit area
-                        // collapses to the text. Force the full frame to be tappable.
-                        .contentShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                        .foregroundStyle(Color.bodyText)
+                        .frame(width: 90, height: 52)
                 }
-                .buttonStyle(.plain)
 
-                // Save CTA — tactile 3D with phormPrimary fill.
+                // Save CTA — tactile 3D with Tết-red fill.
                 TactileKey(
-                    fill: canSave ? Color.phormPrimary : Color.phormPrimaryDisabled,
+                    face: LinearGradient(
+                        colors: canSave ? [Color.phormPrimary, Color.phormPrimaryActive]
+                                        : [Color.phormPrimaryDisabled, Color.phormPrimaryDisabled],
+                        startPoint: .top, endPoint: .bottom
+                    ),
+                    ridge: Color.black.opacity(0.30),
                     haptic: { Haptics.success() },
                     a11yLabel: "Lưu vòng",
                     action: { if canSave { onSave() } }
@@ -80,7 +80,8 @@ struct Keypad: View {
     @ViewBuilder
     private func key(_ kind: KeyKind) -> some View {
         TactileKey(
-            fill: keyFill(kind),
+            face: face(kind),
+            ridge: ridge(kind),
             haptic: keyHaptic(kind),
             a11yLabel: keyA11yLabel(kind),
             action: { keyAction(kind) }
@@ -91,10 +92,22 @@ struct Keypad: View {
         }
     }
 
-    /// Sign key gets phormPrimary (brand accent); all other keys use surfaceTile.
-    private func keyFill(_ kind: KeyKind) -> Color {
-        if case .sign = kind { return .phormPrimary }
-        return .surfaceTile
+    /// Warm key face gradient (digit/delete keys).
+    private var keyFace: LinearGradient {
+        LinearGradient(colors: [.keyFaceTop, .keyFaceBottom], startPoint: .top, endPoint: .bottom)
+    }
+    /// Sign key face gradient (warmer, paired with red/gold glyph ink).
+    private var signFace: LinearGradient {
+        LinearGradient(colors: [.keySignFaceTop, .keySignFaceBottom], startPoint: .top, endPoint: .bottom)
+    }
+    /// Sign key gets the sign face; all other keys use the neutral key face.
+    private func face(_ kind: KeyKind) -> LinearGradient {
+        if case .sign = kind { return signFace }
+        return keyFace
+    }
+    private func ridge(_ kind: KeyKind) -> Color {
+        if case .sign = kind { return .keySignRidge }
+        return .keyRidge
     }
 
     /// Haptic fired on press-down — toggle for state-changing keys, tap for digits.
@@ -136,22 +149,22 @@ struct Keypad: View {
         case .digit(let d):
             Text("\(d)")
                 .font(.phormKeypadDigit)
-                .foregroundStyle(Color.phormCream)
+                .foregroundStyle(Color.bodyText)
         case .sign:
             // Active glyph is bigger and mode-colored; inactive shrinks and dims.
             // Asymmetry is the affordance — the bigger one is what gets typed.
             HStack(spacing: 6) {
                 Text("+")
                     .font(.system(size: sign > 0 ? 28 : 18, weight: .bold, design: .default))
-                    .foregroundStyle(sign > 0 ? Color.scorePositive : Color.phormCream.opacity(0.22))
+                    .foregroundStyle(sign > 0 ? Color.scorePositive : Color.keySignInk.opacity(0.30))
                 Text("\u{2212}")
                     .font(.system(size: sign < 0 ? 28 : 18, weight: .bold, design: .default))
-                    .foregroundStyle(sign < 0 ? Color.scoreNegative : Color.phormCream.opacity(0.22))
+                    .foregroundStyle(sign < 0 ? Color.scoreNegative : Color.keySignInk.opacity(0.30))
             }
         case .delete:
             Image(systemName: "delete.left")
                 .font(.system(size: 20, weight: .regular))
-                .foregroundStyle(Color.phormCreamDim)
+                .foregroundStyle(Color.mutedStrong)
         }
     }
 }
@@ -162,8 +175,8 @@ struct Keypad: View {
 /// On press the face translates down 3 pt and the ridge shrinks — simulating a
 /// physical button depression. A haptic fires on touch-down, the action on release.
 private struct TactileKey<Label: View>: View {
-    var fill: Color = .surfaceTile
-    var ridge: Color = Color.black.opacity(0.25)
+    var face: LinearGradient
+    var ridge: Color
     var haptic: () -> Void = { Haptics.tap() }
     var a11yLabel: String = ""
     let action: () -> Void
@@ -171,9 +184,9 @@ private struct TactileKey<Label: View>: View {
     @GestureState private var pressed = false
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 14, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
         label()
-            .background(shape.fill(fill))
+            .background(shape.fill(face))
             .background(shape.fill(ridge).offset(y: pressed ? 1 : 4))
             .offset(y: pressed ? 3 : 0)
             .contentShape(shape)
