@@ -94,7 +94,7 @@
       --gold-dim: #a88438;
       --jade: #6ea088;
       --mint: #b6e0c2;             /* 5.81:1 — positive scores */
-      --ochre: #e6a665;            /* 4.62:1 — negative scores, AA Normal */
+      --ochre: #F2B488;            /* peach — negative scores on lacquer night surface */
       --ink-stamp: #f3e8d2;
 
       font-family: 'Spectral', Georgia, serif;
@@ -198,7 +198,7 @@
       font-family: 'IBM Plex Serif', serif;
     }
     .h-pos { color: var(--mint); }      /* 5.81:1 on cinnabar */
-    .h-neg { color: var(--ochre); }     /* 4.02:1 — used only at ≥18px display weight */
+    .h-neg { color: var(--ochre); }     /* peach #F2B488 ≈ 4.35:1 on cinnabar — AA Large/bold */
     .h-pip {
       width: 6px; height: 6px; border-radius: 999px;
       background: var(--cream);
@@ -336,6 +336,110 @@
 
     /* ---------- Static helpers shared ---------- */
     .ml-mono { font-feature-settings: "tnum"; }
+
+    /* ============================================================
+       PAPER SURFACE — light / day variant (warm print paper)
+       ============================================================ */
+    .paper {
+      --p-ground: #F2E9D8;
+      --p-ink: #2E1C16;
+      --p-secondary: #6B5A4A;
+      --p-accent: #8C2A22;
+      --p-pos: #1B6B47;
+      --p-neg: #A63A1E;
+      --p-gold: #d9b25a;
+      --p-gold-bg: rgba(217,178,90,0.12);
+      --p-rule: rgba(46,28,22,0.12);
+
+      font-family: 'Spectral', Georgia, serif;
+      color: #2E1C16;
+      background: #F2E9D8;
+      position: relative;
+    }
+    .paper::before {
+      /* subtle paper grain */
+      content: "";
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.18  0 0 0 0 0.11  0 0 0 0 0.09  0 0 0 0.07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23p)'/></svg>");
+      mix-blend-mode: multiply;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .paper > * { position: relative; z-index: 2; }
+
+    /* Paper typography helpers */
+    .p-display  { font-family: 'Noto Serif Display', 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: -0.01em; }
+    .p-name     { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-style: italic; letter-spacing: -0.005em; }
+    .p-num      { font-family: 'IBM Plex Serif', 'Spectral', serif; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .p-num-display { font-family: 'Noto Serif Display', serif; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .p-label    { font-family: 'Spectral', serif; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; font-size: 11px; color: #6B5A4A; }
+    .p-hairline { background: #2E1C16; height: 1px; opacity: 0.12; }
+    .p-thick-line { background: #8C2A22; height: 2px; opacity: 0.45; }
+
+    /* Paper seal badge */
+    .p-seal {
+      width: 32px; height: 32px;
+      border: 1.5px solid #8C2A22;
+      border-radius: 4px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #8C2A22;
+      font-family: 'Noto Serif Display', serif; font-weight: 800;
+      transform: rotate(-3deg);
+      background: rgba(140,42,34,0.06);
+    }
+    .p-seal--win {
+      background: #8C2A22;
+      color: #F2E9D8;
+      border-color: #8C2A22;
+      box-shadow: 0 0 0 2px rgba(140,42,34,0.22);
+    }
+    .p-seal--last {
+      border-color: #6B5A4A;
+      color: #6B5A4A;
+      transform: rotate(2deg);
+      opacity: 0.65;
+    }
+
+    .p-cell {
+      border: 1px solid rgba(46,28,22,0.18);
+      background: rgba(46,28,22,0.04);
+      border-radius: 2px;
+    }
+    .p-cell--active {
+      border-color: #8C2A22;
+      background: rgba(140,42,34,0.08);
+      box-shadow: inset 0 0 0 1px #8C2A22;
+    }
+    .p-cell--sealed {
+      border-color: rgba(140,42,34,0.45);
+      background: rgba(140,42,34,0.06);
+      color: #8C2A22;
+    }
+    .p-btn-primary {
+      background: #8C2A22;
+      color: #F2E9D8;
+      font-family: 'Spectral', serif;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    }
+    .p-pos { color: #1B6B47; }
+    .p-neg { color: #A63A1E; }
+    .p-card {
+      background: rgba(46,28,22,0.05);
+      border: 1px solid rgba(46,28,22,0.10);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .p-card::before {
+      content: "";
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: #8C2A22;
+      opacity: 0.5;
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -367,7 +471,7 @@
   <section class="max-w-[1400px] mx-auto px-6 pt-10 pb-6">
     <div class="flex items-end justify-between border-b border-amber-50/10 pb-6">
       <div>
-        <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Hướng 01</p>
+        <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Hướng 01 · đêm / lacquer</p>
         <h2 style="font-family:'Noto Serif Display',serif; font-weight:800;" class="text-4xl md:text-5xl mt-2 italic" >Hà Nội cũ</h2>
         <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60" style="font-family:'Spectral',serif;">
           Nhãn bao diêm Thống Nhất, vỏ chai Bia Hà Nội, lá thư đánh máy ngày cũ — đọc lại bằng con mắt thiết kế đương đại. Mỗi session là một <em>màu lacquer</em> riêng (son, ngà, ngọc, hoàng thổ). Số liệu in nét, dấu son đóng lên thứ hạng.
@@ -404,7 +508,7 @@
             <div class="px-5 mt-5 space-y-5">
               <!-- Row: Quý — 1st -->
               <div class="flex items-center gap-3">
-                <div class="h-seal h-seal--win">壹</div>
+                <div class="h-seal h-seal--win">1</div>
                 <div class="flex-1">
                   <p class="h-name text-[19px] leading-none">Quý</p>
                   <p class="h-label mt-1">Đang dẫn</p>
@@ -415,7 +519,7 @@
               </div>
               <!-- Row: Nam -->
               <div class="flex items-center gap-3">
-                <div class="h-seal">贰</div>
+                <div class="h-seal">2</div>
                 <div class="flex-1">
                   <p class="h-name text-[19px] leading-none">Nam</p>
                   <p class="h-label mt-1">Sát nút</p>
@@ -426,7 +530,7 @@
               </div>
               <!-- Row: Linh -->
               <div class="flex items-center gap-3">
-                <div class="h-seal">叁</div>
+                <div class="h-seal">3</div>
                 <div class="flex-1">
                   <p class="h-name text-[19px] leading-none">Linh</p>
                   <p class="h-label mt-1">—</p>
@@ -437,7 +541,7 @@
               </div>
               <!-- Row: Hoàng — last -->
               <div class="flex items-center gap-3">
-                <div class="h-seal h-seal--last">肆</div>
+                <div class="h-seal h-seal--last">4</div>
                 <div class="flex-1">
                   <p class="h-name text-[19px] leading-none">Hoàng</p>
                   <p class="h-label mt-1">Đi sau</p>
@@ -517,7 +621,7 @@
                 <p class="h-name text-[18px]" style="color:#d6c4a0;">Hoàng</p>
                 <div class="h-cell h-cell--sealed px-3 py-2 w-[100px] text-right relative">
                   <p class="h-num-display text-[22px] leading-none">−7</p>
-                  <span class="absolute -top-2 -right-2 h-seal h-stamp-in" style="width:22px;height:22px;font-size:11px;color:var(--surface-deep);background:var(--gold);border-color:var(--gold);">封</span>
+                  <span class="absolute -top-2 -right-2 h-seal h-stamp-in" style="width:22px;height:22px;font-size:11px;color:var(--surface-deep);background:var(--gold);border-color:var(--gold);">✓</span>
                 </div>
               </div>
             </div>
@@ -570,15 +674,13 @@
             <div class="px-5 mt-6">
               <div class="flex items-end justify-between">
                 <div>
-                  <p class="h-label" style="color:var(--gold-bright);">Vô địch ván</p>
+                  <p class="h-label" style="color:var(--gold-bright);">Nhất bàn</p>
                   <p class="h-name text-[32px] leading-none mt-1" style="color:var(--cream);">Quý</p>
                 </div>
-                <div class="text-right">
+                <div class="flex items-center gap-3">
+                  <div class="h-seal h-seal--win" style="width:36px;height:36px;font-size:18px;">1</div>
                   <p class="h-num-display text-[44px] leading-none" style="color:var(--gold);">+24</p>
                 </div>
-              </div>
-              <div class="mt-3 h-card flex items-center justify-center py-2" style="background:rgba(0,0,0,0.20); border-color: rgba(217, 178, 90, 0.55);">
-                <p class="h-label" style="color:var(--gold-bright);">壹 · ấn vàng</p>
               </div>
             </div>
 
@@ -610,10 +712,10 @@
             <!-- Last place seal -->
             <div class="mx-5 mt-6 pt-4 border-t border-amber-50/15 flex items-center justify-between">
               <div>
-                <p class="h-label">Tem cuối bàn</p>
+                <p class="h-label">Bét bàn</p>
                 <p class="h-name text-[16px] mt-1">Hoàng</p>
               </div>
-              <div class="h-seal h-seal--last" style="font-size:16px;">×</div>
+              <div class="h-seal h-seal--last" style="font-size:16px;">4</div>
             </div>
 
             <div class="absolute left-5 right-5 bottom-7 flex gap-2">
@@ -737,7 +839,385 @@
   </section>
 
 
-  <!-- Divider -->
+  <!-- Divider night → paper -->
+  <div class="max-w-5xl mx-auto my-16 px-6">
+    <div class="h-px w-full" style="background:linear-gradient(90deg, transparent, rgba(232,220,196,0.25), transparent);"></div>
+  </div>
+
+  <!-- ============================================================
+       PAPER SURFACE — light / day variant
+       ============================================================ -->
+  <section class="max-w-[1400px] mx-auto px-6 pt-4 pb-6">
+    <div class="flex items-end justify-between border-b border-amber-50/10 pb-6">
+      <div>
+        <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Hướng 02 · ban ngày</p>
+        <h2 style="font-family:'Noto Serif Display',serif; font-weight:800;" class="text-4xl md:text-5xl mt-2 italic">Giấy ấm</h2>
+        <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60" style="font-family:'Spectral',serif;">
+          Cùng ngôn ngữ thiết kế — ấn son, số serif, tên nghiêng — nhưng nền là giấy in ấm thay vì lacquer. Ban ngày, ánh sáng phòng cao; ban đêm iOS tự đổ bóng sâu thêm. Chữ ink đậm trên giấy cream, điểm cộng jade, điểm trừ rust.
+        </p>
+      </div>
+      <div class="hidden md:flex gap-2 text-[10px] uppercase tracking-[0.18em] text-amber-50/40">
+        <span>Giấy cream</span><span class="opacity-40">·</span>
+        <span>Ink đậm</span><span class="opacity-40">·</span>
+        <span>Ấn son</span>
+      </div>
+    </div>
+
+    <div class="row-phones">
+
+      <!-- 2A: Paper — Leaderboard -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen paper">
+            <div class="px-5 pt-12 pb-4 flex items-center justify-between">
+              <div>
+                <p class="p-label">Phiên đang chơi</p>
+                <p class="p-display text-[20px] leading-tight mt-1" style="color:#2E1C16;">Phỏm tối thứ Sáu</p>
+              </div>
+              <div class="text-right">
+                <p class="p-label">Vòng</p>
+                <p class="p-num text-[20px] leading-none mt-1" style="color:#2E1C16;">06</p>
+              </div>
+            </div>
+
+            <div class="p-hairline mx-5"></div>
+
+            <!-- Player rows -->
+            <div class="px-5 mt-5 space-y-5">
+              <!-- Row: Quý — 1st -->
+              <div class="flex items-center gap-3">
+                <div class="p-seal p-seal--win">1</div>
+                <div class="flex-1">
+                  <p class="p-name text-[19px] leading-none" style="color:#2E1C16;">Quý</p>
+                  <p class="p-label mt-1">Đang dẫn</p>
+                </div>
+                <div class="text-right">
+                  <p class="p-num-display text-[26px] leading-none p-pos">+7</p>
+                </div>
+              </div>
+              <!-- Row: Nam -->
+              <div class="flex items-center gap-3">
+                <div class="p-seal">2</div>
+                <div class="flex-1">
+                  <p class="p-name text-[19px] leading-none" style="color:#2E1C16;">Nam</p>
+                  <p class="p-label mt-1">Sát nút</p>
+                </div>
+                <div class="text-right">
+                  <p class="p-num-display text-[26px] leading-none p-neg">−1</p>
+                </div>
+              </div>
+              <!-- Row: Linh -->
+              <div class="flex items-center gap-3">
+                <div class="p-seal">3</div>
+                <div class="flex-1">
+                  <p class="p-name text-[19px] leading-none" style="color:#2E1C16;">Linh</p>
+                  <p class="p-label mt-1">—</p>
+                </div>
+                <div class="text-right">
+                  <p class="p-num-display text-[26px] leading-none p-neg">−3</p>
+                </div>
+              </div>
+              <!-- Row: Hoàng — last -->
+              <div class="flex items-center gap-3">
+                <div class="p-seal p-seal--last">4</div>
+                <div class="flex-1">
+                  <p class="p-name text-[19px] leading-none" style="color:#2E1C16;">Hoàng</p>
+                  <p class="p-label mt-1">Đi sau</p>
+                </div>
+                <div class="text-right">
+                  <p class="p-num-display text-[26px] leading-none p-neg">−3</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Round history strip -->
+            <div class="mx-5 mt-7 pt-4" style="border-top:1px solid rgba(46,28,22,0.12);">
+              <p class="p-label">Sáu vòng vừa qua</p>
+              <div class="mt-2 grid grid-cols-6 gap-2">
+                <div class="p-card !pl-0 !before:hidden px-1 py-1 text-center" style="border-left:none;"><p class="p-num text-[11px]" style="color:#2E1C16;">−8</p></div>
+                <div class="p-card !pl-0 px-1 py-1 text-center"><p class="p-num text-[11px] p-pos">+12</p></div>
+                <div class="p-card !pl-0 px-1 py-1 text-center"><p class="p-num text-[11px]" style="color:#2E1C16;">−6</p></div>
+                <div class="p-card !pl-0 px-1 py-1 text-center"><p class="p-num text-[11px] p-pos">+4</p></div>
+                <div class="p-card !pl-0 px-1 py-1 text-center"><p class="p-num text-[11px]" style="color:#2E1C16;">−2</p></div>
+                <div class="p-card !pl-0 px-1 py-1 text-center"><p class="p-num text-[11px] p-pos">+7</p></div>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="absolute left-5 right-5 bottom-7">
+              <button class="p-btn-primary w-full py-3.5 rounded-[3px] text-[14px] tracking-wider uppercase">
+                Vòng mới
+              </button>
+              <p class="p-label text-center mt-3">Vuốt xuống · xem chi tiết</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Bảng xếp hạng · giấy</p>
+      </div>
+
+      <!-- 2B: Paper — Round entry -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen paper">
+            <div class="px-5 pt-12 pb-3 flex items-center justify-between">
+              <p class="p-label">Nhập vòng</p>
+              <p class="p-num text-[14px]" style="color:#2E1C16;">07</p>
+            </div>
+
+            <div class="px-5">
+              <h3 class="p-display text-[26px] leading-tight mt-1" style="color:#2E1C16;">
+                <span style="color:#8C2A22">Vòng bảy</span><br/>
+                <span class="text-[18px]" style="opacity:0.7;">điểm ai bao nhiêu?</span>
+              </h3>
+            </div>
+
+            <div class="px-5 mt-6 space-y-3.5">
+              <!-- Quý cell — filled -->
+              <div class="flex items-center justify-between">
+                <p class="p-name text-[18px]" style="color:#2E1C16;">Quý</p>
+                <div class="p-cell px-3 py-2 w-[100px] text-right">
+                  <p class="p-num-display text-[22px] leading-none p-neg">−4</p>
+                </div>
+              </div>
+              <!-- Nam cell — filled -->
+              <div class="flex items-center justify-between">
+                <p class="p-name text-[18px]" style="color:#2E1C16;">Nam</p>
+                <div class="p-cell px-3 py-2 w-[100px] text-right">
+                  <p class="p-num-display text-[22px] leading-none p-pos">+6</p>
+                </div>
+              </div>
+              <!-- Linh cell — active focus -->
+              <div class="flex items-center justify-between">
+                <p class="p-name text-[18px]" style="color:#8C2A22;">Linh</p>
+                <div class="p-cell p-cell--active px-3 py-2 w-[100px] text-right">
+                  <p class="p-num-display text-[22px] leading-none" style="color:#8C2A22;">+5<span class="inline-block w-[2px] h-[20px] ml-1 align-middle" style="background:#8C2A22; animation: blink 1s steps(1) infinite;"></span></p>
+                </div>
+              </div>
+              <!-- Hoàng cell — sealed (auto-fill) -->
+              <div class="flex items-center justify-between">
+                <p class="p-name text-[18px]" style="color:#6B5A4A;">Hoàng</p>
+                <div class="p-cell p-cell--sealed px-3 py-2 w-[100px] text-right relative">
+                  <p class="p-num-display text-[22px] leading-none">−7</p>
+                  <span class="absolute -top-2 -right-2 p-seal h-stamp-in" style="width:22px;height:22px;font-size:11px;color:#F2E9D8;background:#8C2A22;border-color:#8C2A22;">✓</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation row -->
+            <div class="mx-5 mt-7 pt-3" style="border-top:1px solid rgba(46,28,22,0.12);">
+              <div class="flex items-center justify-between">
+                <p class="p-label">Tổng</p>
+                <p class="p-num text-[15px]" style="color:#1B6B47;">0 · cân</p>
+              </div>
+            </div>
+
+            <!-- Number pad hint -->
+            <div class="mx-5 mt-4 grid grid-cols-3 gap-2">
+              <div class="p-card py-2 text-center"><p class="p-num text-[14px]" style="color:#2E1C16;">7</p></div>
+              <div class="p-card py-2 text-center"><p class="p-num text-[14px]" style="color:#2E1C16;">8</p></div>
+              <div class="p-card py-2 text-center"><p class="p-num text-[14px]" style="color:#2E1C16;">9</p></div>
+              <div class="p-card py-2 text-center"><p class="p-num text-[14px]" style="color:#2E1C16;">4</p></div>
+              <div class="p-card py-2 text-center"><p class="p-num text-[14px]" style="color:#2E1C16;">5</p></div>
+              <div class="p-card py-2 text-center"><p class="p-num text-[14px]" style="color:#2E1C16;">6</p></div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7">
+              <button class="p-btn-primary w-full py-3.5 rounded-[3px] text-[14px] tracking-wider uppercase">
+                Đóng dấu — lưu vòng
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Nhập vòng · N−1 · giấy</p>
+      </div>
+
+      <!-- 2C: Paper — End-of-session ranking -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen paper" style="background:
+            radial-gradient(circle at 50% 0%, rgba(140,42,34,0.08), transparent 50%),
+            radial-gradient(circle at 50% 100%, rgba(46,28,22,0.06), transparent 65%),
+            #EDE3CE;">
+            <div class="px-5 pt-12 pb-3">
+              <p class="p-label" style="color:#8C2A22;">Phiên kết thúc</p>
+              <p class="p-display text-[24px] leading-tight mt-1 italic" style="color:#2E1C16;">Phỏm tối thứ Sáu</p>
+              <p class="p-label mt-1">12 vòng · 1g 48p · 25.05</p>
+            </div>
+
+            <div class="p-thick-line mx-5"></div>
+
+            <!-- Champion -->
+            <div class="px-5 mt-6">
+              <div class="flex items-end justify-between">
+                <div>
+                  <p class="p-label" style="color:#8C2A22;">Nhất bàn</p>
+                  <p class="p-name text-[32px] leading-none mt-1" style="color:#2E1C16;">Quý</p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="p-seal p-seal--win" style="width:36px;height:36px;font-size:18px;">1</div>
+                  <p class="p-num-display text-[44px] leading-none" style="color:#1B6B47;">+24</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Runners -->
+            <div class="px-5 mt-5 space-y-3.5">
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-3">
+                  <span class="p-num text-[14px]" style="color:#6B5A4A;">02</span>
+                  <p class="p-name text-[20px]" style="color:#2E1C16;">Nam</p>
+                </div>
+                <p class="p-num-display text-[22px] p-pos">+4</p>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-3">
+                  <span class="p-num text-[14px]" style="color:#6B5A4A;">03</span>
+                  <p class="p-name text-[20px]" style="color:#2E1C16;">Linh</p>
+                </div>
+                <p class="p-num-display text-[22px] p-neg">−9</p>
+              </div>
+              <div class="flex items-baseline justify-between" style="opacity:0.8;">
+                <div class="flex items-baseline gap-3">
+                  <span class="p-num text-[14px]" style="color:#6B5A4A;">04</span>
+                  <p class="p-name text-[20px]" style="color:#2E1C16;">Hoàng</p>
+                </div>
+                <p class="p-num-display text-[22px] p-neg">−19</p>
+              </div>
+            </div>
+
+            <!-- Last place — muted rank seal -->
+            <div class="mx-5 mt-6 pt-4 flex items-center justify-between" style="border-top:1px solid rgba(46,28,22,0.12);">
+              <div>
+                <p class="p-label">Bét bàn</p>
+                <p class="p-name text-[16px] mt-1" style="color:#2E1C16;">Hoàng</p>
+              </div>
+              <div class="p-seal p-seal--last" style="font-size:16px;">4</div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7 flex gap-2">
+              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #8C2A22; color:#8C2A22; font-family:'Spectral',serif; font-weight:600;">
+                Chia sẻ
+              </button>
+              <button class="flex-1 p-btn-primary py-3 rounded-[3px] text-[12px] tracking-wider uppercase">
+                Phiên mới
+              </button>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Kết thúc · giấy</p>
+      </div>
+
+      <!-- 2D: Paper — History list -->
+      <div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen paper">
+            <div class="px-5 pt-12 pb-3 flex items-center justify-between">
+              <div>
+                <p class="p-label">Lưu trữ</p>
+                <p class="p-display text-[22px] leading-tight mt-1 italic" style="color:#2E1C16;">Lịch sử phiên</p>
+              </div>
+              <p class="p-num text-[14px]" style="color:#6B5A4A;">37 phiên</p>
+            </div>
+
+            <div class="p-hairline mx-5"></div>
+
+            <div class="px-5 mt-4 space-y-3">
+              <!-- Card 1 -->
+              <div class="p-card px-4 py-3">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="p-label">25.05 · thứ Sáu</p>
+                    <p class="p-name text-[17px] leading-none mt-1" style="color:#2E1C16;">Phỏm tối thứ Sáu</p>
+                    <p class="p-num text-[11px] mt-1.5" style="color:#6B5A4A;">Quý · Nam · Linh · Hoàng</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="p-label">Nhất bàn</p>
+                    <p class="p-num-display text-[20px] leading-none mt-1" style="color:#8C2A22;">+24</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="p-card px-4 py-3" style="background:rgba(46,28,22,0.04);">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="p-label">18.05 · thứ Sáu</p>
+                    <p class="p-name text-[17px] leading-none mt-1" style="color:#2E1C16;">Sâm Lốc nhà Hoàng</p>
+                    <p class="p-num text-[11px] mt-1.5" style="color:#6B5A4A;">Quý · Hoàng · Mai</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="p-label">Nhất bàn</p>
+                    <p class="p-num-display text-[20px] leading-none mt-1" style="color:#8C2A22;">+18</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div class="p-card px-4 py-3" style="background:rgba(46,28,22,0.03);">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="p-label">11.05 · thứ Sáu</p>
+                    <p class="p-name text-[17px] leading-none mt-1" style="color:#2E1C16;">Cafe sau giờ làm</p>
+                    <p class="p-num text-[11px] mt-1.5" style="color:#6B5A4A;">Nam · Linh · Trang · Quý</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="p-label">Nhất bàn</p>
+                    <p class="p-num-display text-[20px] leading-none mt-1" style="color:#8C2A22;">+11</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 4 — dimmer -->
+              <div class="p-card px-4 py-3" style="opacity:0.75; background:rgba(46,28,22,0.02);">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="p-label">04.05 · thứ Sáu</p>
+                    <p class="p-name text-[17px] leading-none mt-1" style="color:#2E1C16;">Sinh nhật Linh</p>
+                    <p class="p-num text-[11px] mt-1.5" style="color:#6B5A4A;">Linh · Quý · Nam · Mai · Trang</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="p-label">Nhất bàn</p>
+                    <p class="p-num-display text-[20px] leading-none mt-1" style="color:#8C2A22;">+32</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute left-5 right-5 bottom-7">
+              <p class="p-label text-center">Chạm để mở · vuốt trái xoá</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-label">Lịch sử · giấy</p>
+      </div>
+
+    </div>
+
+    <!-- Paper section rationale -->
+    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm" style="font-family:'Spectral',serif;">
+      <div>
+        <p style="font-family:'Spectral',serif; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; font-size:11px; color:#d9b25a;">Cùng một bản sắc</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Ấn son, số Noto, tên Cormorant italic — tất cả giữ nguyên. Chỉ đổi nền từ lacquer sậm sang giấy ấm. Ban ngày đọc rõ hơn, ban đêm iOS tự tối màu nền xuống một chút — không cần hai chế độ sáng/tối riêng biệt.
+        </p>
+      </div>
+      <div>
+        <p style="font-family:'Spectral',serif; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; font-size:11px; color:#d9b25a;">Tương phản đảm bảo</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          Ink đậm <code style="font-size:10px;">#2E1C16</code> trên cream <code style="font-size:10px;">#F2E9D8</code>: &gt;12:1 (AAA). Jade <code style="font-size:10px;">#1B6B47</code>: 5.8:1. Rust <code style="font-size:10px;">#A63A1E</code>: 4.5:1 (AA). Ký hiệu +/− luôn đi kèm màu — mù màu đọc được.
+        </p>
+      </div>
+      <div>
+        <p style="font-family:'Spectral',serif; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; font-size:11px; color:#d9b25a;">Từ ngữ đời thường</p>
+        <p class="mt-2 leading-relaxed text-amber-50/75">
+          "Nhất bàn" / "Bét bàn" thay cho "Vô địch ván" / "Tem cuối bàn". Ấn son giữ nguyên hình dạng nhưng in số thường thay Hán tự — ai cầm máy cũng đọc ngay, không cần biết chữ Hán.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider paper → đóng dấu -->
   <div class="max-w-5xl mx-auto my-20 px-6">
     <div class="h-px w-full" style="background:linear-gradient(90deg, transparent, rgba(232,220,196,0.25), transparent);"></div>
   </div>
