@@ -200,9 +200,9 @@ struct SessionView: View {
     @ViewBuilder
     private func leaderboardRow(rank: Int, entry: (name: String, total: Int), totalPlayers: Int) -> some View {
         HStack(spacing: Spacing.md) {
-            Seal(
-                glyph: SealGlyph.forRank(rank),
-                variant: sealVariant(rank: rank, total: entry.total, totalPlayers: totalPlayers)
+            Coin(
+                text: SealGlyph.forRank(rank),
+                variant: coinVariant(rank: rank, total: entry.total, totalPlayers: totalPlayers)
             )
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.name)
@@ -221,6 +221,12 @@ struct SessionView: View {
         if rank == 1 && total > 0 { return .winner }
         if rank == totalPlayers && totalPlayers >= 4 && total <= 0 { return .last }
         return .default
+    }
+
+    private func coinVariant(rank: Int, total: Int, totalPlayers: Int) -> Coin.Variant {
+        if rank == 1 && total > 0 { return .winner }
+        if rank == totalPlayers && totalPlayers >= 4 && total <= 0 { return .last }
+        return .seat
     }
 
     private func subtitle(rank: Int, total: Int, totalPlayers: Int) -> String {

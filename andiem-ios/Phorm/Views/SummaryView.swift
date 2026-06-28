@@ -147,35 +147,17 @@ struct SummaryView: View {
     @ViewBuilder
     private func championBlock(name: String, total: Int) -> some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            SectionLabel(text: "Vô địch ván", tone: .gold)
-            HStack(alignment: .lastTextBaseline) {
+            SectionLabel(text: "Nhất bàn", tone: .gold)
+            HStack(alignment: .center, spacing: Spacing.md) {
+                Coin(text: "1", variant: .winner, size: 40)
                 Text(name)
                     .font(.system(size: 40, weight: .bold, design: .serif).italic())
                     .foregroundStyle(Color.phormCream)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                 Spacer()
-                Text(ScoreFormat.signed(total))
-                    .font(.phormNumberHero)
-                    .foregroundStyle(Color.phormPrimary)
+                ScoreChip(value: total, size: .large)
             }
-
-            HStack(spacing: Spacing.md) {
-                Seal(glyph: "壹", variant: .winner, size: 34)
-                Text("Ấn vàng")
-                    .font(.system(size: 22, weight: .semibold, design: .serif).italic())
-                    .foregroundStyle(Color.phormGoldBright)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.md)
-            .background(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(Color.black.opacity(0.22))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .stroke(Color.phormPrimary.opacity(0.55), lineWidth: 1)
-            )
         }
     }
 
@@ -196,9 +178,7 @@ struct SummaryView: View {
                         .font(.phormNameDisplay)
                         .foregroundStyle(Color.phormCream)
                     Spacer()
-                    Text(ScoreFormat.signed(entry.total))
-                        .font(.phormNumberEntry)
-                        .foregroundStyle(ScoreFormat.color(for: entry.total))
+                    ScoreChip(value: entry.total, size: .small)
                 }
                 .opacity(isLastSeat ? 0.78 : 1.0)
             }
@@ -211,13 +191,13 @@ struct SummaryView: View {
     private func lastPlaceBlock(name: String) -> some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
-                SectionLabel(text: "Tem cuối bàn")
+                SectionLabel(text: "Bét bàn")
                 Text(name)
                     .font(.phormNameMd)
                     .foregroundStyle(Color.phormCreamDim)
             }
             Spacer()
-            Seal(glyph: "×", variant: .last, size: 28)
+            Coin(text: "\(ranking.count)", variant: .last, size: 28)
         }
         .padding(.top, Spacing.lg)
         .overlay(alignment: .top) {
@@ -233,12 +213,12 @@ struct SummaryView: View {
     /// Tied-rank case: same shape but disabled with explanatory caption.
     private var unstampedCallout: some View {
         HStack(alignment: .center, spacing: Spacing.md) {
-            Seal(glyph: "壹", variant: isRankTied ? .default : .winner, size: 32)
+            Coin(text: "1", variant: isRankTied ? .seat : .winner, size: 32)
                 .opacity(isRankTied ? 0.55 : 1)
             VStack(alignment: .leading, spacing: 4) {
                 SectionLabel(text: isRankTied ? "Chưa đóng dấu được" : "Chưa đóng dấu", tone: .gold)
                 Text(isRankTied
-                     ? "Phiên có tổng bằng nhau, không xác định vô địch/cuối bàn"
+                     ? "Hoà — chưa rõ ai nhất, ai bét"
                      : "Chụp ảnh nhóm — hoặc chọn ảnh có sẵn.")
                     .font(.system(size: 12, weight: .regular, design: .serif))
                     .foregroundStyle(Color.phormCream.opacity(isRankTied ? 0.65 : 1))
