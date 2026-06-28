@@ -217,12 +217,6 @@ struct SessionView: View {
         }
     }
 
-    private func sealVariant(rank: Int, total: Int, totalPlayers: Int) -> Seal.Variant {
-        if rank == 1 && total > 0 { return .winner }
-        if rank == totalPlayers && totalPlayers >= 4 && total <= 0 { return .last }
-        return .default
-    }
-
     private func coinVariant(rank: Int, total: Int, totalPlayers: Int) -> Coin.Variant {
         if rank == 1 && total > 0 { return .winner }
         if rank == totalPlayers && totalPlayers >= 4 && total <= 0 { return .last }

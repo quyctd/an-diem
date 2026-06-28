@@ -44,7 +44,7 @@ extension Color {
     static let surfaceTile     = Color("SurfaceTile")
     /// Neutral/zero chip fill.
     static let chipNeutral     = Color("ChipNeutral")
-    /// Text on a color-filled chip (white).
+    /// Dark ink for legible numbers on color-filled chips (AA).
     static let onChip          = Color("OnChip")
 
     // MARK: - Ink (paper-on-surface text family — adaptive asset catalog)

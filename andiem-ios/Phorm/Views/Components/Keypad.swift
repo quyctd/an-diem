@@ -61,6 +61,7 @@ struct Keypad: View {
                 TactileKey(
                     fill: canSave ? Color.phormPrimary : Color.phormPrimaryDisabled,
                     haptic: { Haptics.success() },
+                    a11yLabel: "Đóng dấu — lưu vòng",
                     action: { if canSave { onSave() } }
                 ) {
                     Text("Đóng dấu — lưu vòng")
@@ -81,6 +82,7 @@ struct Keypad: View {
         TactileKey(
             fill: keyFill(kind),
             haptic: keyHaptic(kind),
+            a11yLabel: keyA11yLabel(kind),
             action: { keyAction(kind) }
         ) {
             keyLabel(for: kind)
@@ -109,6 +111,15 @@ struct Keypad: View {
         case .digit(let d): onKey(.digit(d))
         case .sign:         onKey(.sign)
         case .delete:       onKey(.delete)
+        }
+    }
+
+    /// VoiceOver label for each key.
+    private func keyA11yLabel(_ kind: KeyKind) -> String {
+        switch kind {
+        case .digit(let d): return "\(d)"
+        case .sign:         return "Đổi dấu"
+        case .delete:       return "Xóa"
         }
     }
 
@@ -154,6 +165,7 @@ private struct TactileKey<Label: View>: View {
     var fill: Color = .surfaceTile
     var ridge: Color = Color.black.opacity(0.25)
     var haptic: () -> Void = { Haptics.tap() }
+    var a11yLabel: String = ""
     let action: () -> Void
     @ViewBuilder var label: () -> Label
     @GestureState private var pressed = false
@@ -171,5 +183,7 @@ private struct TactileKey<Label: View>: View {
                     .onEnded { _ in action() }
             )
             .animation(.spring(response: 0.18, dampingFraction: 0.6), value: pressed)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(a11yLabel)
     }
 }

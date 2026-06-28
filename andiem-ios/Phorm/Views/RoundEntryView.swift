@@ -59,7 +59,6 @@ struct RoundEntryView: View {
         .lacquerBackground(.phormSurfaceCinnabar)
         .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDragIndicator(.visible)
-        .preferredColorScheme(.dark)
         .confirmationDialog("Xóa vòng này?", isPresented: $showDeleteConfirm) {
             if case .edit(let round) = mode {
                 Button("Xóa", role: .destructive) {

@@ -59,7 +59,6 @@ struct EmptyHomeView: View {
         .navigationTitle("")
         .sheet(isPresented: $showNewSession) {
             NewSessionView()
-                .preferredColorScheme(.dark)
         }
         .navigationDestination(isPresented: $showHistory) {
             HistoryView()

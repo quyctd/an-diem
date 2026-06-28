@@ -110,11 +110,9 @@ struct SummaryView: View {
         .navigationTitle("")
         .sheet(isPresented: $showNewSession) {
             NewSessionView()
-                .preferredColorScheme(.dark)
         }
         .fullScreenCover(isPresented: $showStampFlow) {
             StampEditorView(session: session)
-                .preferredColorScheme(.dark)
         }
         .sheet(isPresented: $showShareSheet) {
             if let shareCardImage {

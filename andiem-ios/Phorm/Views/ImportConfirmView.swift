@@ -30,7 +30,6 @@ struct ImportConfirmView: View {
         .presentationBackground(Color.phormSurfaceOchre)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .preferredColorScheme(.dark)
     }
 
     private var headerStrip: some View {

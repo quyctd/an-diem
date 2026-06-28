@@ -57,7 +57,6 @@ struct PhormApp: App {
     private var normalRoot: some View {
         ZStack {
             HomeView()
-                .preferredColorScheme(.dark)
                 .tint(.phormPrimary)
                 .onOpenURL { url in
                     pendingImport = try? SessionShare.decode(url)
@@ -65,12 +64,10 @@ struct PhormApp: App {
                 .sheet(item: $pendingImport) { dto in
                     ImportConfirmView(dto: dto, onDismiss: { pendingImport = nil })
                         .interactiveDismissDisabled()
-                        .preferredColorScheme(.dark)
                 }
 
             if showSplash {
                 SplashView(isVisible: $showSplash)
-                    .preferredColorScheme(.dark)
                     .transition(.opacity)
                     .zIndex(1)
             }
