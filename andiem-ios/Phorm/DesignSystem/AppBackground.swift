@@ -1,14 +1,14 @@
 import SwiftUI
 import UIKit
 
-/// Adaptive surface background — flat on day (light appearance), with subtle grain on night (dark appearance).
+/// Adaptive tactile surface background — flat on day (light appearance), with subtle grain on night (dark appearance).
 /// Replaces Liquid Glass and the prior halftone/vignette layers entirely.
 ///
 /// Dark mode only: overlays a 25% grain tile (`.overlay` blend) on top of the deep warm night surface.
 /// Day/light mode: the surface color is rendered flat — no halftone, no grain.
 ///
 /// The grain tile is precomputed once into a tileable UIImage so re-renders don't redraw thousands of paths.
-struct LacquerBackground: View {
+struct AppBackground: View {
     var surface: Color = .phormSurfaceCinnabar
     @Environment(\.colorScheme) private var scheme
 
@@ -29,8 +29,8 @@ struct LacquerBackground: View {
 extension View {
     /// Apply the adaptive surface background to the view's background.
     /// Use this on the *root* of every screen — day surfaces are flat; night surfaces add a subtle grain overlay.
-    func lacquerBackground(_ surface: Color = .phormSurfaceCinnabar) -> some View {
-        background(LacquerBackground(surface: surface).ignoresSafeArea())
+    func appBackground(_ surface: Color = .phormSurfaceCinnabar) -> some View {
+        background(AppBackground(surface: surface).ignoresSafeArea())
     }
 }
 

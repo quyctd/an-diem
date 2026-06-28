@@ -16,7 +16,7 @@ struct SplashView: View {
 
     var body: some View {
         ZStack {
-            LacquerBackground()
+            AppBackground()
                 .ignoresSafeArea()
 
             VStack(spacing: Spacing.lg) {

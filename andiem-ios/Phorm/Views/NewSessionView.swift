@@ -58,7 +58,7 @@ struct NewSessionView: View {
                         .padding(.horizontal, Spacing.lg)
                         .padding(.top, Spacing.lg)
 
-                    LacquerHairline()
+                    RuleHairline()
                         .padding(.horizontal, Spacing.lg)
                         .padding(.top, Spacing.md)
 
@@ -83,7 +83,7 @@ struct NewSessionView: View {
 
             cta
         }
-        .lacquerBackground()
+        .appBackground()
         .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDragIndicator(.visible)
     }
@@ -348,7 +348,7 @@ struct NewSessionView: View {
 
     private var cta: some View {
         VStack(spacing: Spacing.xs) {
-            LacquerPrimaryButton(
+            TactilePrimaryButton(
                 title: players.count >= 2 ? "Bắt đầu — \(players.count) người" : "Cần ít nhất 2 người",
                 enabled: players.count >= 2,
                 action: create

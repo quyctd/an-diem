@@ -62,7 +62,7 @@ struct SummaryView: View {
                         .padding(.top, Spacing.xs)
                         .padding(.bottom, Spacing.md)
 
-                    LacquerThickRule()
+                    GoldRule()
                         .padding(.horizontal, Spacing.lg)
 
                     if let champ = ranking.first {
@@ -104,7 +104,7 @@ struct SummaryView: View {
 
             cta
         }
-        .lacquerBackground()
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationTitle("")
@@ -298,20 +298,20 @@ struct SummaryView: View {
             if showStampCallout && !isRankTied {
                 // F1: [Bỏ qua | Đóng dấu]
                 HStack(spacing: Spacing.sm) {
-                    LacquerOutlineButton(title: "Bỏ qua") {
+                    TactileOutlineButton(title: "Bỏ qua") {
                         hasSkippedStamp = true
                     }
-                    LacquerPrimaryButton(title: "Khoe bàn") {
+                    TactilePrimaryButton(title: "Khoe bàn") {
                         showStampFlow = true
                     }
                 }
             } else {
                 // Default / skipped / stamped / tied: [Chia sẻ | Phiên mới]
                 HStack(spacing: Spacing.sm) {
-                    LacquerOutlineButton(title: "Chia sẻ") {
+                    TactileOutlineButton(title: "Chia sẻ") {
                         renderAndShare()
                     }
-                    LacquerPrimaryButton(title: "Phiên mới") {
+                    TactilePrimaryButton(title: "Phiên mới") {
                         showNewSession = true
                     }
                 }

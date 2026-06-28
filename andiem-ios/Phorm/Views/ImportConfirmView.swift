@@ -13,7 +13,7 @@ struct ImportConfirmView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
                     headerStrip
-                    LacquerHairline()
+                    RuleHairline()
                     detailBlock
                     Text("Phiên đang chơi của bạn sẽ tự đóng vào lịch sử trước khi mở phiên này.")
                         .font(.phormBodySm)
@@ -26,7 +26,7 @@ struct ImportConfirmView: View {
 
             cta
         }
-        .lacquerBackground()
+        .appBackground()
         .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
@@ -86,7 +86,7 @@ struct ImportConfirmView: View {
 
     private var cta: some View {
         VStack(spacing: Spacing.sm) {
-            LacquerPrimaryButton(title: "Mở phiên này", action: confirm)
+            TactilePrimaryButton(title: "Mở phiên này", action: confirm)
             Button {
                 onDismiss(); dismiss()
             } label: {

@@ -42,7 +42,7 @@ struct SessionView: View {
                         .padding(.top, Spacing.xs)
                         .padding(.bottom, Spacing.md)
 
-                    LacquerHairline()
+                    RuleHairline()
                         .padding(.horizontal, Spacing.lg)
 
                     leaderboardRows
@@ -69,7 +69,7 @@ struct SessionView: View {
 
             cta
         }
-        .lacquerBackground()
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbar {
@@ -306,7 +306,7 @@ struct SessionView: View {
     // MARK: - CTA
 
     private var cta: some View {
-        LacquerPrimaryButton(
+        TactilePrimaryButton(
             title: "+ Vòng \((session.rounds ?? []).count + 1)"
         ) {
             showRoundEntry = true

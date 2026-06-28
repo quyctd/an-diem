@@ -15,7 +15,7 @@ struct HistoryView: View {
                     .padding(.top, Spacing.xs)
                     .padding(.bottom, Spacing.md)
 
-                LacquerHairline()
+                RuleHairline()
                     .padding(.horizontal, Spacing.lg)
 
                 if sessions.isEmpty {
@@ -52,7 +52,7 @@ struct HistoryView: View {
             }
         }
         .scrollIndicators(.hidden)
-        .lacquerBackground()
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationTitle("")

@@ -64,7 +64,7 @@ enum SealGlyph {
 
 #Preview {
     ZStack {
-        LacquerBackground().ignoresSafeArea()
+        AppBackground().ignoresSafeArea()
         VStack(spacing: 24) {
             HStack(spacing: 18) {
                 Seal(glyph: SealGlyph.forRank(1), variant: .winner)

@@ -56,7 +56,7 @@ struct RoundEntryView: View {
 
             bottomDock
         }
-        .lacquerBackground(.phormSurfaceCinnabar)
+        .appBackground(.phormSurfaceCinnabar)
         .presentationBackground(Color.phormSurfaceCinnabar)
         .presentationDragIndicator(.visible)
         .confirmationDialog("Xóa vòng này?", isPresented: $showDeleteConfirm) {

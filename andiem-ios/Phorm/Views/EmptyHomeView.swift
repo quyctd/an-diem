@@ -42,10 +42,10 @@ struct EmptyHomeView: View {
                 .padding(.horizontal, Spacing.xl)
 
                 VStack(spacing: Spacing.sm) {
-                    LacquerPrimaryButton(title: "Mở phiên mới") {
+                    TactilePrimaryButton(title: "Mở phiên mới") {
                         showNewSession = true
                     }
-                    LacquerOutlineButton(title: "Lịch sử") {
+                    TactileOutlineButton(title: "Lịch sử") {
                         showHistory = true
                     }
                 }
@@ -53,7 +53,7 @@ struct EmptyHomeView: View {
                 .padding(.bottom, Spacing.md)
             }
         }
-        .lacquerBackground()
+        .appBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationTitle("")

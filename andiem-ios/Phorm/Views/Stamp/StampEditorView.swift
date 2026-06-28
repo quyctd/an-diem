@@ -39,7 +39,7 @@ struct StampEditorView: View {
 
     var body: some View {
         ZStack {
-            LacquerBackground(surface: .phormSurfaceOxblood).ignoresSafeArea()
+            AppBackground(surface: .phormSurfaceOxblood).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 topChrome
@@ -271,7 +271,7 @@ struct StampEditorView: View {
             }
             .buttonStyle(.plain)
 
-            LacquerPrimaryButton(title: photo == nil ? "Chia sẻ" : "Lưu & chia sẻ") {
+            TactilePrimaryButton(title: photo == nil ? "Chia sẻ" : "Lưu & chia sẻ") {
                 commitAndShare()
             }
         }
