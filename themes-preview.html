@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Noto+Serif+Display:wght@400;500;600;700;800;900&family=IBM+Plex+Serif:wght@300;400;500;600;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     /* ---------- Page chrome ---------- */
     :root {
@@ -97,7 +97,7 @@
       --ochre: #F2B488;            /* peach — negative scores on lacquer night surface */
       --ink-stamp: #f3e8d2;
 
-      font-family: 'Spectral', Georgia, serif;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
       color: var(--cream);
       background:
         radial-gradient(circle at 30% 20%, rgba(255,220,180,0.10), transparent 55%),
@@ -128,11 +128,11 @@
     }
     .hanoi > * { position: relative; z-index: 3; }
 
-    .h-display { font-family: 'Noto Serif Display', 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: -0.01em; }
-    .h-name { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-style: italic; letter-spacing: -0.005em; }
-    .h-num { font-family: 'IBM Plex Serif', 'Spectral', serif; font-weight: 500; font-variant-numeric: tabular-nums; }
-    .h-num-display { font-family: 'Noto Serif Display', serif; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-    .h-label { font-family: 'Spectral', serif; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; font-size: 11px; color: var(--cream-dim); }
+    .h-display { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+    .h-name { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 500; letter-spacing: 0; }
+    .h-num { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .h-num-display { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .h-label { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; font-size: 10px; color: var(--cream-dim); }
     .h-hairline { background: var(--cream); height: 1px; opacity: 0.18; }
     .h-thick-line { background: var(--cream); height: 2px; opacity: 0.32; }
 
@@ -143,7 +143,7 @@
       border-radius: 4px;
       display: inline-flex; align-items: center; justify-content: center;
       color: var(--gold);
-      font-family: 'Noto Serif Display', serif; font-weight: 800;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 700;
       transform: rotate(-3deg);
       background: rgba(217, 178, 90, 0.08);
     }
@@ -187,7 +187,7 @@
     .h-btn-primary {
       background: var(--gold);
       color: var(--surface-deep);
-      font-family: 'Spectral', serif;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
       font-weight: 600;
       letter-spacing: 0.04em;
       box-shadow: 0 1px 0 rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.18);
@@ -195,7 +195,7 @@
     .h-tally {
       letter-spacing: 0.05em;
       color: var(--cream-dim);
-      font-family: 'IBM Plex Serif', serif;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
     }
     .h-pos { color: var(--mint); }      /* 5.81:1 on cinnabar */
     .h-neg { color: var(--ochre); }     /* peach #F2B488 ≈ 4.35:1 on cinnabar — AA Large/bold */
@@ -274,7 +274,7 @@
       background:
         radial-gradient(circle at 35% 30%, #f0d685 0%, #d9b25a 60%, #b89542 100%);
       color: #4a1410;
-      font-family: 'Noto Serif Display', serif;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
       font-weight: 800;
       font-size: 24px;
       display: flex; align-items: center; justify-content: center;
@@ -317,9 +317,9 @@
 
     /* Section eyebrow used twice */
     .seal-eyebrow {
-      font-family: 'Spectral', serif;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
       font-weight: 500;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-size: 11px;
     }
@@ -351,7 +351,7 @@
       --p-gold-bg: rgba(217,178,90,0.12);
       --p-rule: rgba(46,28,22,0.12);
 
-      font-family: 'Spectral', Georgia, serif;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
       color: #2E1C16;
       background: #F2E9D8;
       position: relative;
@@ -369,11 +369,11 @@
     .paper > * { position: relative; z-index: 2; }
 
     /* Paper typography helpers */
-    .p-display  { font-family: 'Noto Serif Display', 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: -0.01em; }
-    .p-name     { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-style: italic; letter-spacing: -0.005em; }
-    .p-num      { font-family: 'IBM Plex Serif', 'Spectral', serif; font-weight: 500; font-variant-numeric: tabular-nums; }
-    .p-num-display { font-family: 'Noto Serif Display', serif; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-    .p-label    { font-family: 'Spectral', serif; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; font-size: 11px; color: #6B5A4A; }
+    .p-display  { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+    .p-name     { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 500; letter-spacing: 0; }
+    .p-num      { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .p-num-display { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .p-label    { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; font-size: 10px; color: #6B5A4A; }
     .p-hairline { background: #2E1C16; height: 1px; opacity: 0.12; }
     .p-thick-line { background: #8C2A22; height: 2px; opacity: 0.45; }
 
@@ -384,7 +384,7 @@
       border-radius: 4px;
       display: inline-flex; align-items: center; justify-content: center;
       color: #8C2A22;
-      font-family: 'Noto Serif Display', serif; font-weight: 800;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif; font-weight: 700;
       transform: rotate(-3deg);
       background: rgba(140,42,34,0.06);
     }
@@ -419,7 +419,7 @@
     .p-btn-primary {
       background: #8C2A22;
       color: #F2E9D8;
-      font-family: 'Spectral', serif;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
       font-weight: 600;
       letter-spacing: 0.04em;
       box-shadow: 0 1px 0 rgba(0,0,0,0.15);
@@ -449,12 +449,12 @@
        ============================================================ -->
   <header class="max-w-5xl mx-auto px-6 pt-16 pb-10">
     <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Ấn Điểm — Hà Nội cũ</p>
-    <h1 style="font-family:'Noto Serif Display',serif; font-weight:800;" class="text-5xl md:text-6xl mt-4 leading-[1.02]">
-      Không phải <span class="italic" style="color:#d9b25a;">terminal đen</span>.<br/>
-      Không phải <span class="italic" style="color:#f5c850;">SaaS xám</span>.
+    <h1 style="font-family:'Inter',-apple-system,system-ui,sans-serif; font-weight:800;" class="text-5xl md:text-6xl mt-4 leading-[1.02]">
+      Không phải <span style="color:#d9b25a;">terminal đen</span>.<br/>
+      Không phải <span style="color:#f5c850;">SaaS xám</span>.
     </h1>
-    <p class="mt-6 max-w-2xl text-base leading-relaxed text-amber-50/70" style="font-family:'Spectral',serif;">
-      Bốn màn hình lõi (bảng xếp hạng, nhập vòng, kết thúc, lịch sử) cộng với khoảnh khắc <em>đóng dấu</em> ở cuối phiên — render bằng ngôn ngữ thiết kế Việt vernacular print: sơn lacquer, ấn vàng, chữ serif.
+    <p class="mt-6 max-w-2xl text-base leading-relaxed text-amber-50/70">
+      Bốn màn hình lõi (bảng xếp hạng, nhập vòng, kết thúc, lịch sử) cộng với khoảnh khắc đóng dấu ở cuối phiên — render bằng ngôn ngữ thiết kế Việt vernacular: sơn lacquer, ấn vàng, chữ sans sạch.
     </p>
     <div class="mt-8 flex gap-3 text-xs uppercase tracking-[0.18em] text-amber-50/40">
       <span>Quý <span class="opacity-50">·</span></span>
@@ -472,9 +472,9 @@
     <div class="flex items-end justify-between border-b border-amber-50/10 pb-6">
       <div>
         <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Hướng 01 · đêm / lacquer</p>
-        <h2 style="font-family:'Noto Serif Display',serif; font-weight:800;" class="text-4xl md:text-5xl mt-2 italic" >Hà Nội cũ</h2>
-        <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60" style="font-family:'Spectral',serif;">
-          Nhãn bao diêm Thống Nhất, vỏ chai Bia Hà Nội, lá thư đánh máy ngày cũ — đọc lại bằng con mắt thiết kế đương đại. Mỗi session là một <em>màu lacquer</em> riêng (son, ngà, ngọc, hoàng thổ). Số liệu in nét, dấu son đóng lên thứ hạng.
+        <h2 style="font-family:'Inter',-apple-system,system-ui,sans-serif; font-weight:800;" class="text-4xl md:text-5xl mt-2">Hà Nội cũ</h2>
+        <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60">
+          Nhãn bao diêm Thống Nhất, vỏ chai Bia Hà Nội, lá thư đánh máy ngày cũ — đọc lại bằng con mắt thiết kế đương đại. Mỗi session là một màu lacquer riêng (son, ngà, ngọc, hoàng thổ). Số liệu in nét, dấu son đóng lên thứ hạng.
         </p>
       </div>
       <div class="hidden md:flex gap-2 text-[10px] uppercase tracking-[0.18em] text-amber-50/40">
@@ -595,32 +595,32 @@
             </div>
 
             <div class="px-5 mt-6 space-y-3.5">
-              <!-- Quý cell — filled -->
-              <div class="flex items-center justify-between">
+              <!-- Quý cell — filled (inactive, receded) -->
+              <div class="flex items-center justify-between" style="opacity:0.45;">
                 <p class="h-name text-[18px]">Quý</p>
                 <div class="h-cell px-3 py-2 w-[100px] text-right">
-                  <p class="h-num-display text-[22px] leading-none h-neg">−4</p>
+                  <p class="h-num-display text-[20px] leading-none h-neg">−4</p>
                 </div>
               </div>
-              <!-- Nam cell — filled -->
-              <div class="flex items-center justify-between">
+              <!-- Nam cell — filled (inactive, receded) -->
+              <div class="flex items-center justify-between" style="opacity:0.45;">
                 <p class="h-name text-[18px]">Nam</p>
                 <div class="h-cell px-3 py-2 w-[100px] text-right">
-                  <p class="h-num-display text-[22px] leading-none h-pos">+6</p>
+                  <p class="h-num-display text-[20px] leading-none h-pos">+6</p>
                 </div>
               </div>
-              <!-- Linh cell — active focus -->
-              <div class="flex items-center justify-between">
-                <p class="h-name text-[18px]" style="color:#d9b25a">Linh</p>
-                <div class="h-cell h-cell--active px-3 py-2 w-[100px] text-right">
-                  <p class="h-num-display text-[22px] leading-none" style="color:#d9b25a">+5<span class="inline-block w-[2px] h-[20px] ml-1 align-middle" style="background:#d9b25a; animation: blink 1s steps(1) infinite;"></span></p>
+              <!-- Linh cell — ACTIVE FOCUS (dominant) -->
+              <div class="flex items-center justify-between py-0.5">
+                <p class="h-name text-[18px]" style="color:var(--mint); font-weight:600;">Linh</p>
+                <div class="px-3 py-3 w-[100px] text-right" style="background:rgba(182,224,194,0.20); border:2px solid var(--mint); border-radius:2px;">
+                  <p class="h-num-display text-[34px] leading-none" style="color:var(--mint); font-variant-numeric:tabular-nums; font-weight:800;">+5<span class="inline-block w-[2px] h-[26px] ml-1 align-middle" style="background:var(--mint); animation: blink 1s steps(1) infinite;"></span></p>
                 </div>
               </div>
-              <!-- Hoàng cell — sealed (auto-fill) -->
-              <div class="flex items-center justify-between">
+              <!-- Hoàng cell — sealed (auto-fill, distinct but quieter than focused) -->
+              <div class="flex items-center justify-between" style="opacity:0.70;">
                 <p class="h-name text-[18px]" style="color:#d6c4a0;">Hoàng</p>
                 <div class="h-cell h-cell--sealed px-3 py-2 w-[100px] text-right relative">
-                  <p class="h-num-display text-[22px] leading-none">−7</p>
+                  <p class="h-num-display text-[20px] leading-none">−7</p>
                   <span class="absolute -top-2 -right-2 h-seal h-stamp-in" style="width:22px;height:22px;font-size:11px;color:var(--surface-deep);background:var(--gold);border-color:var(--gold);">✓</span>
                 </div>
               </div>
@@ -664,7 +664,7 @@
             #6e1d18;">
             <div class="px-5 pt-12 pb-3">
               <p class="h-label" style="color:var(--gold-bright);">Phiên kết thúc</p>
-              <p class="h-display text-[24px] leading-tight mt-1 italic">Phỏm tối thứ Sáu</p>
+              <p class="h-display text-[24px] leading-tight mt-1">Phỏm tối thứ Sáu</p>
               <p class="h-label mt-1">12 vòng · 1g 48p · 25.05</p>
             </div>
 
@@ -719,7 +719,7 @@
             </div>
 
             <div class="absolute left-5 right-5 bottom-7 flex gap-2">
-              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #d9b25a; color:#d9b25a; font-family:'Spectral',serif; font-weight:600;">
+              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #d9b25a; color:#d9b25a; font-weight:600;">
                 Chia sẻ
               </button>
               <button class="flex-1 h-btn-primary py-3 rounded-[3px] text-[12px] tracking-wider uppercase">
@@ -739,7 +739,7 @@
             <div class="px-5 pt-12 pb-3 flex items-center justify-between">
               <div>
                 <p class="h-label">Lưu trữ</p>
-                <p class="h-display text-[22px] leading-tight mt-1 italic">Lịch sử phiên</p>
+                <p class="h-display text-[22px] leading-tight mt-1">Lịch sử phiên</p>
               </div>
               <p class="h-num text-[14px]" style="color:#d6c4a0;">37 phiên</p>
             </div>
@@ -816,7 +816,7 @@
     </div>
 
     <!-- Theme rationale row -->
-    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm" style="font-family:'Spectral',serif;">
+    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm">
       <div>
         <p class="h-label" style="color:#d9b25a;">Mặt phẳng</p>
         <p class="mt-2 leading-relaxed text-amber-50/75">
@@ -826,13 +826,13 @@
       <div>
         <p class="h-label" style="color:#d9b25a;">Chữ</p>
         <p class="mt-2 leading-relaxed text-amber-50/75">
-          Noto Serif Display cho tiêu đề, Cormorant Garamond italic cho tên người chơi, IBM Plex Serif cho số. Không một dòng SF Mono — số là chữ có nét, không phải đèn LED.
+          Inter humanist sans cho mọi chữ — tiêu đề, tên người chơi, số. Tabular figures giữ thẳng cột điểm. Không SF Mono, không serif in ấn — bản sắc đến từ màu lacquer và ấn son, không từ kiểu chữ.
         </p>
       </div>
       <div>
         <p class="h-label" style="color:#d9b25a;">Khoảnh khắc</p>
         <p class="mt-2 leading-relaxed text-amber-50/75">
-          Ô auto-fill hiện ra như một con dấu đóng xuống (<em>封</em>). Cuối phiên hiện ấn vàng cho người dẫn, tem chéo cho người cuối — không pop-up confetti, không &quot;You won&quot;.
+          Ô auto-fill hiện ra như một con dấu đóng xuống. Cuối phiên hiện ấn vàng cho người dẫn, dấu mờ cho người cuối — không pop-up confetti, không "You won".
         </p>
       </div>
     </div>
@@ -851,9 +851,9 @@
     <div class="flex items-end justify-between border-b border-amber-50/10 pb-6">
       <div>
         <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Hướng 02 · ban ngày</p>
-        <h2 style="font-family:'Noto Serif Display',serif; font-weight:800;" class="text-4xl md:text-5xl mt-2 italic">Giấy ấm</h2>
-        <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60" style="font-family:'Spectral',serif;">
-          Cùng ngôn ngữ thiết kế — ấn son, số serif, tên nghiêng — nhưng nền là giấy in ấm thay vì lacquer. Ban ngày, ánh sáng phòng cao; ban đêm iOS tự đổ bóng sâu thêm. Chữ ink đậm trên giấy cream, điểm cộng jade, điểm trừ rust.
+        <h2 style="font-family:'Inter',-apple-system,system-ui,sans-serif; font-weight:800;" class="text-4xl md:text-5xl mt-2">Giấy ấm</h2>
+        <p class="mt-3 max-w-xl text-sm leading-relaxed text-amber-50/60">
+          Cùng ngôn ngữ thiết kế — ấn son, sans sạch — nhưng nền là giấy in ấm thay vì lacquer. Ban ngày, ánh sáng phòng cao; ban đêm iOS tự đổ bóng sâu thêm. Chữ ink đậm trên giấy cream, điểm cộng jade, điểm trừ rust.
         </p>
       </div>
       <div class="hidden md:flex gap-2 text-[10px] uppercase tracking-[0.18em] text-amber-50/40">
@@ -974,32 +974,32 @@
             </div>
 
             <div class="px-5 mt-6 space-y-3.5">
-              <!-- Quý cell — filled -->
-              <div class="flex items-center justify-between">
+              <!-- Quý cell — filled (inactive, receded) -->
+              <div class="flex items-center justify-between" style="opacity:0.45;">
                 <p class="p-name text-[18px]" style="color:#2E1C16;">Quý</p>
                 <div class="p-cell px-3 py-2 w-[100px] text-right">
-                  <p class="p-num-display text-[22px] leading-none p-neg">−4</p>
+                  <p class="p-num-display text-[20px] leading-none p-neg">−4</p>
                 </div>
               </div>
-              <!-- Nam cell — filled -->
-              <div class="flex items-center justify-between">
+              <!-- Nam cell — filled (inactive, receded) -->
+              <div class="flex items-center justify-between" style="opacity:0.45;">
                 <p class="p-name text-[18px]" style="color:#2E1C16;">Nam</p>
                 <div class="p-cell px-3 py-2 w-[100px] text-right">
-                  <p class="p-num-display text-[22px] leading-none p-pos">+6</p>
+                  <p class="p-num-display text-[20px] leading-none p-pos">+6</p>
                 </div>
               </div>
-              <!-- Linh cell — active focus -->
-              <div class="flex items-center justify-between">
-                <p class="p-name text-[18px]" style="color:#8C2A22;">Linh</p>
-                <div class="p-cell p-cell--active px-3 py-2 w-[100px] text-right">
-                  <p class="p-num-display text-[22px] leading-none" style="color:#8C2A22;">+5<span class="inline-block w-[2px] h-[20px] ml-1 align-middle" style="background:#8C2A22; animation: blink 1s steps(1) infinite;"></span></p>
+              <!-- Linh cell — ACTIVE FOCUS (dominant) -->
+              <div class="flex items-center justify-between py-0.5">
+                <p class="p-name text-[18px]" style="color:#1B6B47; font-weight:600;">Linh</p>
+                <div class="px-3 py-3 w-[100px] text-right" style="background:rgba(27,107,71,0.12); border:2px solid #1B6B47; border-radius:2px;">
+                  <p class="p-num-display text-[34px] leading-none" style="color:#1B6B47; font-variant-numeric:tabular-nums; font-weight:800;">+5<span class="inline-block w-[2px] h-[26px] ml-1 align-middle" style="background:#1B6B47; animation: blink 1s steps(1) infinite;"></span></p>
                 </div>
               </div>
-              <!-- Hoàng cell — sealed (auto-fill) -->
-              <div class="flex items-center justify-between">
+              <!-- Hoàng cell — sealed (auto-fill, distinct but quieter than focused) -->
+              <div class="flex items-center justify-between" style="opacity:0.70;">
                 <p class="p-name text-[18px]" style="color:#6B5A4A;">Hoàng</p>
                 <div class="p-cell p-cell--sealed px-3 py-2 w-[100px] text-right relative">
-                  <p class="p-num-display text-[22px] leading-none">−7</p>
+                  <p class="p-num-display text-[20px] leading-none">−7</p>
                   <span class="absolute -top-2 -right-2 p-seal h-stamp-in" style="width:22px;height:22px;font-size:11px;color:#F2E9D8;background:#8C2A22;border-color:#8C2A22;">✓</span>
                 </div>
               </div>
@@ -1043,7 +1043,7 @@
             #EDE3CE;">
             <div class="px-5 pt-12 pb-3">
               <p class="p-label" style="color:#8C2A22;">Phiên kết thúc</p>
-              <p class="p-display text-[24px] leading-tight mt-1 italic" style="color:#2E1C16;">Phỏm tối thứ Sáu</p>
+              <p class="p-display text-[24px] leading-tight mt-1" style="color:#2E1C16;">Phỏm tối thứ Sáu</p>
               <p class="p-label mt-1">12 vòng · 1g 48p · 25.05</p>
             </div>
 
@@ -1098,7 +1098,7 @@
             </div>
 
             <div class="absolute left-5 right-5 bottom-7 flex gap-2">
-              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #8C2A22; color:#8C2A22; font-family:'Spectral',serif; font-weight:600;">
+              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #8C2A22; color:#8C2A22; font-weight:600;">
                 Chia sẻ
               </button>
               <button class="flex-1 p-btn-primary py-3 rounded-[3px] text-[12px] tracking-wider uppercase">
@@ -1118,7 +1118,7 @@
             <div class="px-5 pt-12 pb-3 flex items-center justify-between">
               <div>
                 <p class="p-label">Lưu trữ</p>
-                <p class="p-display text-[22px] leading-tight mt-1 italic" style="color:#2E1C16;">Lịch sử phiên</p>
+                <p class="p-display text-[22px] leading-tight mt-1" style="color:#2E1C16;">Lịch sử phiên</p>
               </div>
               <p class="p-num text-[14px]" style="color:#6B5A4A;">37 phiên</p>
             </div>
@@ -1195,21 +1195,21 @@
     </div>
 
     <!-- Paper section rationale -->
-    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm" style="font-family:'Spectral',serif;">
+    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm">
       <div>
-        <p style="font-family:'Spectral',serif; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; font-size:11px; color:#d9b25a;">Cùng một bản sắc</p>
+        <p style="font-weight:500; letter-spacing:0.12em; text-transform:uppercase; font-size:10px; color:#d9b25a;">Cùng một bản sắc</p>
         <p class="mt-2 leading-relaxed text-amber-50/75">
-          Ấn son, số Noto, tên Cormorant italic — tất cả giữ nguyên. Chỉ đổi nền từ lacquer sậm sang giấy ấm. Ban ngày đọc rõ hơn, ban đêm iOS tự tối màu nền xuống một chút — không cần hai chế độ sáng/tối riêng biệt.
+          Ấn son, sans sạch — tất cả giữ nguyên. Chỉ đổi nền từ lacquer sậm sang giấy ấm. Ban ngày đọc rõ hơn, ban đêm iOS tự tối màu nền xuống một chút — không cần hai chế độ sáng/tối riêng biệt.
         </p>
       </div>
       <div>
-        <p style="font-family:'Spectral',serif; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; font-size:11px; color:#d9b25a;">Tương phản đảm bảo</p>
+        <p style="font-weight:500; letter-spacing:0.12em; text-transform:uppercase; font-size:10px; color:#d9b25a;">Tương phản đảm bảo</p>
         <p class="mt-2 leading-relaxed text-amber-50/75">
           Ink đậm <code style="font-size:10px;">#2E1C16</code> trên cream <code style="font-size:10px;">#F2E9D8</code>: &gt;12:1 (AAA). Jade <code style="font-size:10px;">#1B6B47</code>: 5.8:1. Rust <code style="font-size:10px;">#A63A1E</code>: 4.5:1 (AA). Ký hiệu +/− luôn đi kèm màu — mù màu đọc được.
         </p>
       </div>
       <div>
-        <p style="font-family:'Spectral',serif; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; font-size:11px; color:#d9b25a;">Từ ngữ đời thường</p>
+        <p style="font-weight:500; letter-spacing:0.12em; text-transform:uppercase; font-size:10px; color:#d9b25a;">Từ ngữ đời thường</p>
         <p class="mt-2 leading-relaxed text-amber-50/75">
           "Nhất bàn" / "Bét bàn" thay cho "Vô địch ván" / "Tem cuối bàn". Ấn son giữ nguyên hình dạng nhưng in số thường thay Hán tự — ai cầm máy cũng đọc ngay, không cần biết chữ Hán.
         </p>
@@ -1228,11 +1228,11 @@
   <section class="max-w-[1400px] mx-auto px-6 pt-2 pb-24">
     <div class="border-b border-amber-50/10 pb-6">
       <p class="seal-eyebrow text-amber-200/60">Tính năng mới · cuối phiên</p>
-      <h2 class="mt-3 text-3xl md:text-4xl leading-tight" style="font-family:'Noto Serif Display',serif; font-weight:700;">
-        Đóng dấu — <span class="italic" style="color:#d9b25a;">một ảnh, hai chạm</span>.
+      <h2 class="mt-3 text-3xl md:text-4xl leading-tight" style="font-family:'Inter',-apple-system,system-ui,sans-serif; font-weight:700;">
+        Đóng dấu — <span style="color:#d9b25a;">một ảnh, hai chạm</span>.
       </h2>
-      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-amber-50/70" style="font-family:'Spectral',serif;">
-        Cuối phiên, chủ trò chụp một ảnh nhóm (hoặc chọn ảnh có sẵn trong thư viện), rồi chạm vào mặt vô địch — ấn vàng đóng lên — và mặt cuối bàn — tem chéo gạch xuống. Ảnh xuất là khung dọc 9:16, kết cấu lacquer, tâm điểm để giữa khung an toàn cho mọi nền tảng: Locket, Instagram, Reels, TikTok, Zalo.
+      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-amber-50/70">
+        Cuối phiên, chủ trò chụp một ảnh nhóm (hoặc chọn ảnh có sẵn trong thư viện), rồi chạm vào mặt vô địch — ấn vàng đóng lên — và mặt cuối bàn — dấu mờ gạch xuống. Ảnh xuất là khung dọc 9:16, kết cấu lacquer, tâm điểm để giữa khung an toàn cho mọi nền tảng: Locket, Instagram, Reels, TikTok, Zalo.
       </p>
     </div>
 
@@ -1296,13 +1296,13 @@
                 <div class="h-seal h-seal--win" style="width:28px; height:28px; font-size:16px;">壹</div>
                 <div class="flex-1">
                   <p class="h-label" style="color:var(--gold-bright);">Chưa đóng dấu</p>
-                  <p class="text-[12px] mt-0.5" style="font-family:'Spectral',serif; color:var(--cream);">Chụp ảnh nhóm — hoặc chọn ảnh có sẵn.</p>
+                  <p class="text-[12px] mt-0.5" style="color:var(--cream);">Chụp ảnh nhóm — hoặc chọn ảnh có sẵn.</p>
                 </div>
               </div>
             </div>
 
             <div class="absolute left-5 right-5 bottom-7 flex gap-2">
-              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #d9b25a; color:#d9b25a; font-family:'Spectral',serif; font-weight:600;">
+              <button class="flex-1 py-3 rounded-[3px] text-[12px] tracking-wider uppercase" style="border:1px solid #d9b25a; color:#d9b25a; font-weight:600;">
                 Bỏ qua
               </button>
               <button class="flex-1 h-btn-primary py-3 rounded-[3px] text-[12px] tracking-wider uppercase">
@@ -1351,7 +1351,7 @@
                     <circle cx="16" cy="17.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
                     <circle cx="24.5" cy="12.5" r="0.9" fill="currentColor"/>
                   </svg>
-                  <p class="mt-2 text-[11px] tracking-wider uppercase" style="font-family:'Spectral',serif; color:var(--gold); font-weight:600;">Chụp ngay</p>
+                  <p class="mt-2 text-[11px] tracking-wider uppercase" style="color:var(--gold); font-weight:600;">Chụp ngay</p>
                 </button>
                 <!-- Library tile -->
                 <button class="rounded-[3px] p-4 flex flex-col items-center" style="border:1px solid rgba(243,232,210,0.34); background:rgba(0,0,0,0.18);">
@@ -1361,11 +1361,11 @@
                     <circle cx="9" cy="16" r="1.5" fill="currentColor"/>
                     <path d="M5 24 L10 19 L14 22 L19 17 L23 22 L23 25 Z" fill="currentColor" opacity="0.6"/>
                   </svg>
-                  <p class="mt-2 text-[11px] tracking-wider uppercase" style="font-family:'Spectral',serif; color:var(--cream); font-weight:500;">Thư viện</p>
+                  <p class="mt-2 text-[11px] tracking-wider uppercase" style="color:var(--cream); font-weight:500;">Thư viện</p>
                 </button>
               </div>
 
-              <button class="w-full mt-4 py-2.5 text-[11px] tracking-wider uppercase" style="color:var(--cream-dim); font-family:'Spectral',serif;">
+              <button class="w-full mt-4 py-2.5 text-[11px] tracking-wider uppercase" style="color:var(--cream-dim);">
                 Hủy
               </button>
             </div>
@@ -1426,10 +1426,10 @@
               <p class="h-name text-[28px] text-center leading-none mt-1" style="color:var(--cream);">Quý</p>
               <p class="h-label text-center mt-1.5" style="color:var(--cream-dim);">— để đóng ấn vàng —</p>
               <div class="mt-4 flex gap-2">
-                <button class="flex-1 py-2.5 rounded-[3px] text-[11px] tracking-wider uppercase" style="color:var(--cream-dim); font-family:'Spectral',serif;">
+                <button class="flex-1 py-2.5 rounded-[3px] text-[11px] tracking-wider uppercase" style="color:var(--cream-dim);">
                   Đổi ảnh
                 </button>
-                <button class="flex-1 py-2.5 rounded-[3px] text-[11px] tracking-wider uppercase" style="color:var(--cream-dim); font-family:'Spectral',serif;">
+                <button class="flex-1 py-2.5 rounded-[3px] text-[11px] tracking-wider uppercase" style="color:var(--cream-dim);">
                   Bỏ qua
                 </button>
               </div>
@@ -1494,7 +1494,7 @@
                 </div>
               </div>
               <div class="flex gap-2">
-                <button class="px-3 py-3 rounded-[3px] text-[11px] tracking-wider uppercase" style="border:1px solid #d9b25a; color:#d9b25a; font-family:'Spectral',serif; font-weight:600;">
+                <button class="px-3 py-3 rounded-[3px] text-[11px] tracking-wider uppercase" style="border:1px solid #d9b25a; color:#d9b25a; font-weight:600;">
                   Đổi
                 </button>
                 <button class="flex-1 h-btn-primary py-3 rounded-[3px] text-[12px] tracking-wider uppercase">
@@ -1663,7 +1663,7 @@
     </div>
 
     <!-- Rationale row -->
-    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm" style="font-family:'Spectral',serif;">
+    <div class="mt-12 grid md:grid-cols-3 gap-8 text-sm">
       <div>
         <p class="h-label" style="color:#d9b25a;">Khi nào</p>
         <p class="mt-2 leading-relaxed text-amber-50/75">
@@ -1685,7 +1685,7 @@
     </div>
 
     <!-- Edge case footnote -->
-    <div class="mt-10 max-w-3xl text-xs leading-relaxed text-amber-50/55 italic" style="font-family:'Spectral',serif;">
+    <div class="mt-10 max-w-3xl text-xs leading-relaxed text-amber-50/55">
       Trường hợp người vô địch (hoặc cuối bàn) là người cầm máy, không có mặt trong ảnh nhóm: ấn/tem vẫn xuất hiện ở bảng xếp hạng dưới, chỉ không đóng lên ảnh. Đây là &quot;lore của ai cầm máy&quot; — đủ rồi, không cần bắt chụp selfie thêm.
     </div>
   </section>
@@ -1695,7 +1695,7 @@
        ============================================================ -->
   <footer class="max-w-3xl mx-auto px-6 pb-24 text-center">
     <p class="text-xs uppercase tracking-[0.22em] text-amber-200/60">Bước tiếp</p>
-    <p class="mt-4 text-sm leading-relaxed text-amber-50/70" style="font-family:'Spectral',serif;">
+    <p class="mt-4 text-sm leading-relaxed text-amber-50/70">
       Hà Nội cũ đã đi vào code — bốn màn hình lõi chạy thật trong SwiftUI. Đóng dấu là bước mở rộng tiếp theo: concept đã đứng, prototype thật trên iPhone là bước sau. Chỉnh ảnh, thay layout xuất, thêm tem khác — tất cả đều có thể vặn trước khi compile.
     </p>
   </footer>
