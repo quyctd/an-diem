@@ -30,7 +30,7 @@ struct EmptyHomeView: View {
                                 .multilineTextAlignment(.center)
                             Text("Ghi điểm cho bàn phỏm, tá lả, sâm lốc. Mở là chơi — cuối bàn rõ ai ăn ai thua, không cần nhẩm, không ai cãi.")
                                 .font(.phormBodyMd)
-                                .foregroundStyle(Color.phormCream.opacity(0.65))
+                                .foregroundStyle(Color.phormCreamDim)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, Spacing.lg)
                                 .padding(.top, Spacing.xs)

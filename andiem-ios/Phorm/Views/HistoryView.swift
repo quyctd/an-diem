@@ -101,7 +101,7 @@ struct HistoryView: View {
                 .multilineTextAlignment(.center)
             Text("Mở ván đầu để bắt đầu ghi.")
                 .font(.phormBodySm)
-                .foregroundStyle(Color.phormCream.opacity(0.5))
+                .foregroundStyle(Color.phormCreamDim)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)

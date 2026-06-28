@@ -17,7 +17,7 @@ struct ImportConfirmView: View {
                     detailBlock
                     Text("Phiên đang chơi của bạn sẽ tự đóng vào lịch sử trước khi mở phiên này.")
                         .font(.phormBodySm)
-                        .foregroundStyle(Color.phormCream.opacity(0.6))
+                        .foregroundStyle(Color.phormCreamDim)
                 }
                 .padding(.horizontal, Spacing.lg)
                 .padding(.top, Spacing.xl)
@@ -39,7 +39,7 @@ struct ImportConfirmView: View {
                 SectionLabel(text: "Nhận phiên", tone: .gold)
                 Text("Có ai vừa gửi")
                     .font(.phormTitleLg)
-                    .foregroundStyle(Color.phormCream)
+                    .foregroundStyle(Color.bodyText)
             }
             Spacer()
         }
@@ -49,7 +49,7 @@ struct ImportConfirmView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             Text(dto.name)
                 .font(.phormNameDisplay)
-                .foregroundStyle(Color.phormCream)
+                .foregroundStyle(Color.bodyText)
                 .lineLimit(2)
             Text(dto.players.joined(separator: " · "))
                 .font(.phormNumberSm)
@@ -62,12 +62,7 @@ struct ImportConfirmView: View {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.md)
-        .background(Color.black.opacity(0.20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .stroke(Color.phormCream.opacity(0.18), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .tactileCard(radius: 14)
     }
 
     private func detailChip(_ s: String) -> some View {
@@ -79,8 +74,8 @@ struct ImportConfirmView: View {
             .padding(.horizontal, Spacing.sm)
             .padding(.vertical, 4)
             .background(
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                    .stroke(Color.phormGoldBright.opacity(0.55), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(Color.phormGoldBright.opacity(0.55), lineWidth: 1)
             )
     }
 

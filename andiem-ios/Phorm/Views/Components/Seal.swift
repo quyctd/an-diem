@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// Rank seal — the "ấn vàng" / "tem chéo" gold-leaf box from themes-preview.html.
+/// Rank seal — a small Tết-red stamp box. Largely superseded by `Coin`; kept for the
+/// import-confirm header and splash preview.
 /// Three variants:
-///   - `.winner`: solid gold fill, cinnabar-deep glyph, glow halo. Position 1 only.
+///   - `.winner`: solid red fill, light glyph, glow halo. Position 1 only.
 ///   - `.last`:   cream-dim border + cream-dim ×. Renders in 4+ player sessions.
-///   - `.default`: gold border + faint gold tint + gold Hán-Việt numeral. Mid ranks.
+///   - `.default`: red border + faint red tint + red numeral. Mid ranks.
 struct Seal: View {
     enum Variant { case `default`, winner, last }
 
@@ -14,9 +15,9 @@ struct Seal: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(fillColor)
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .strokeBorder(borderColor, lineWidth: 1.5)
             Text(glyph)
                 .font(.system(size: glyphSize, weight: .heavy, design: .default))
