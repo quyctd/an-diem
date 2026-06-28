@@ -20,7 +20,7 @@ struct Coin: View {
         switch variant {
         case .seat:   return .phormCreamDim
         case .winner: return Color(red: 0x3A/255, green: 0x22/255, blue: 0x06/255)
-        case .last:   return .scoreNegative
+        case .last:   return .phormCreamDim
         }
     }
     private var ring: Color {
