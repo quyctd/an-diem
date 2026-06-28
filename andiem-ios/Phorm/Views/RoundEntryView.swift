@@ -15,12 +15,12 @@ struct RoundEntryView: View {
     @State private var draft: RoundDraft
     @State private var showDeleteConfirm = false
 
-    init(session: Session, mode: Mode) {
+    init(session: Session, mode: Mode, prefill: [String: Int]? = nil) {
         self.session = session
         self.mode = mode
         switch mode {
         case .new:
-            _draft = State(initialValue: RoundDraft(playerNames: session.playerNames))
+            _draft = State(initialValue: RoundDraft(playerNames: session.playerNames, existing: prefill))
         case .edit(let round):
             let map = Dictionary(
                 uniqueKeysWithValues: (round.scores ?? []).map { ($0.playerName, $0.value) }
