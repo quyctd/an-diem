@@ -64,5 +64,10 @@ struct EmptyHomeView: View {
         .navigationDestination(isPresented: $showHistory) {
             HistoryView()
         }
+        #if DEBUG
+        .onAppear {
+            if ScreenshotSupport.openTarget == .newSession { showNewSession = true }
+        }
+        #endif
     }
 }

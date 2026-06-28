@@ -10,6 +10,8 @@ struct SessionView: View {
     @State private var deletingRound: Round?
     @State private var editingName = false
     @State private var nameDraft = ""
+    @State private var showSummaryRoute = false
+    @State private var showHistoryRoute = false
 
     private var sortedRounds: [Round] {
         (session.rounds ?? []).sorted { $0.index > $1.index }
@@ -127,6 +129,22 @@ struct SessionView: View {
         } message: { _ in
             Text("Không thể hoàn tác.")
         }
+        .navigationDestination(isPresented: $showSummaryRoute) {
+            SummaryView(session: session)
+        }
+        .navigationDestination(isPresented: $showHistoryRoute) {
+            HistoryView()
+        }
+        #if DEBUG
+        .onAppear {
+            switch ScreenshotSupport.openTarget {
+            case .roundEntry: showRoundEntry = true
+            case .summary:    showSummaryRoute = true
+            case .history:    showHistoryRoute = true
+            default:          break
+            }
+        }
+        #endif
     }
 
     // MARK: - Header
