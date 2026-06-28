@@ -19,7 +19,23 @@ struct ScoreChip: View {
     private var label: String { value == nil ? "0" : ScoreFormat.signed(value!) }
     private var isZeroOrEmpty: Bool { (value ?? 0) == 0 }
     private var dims: (w: CGFloat, h: CGFloat, font: CGFloat, radius: CGFloat) {
-        size == .large ? (82, 50, 30, 16) : (58, 36, 20, 14)
+        size == .large ? (82, 50, 30, 16) : (58, 36, 20, 11)
+    }
+    /// Bottom-bevel ink matched to the fill semantics (tc-chip).
+    private var bevel: Color {
+        switch value ?? 0 {
+        case let v where v > 0: return .chipUpBevel
+        case let v where v < 0: return .chipDownBevel
+        default:                return .chipNeutralBevel
+        }
+    }
+    /// Colored ambient glow under up/down chips; none for neutral.
+    private var glow: Color {
+        switch value ?? 0 {
+        case let v where v > 0: return Color.scorePositive.opacity(0.30)
+        case let v where v < 0: return Color.scoreNegative.opacity(0.30)
+        default:                return .clear
+        }
     }
 
     var body: some View {
@@ -30,16 +46,25 @@ struct ScoreChip: View {
             .background(
                 RoundedRectangle(cornerRadius: dims.radius, style: .continuous)
                     .fill(fill)
+                    // Bottom-bevel strip — tactile depth on the chip's own fill.
                     .overlay(
                         RoundedRectangle(cornerRadius: dims.radius, style: .continuous)
-                            .fill(Color.black.opacity(0.12))
+                            .fill(bevel)
                             .mask(alignment: .bottom) { Rectangle().frame(height: 3) }
                     )
-                    .shadow(color: fill.opacity(0.35), radius: 6, y: 3)
+                    .shadow(color: glow, radius: 14, y: 4)
+                    .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+            )
+            // Focus ring: surface-gap then accent ring (tc-chip-focus).
+            .overlay(
+                RoundedRectangle(cornerRadius: dims.radius + 2.5, style: .continuous)
+                    .strokeBorder(Color.phormSurfaceCinnabar, lineWidth: isFocused ? 2.5 : 0)
+                    .padding(-2.5)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: dims.radius, style: .continuous)
-                    .strokeBorder(Color.phormPrimary, lineWidth: isFocused ? 3 : 0)
+                RoundedRectangle(cornerRadius: dims.radius + 5, style: .continuous)
+                    .strokeBorder(Color.phormPrimary, lineWidth: isFocused ? 2.5 : 0)
+                    .padding(-5)
             )
             .animation(.spring(response: 0.28, dampingFraction: 0.7), value: size)
             .accessibilityLabel(Text(label))
