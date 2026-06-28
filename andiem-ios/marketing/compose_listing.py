@@ -5,11 +5,15 @@ import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-SHOTS = os.path.join(ROOT, "raw")
+# Inputs (frame, fonts) always live next to the script. Output root (raw + listing)
+# is overridable via MARKETING_OUT so the test can run in a temp dir without ever
+# clobbering the real captures or listing.
+OUT_ROOT = os.environ.get("MARKETING_OUT", ROOT)
+SHOTS = os.path.join(OUT_ROOT, "raw")
 FRAMES_DIR = os.path.join(ROOT, "frames")
 FONTS_DIR = os.path.join(ROOT, "fonts")
-OUT69 = os.path.join(ROOT, "listing", "iphone-6.9")
-OUT65 = os.path.join(ROOT, "listing", "iphone-6.5")
+OUT69 = os.path.join(OUT_ROOT, "listing", "iphone-6.9")
+OUT65 = os.path.join(OUT_ROOT, "listing", "iphone-6.5")
 for d in (OUT69, OUT65):
     os.makedirs(d, exist_ok=True)
 
@@ -135,7 +139,7 @@ def main():
     for i in range(1, len(FRAMES) + 1):
         th = Image.open(os.path.join(OUT69, f"{i:02d}.png")).resize((TH_W, TH_H), Image.LANCZOS)
         sheet.paste(th, (PAD_CS + (i - 1) * (TH_W + GAP), PAD_CS))
-    sheet.save(os.path.join(ROOT, "contact-sheet.png"))
+    sheet.save(os.path.join(OUT_ROOT, "contact-sheet.png"))
     print("✓ contact-sheet.png")
     print("\nDone →", OUT69)
 
